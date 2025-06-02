@@ -1,0 +1,8 @@
+@model Login.Models.ServicePackage
+
+<h1>@Model.ServiceName</h1>
+<p><strong>Danh mục:</strong> @Model.Category</p>
+<p><strong>Mô tả:</strong> @Model.Description</p>
+<p><strong>Thời gian thực hiện:</strong> @(Model.Duration.HasValue ? Model.Duration + " phút" : "Không xác định")</p>
+
+<a asp-action="Index" class="btn btn-secondary mt-3">Quay lại danh sách dịch vụ</a>

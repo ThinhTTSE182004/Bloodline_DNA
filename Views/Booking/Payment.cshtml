@@ -1,0 +1,128 @@
+@model List<Login.ViewModel.BookingViewModel>
+
+@{
+    ViewData["Title"] = "Thanh toán";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    decimal totalAmount = Model.Sum(m => m.Price);
+}
+
+<div class="container mt-4">
+    <h2>Thanh toán</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>Thông tin đơn hàng</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Tên dịch vụ</th>
+                                <th>Giá</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var item in Model)
+                            {
+                                <tr>
+                                    <td>@item.ServiceName</td>
+                                    <td>@item.Price.ToString("N0") VNĐ</td>
+                                </tr>
+                            }
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th>Tổng tiền:</th>
+                                <th>@totalAmount.ToString("N0") VNĐ</th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4>Phương thức thanh toán</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="ProcessPayment" method="post" id="payment-form">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="banking" value="banking" checked>
+                            <label class="form-check-label" for="banking">
+                                Chuyển khoản ngân hàng
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="momo" value="momo">
+                            <label class="form-check-label" for="momo">
+                                Ví MoMo
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="vnpay" value="vnpay">
+                            <label class="form-check-label" for="vnpay">
+                                VNPay
+                            </label>
+                        </div>
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="cod" value="cod">
+                            <label class="form-check-label" for="cod">
+                                Thanh toán khi lấy mẫu
+                            </label>
+                        </div>
+
+                        <input type="hidden" name="totalAmount" value="@totalAmount" />
+                        <button type="submit" class="btn btn-primary">Xác nhận thanh toán</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Tóm tắt đơn hàng</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Số lượng dịch vụ:</strong> @Model.Count</p>
+                    <p><strong>Tổng tiền:</strong> @totalAmount.ToString("N0") VNĐ</p>
+                    <hr />
+                    <p class="text-muted">
+                        Vui lòng kiểm tra kỹ thông tin đơn hàng trước khi thanh toán.
+                        Sau khi xác nhận, bạn sẽ không thể thay đổi thông tin đơn hàng.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Đánh dấu các dịch vụ đã chọn trong giỏ hàng
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const selectedServiceIds = @Html.Raw(Json.Serialize(Model.Select(m => m.SelectedServiceId)));
+            
+            cart.forEach(item => {
+                item.isSelected = selectedServiceIds.includes(item.SelectedServiceId);
+            });
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            // Xử lý form submit
+            $('#payment-form').submit(function() {
+                // Đánh dấu các dịch vụ đã được thanh toán
+                const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+                cart.forEach(item => {
+                    if (selectedServiceIds.includes(item.SelectedServiceId)) {
+                        item.isSelected = true;
+                    }
+                });
+                localStorage.setItem('cart', JSON.stringify(cart));
+                return true;
+            });
+        });
+    </script>
+} 

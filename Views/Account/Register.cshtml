@@ -1,0 +1,91 @@
+﻿@model Login.ViewModel.RegisterViewModel
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/Register.css" />
+}
+
+<div class="register-header">
+    Đăng ký tài khoản Bloodline DNA
+    <div class="desc">Khám phá dịch vụ xét nghiệm gen & tổ tiên hiện đại</div>
+</div>
+
+<div class="register-main">
+    <div class="form-container">
+        <div class="form-container-inner">
+            <div class="header d-flex justify-content-between align-items-center mb-3">
+                <img src="~/img/logo.png" alt="Logo" class="img-fluid" style="max-height: 60px;">
+            </div>
+            <h1 class="text-center mb-4">Đăng Ký</h1>
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <input asp-for="Name" class="form-control" placeholder="Họ và Tên" />
+                    <span asp-validation-for="Name" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <input asp-for="Email" class="form-control" placeholder="Email" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <input asp-for="Phone" class="form-control" placeholder="Số Điện Thoại" />
+                    <span asp-validation-for="Phone" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 password-container position-relative">
+                    <input asp-for="Password" class="form-control" placeholder="Mật Khẩu" type="password" />
+                    <button type="button" class="toggle-password btn btn-link position-absolute end-0 top-0 mt-2 me-2" tabindex="-1">
+                        <i class="ri-eye-line"></i>
+                    </button>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 password-container position-relative">
+                    <input asp-for="ConfirmPassword" class="form-control" placeholder="Xác Nhận Mật Khẩu" type="password" />
+                    <button type="button" class="toggle-password btn btn-link position-absolute end-0 top-0 mt-2 me-2" tabindex="-1">
+                        <i class="ri-eye-line"></i>
+                    </button>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3 terms d-flex align-items-center">
+                    <input type="checkbox" id="terms" class="me-2" required />
+                    <label for="terms" class="mb-0">Tôi đồng ý với <a href="#">Điều Khoản Sử Dụng</a> và <a href="#">Chính Sách Bảo Mật</a></label>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100 p-2">Đăng Ký</button>
+                <div class="footer text-center mt-3">
+                    <span>Đã có tài khoản?</span>
+                    <a asp-controller="Account" asp-action="Login" class="text-decoration-none ms-1">Đăng Nhập</a>
+                </div>
+                <div class="text-center mt-2">
+                    <a asp-controller="Home" asp-action="Index" class="text-decoration-none">Quay lại trang chủ</a>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="image-container"></div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        const toggleButtons = document.querySelectorAll(".toggle-password");
+        toggleButtons.forEach((button) => {
+          button.addEventListener("click", function () {
+            const input = this.parentElement.querySelector("input");
+            const type = input.getAttribute("type") === "password" ? "text" : "password";
+            input.setAttribute("type", type);
+            this.querySelector("i").classList.toggle("ri-eye-line");
+            this.querySelector("i").classList.toggle("ri-eye-off-line");
+          });
+        });
+      });
+    </script>
+}

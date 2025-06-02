@@ -1,0 +1,36 @@
+﻿@model Login.ViewModel.ProfileViewModel
+
+<div class="profile-container">
+    <img src="/img/avatar-default.png" alt="Avatar" class="avatar" style="width:100px;height:100px;border-radius:50%;" />
+    <h2>@Model.User.Name</h2>
+    <ul>
+        <li>Email: @Model.User.Email</li>
+        <li>Phone: @Model.User.Phone</li>
+    </ul>
+
+    <h3>Order History</h3>
+    @if (Model.Orders != null && Model.Orders.Count > 0)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model.Orders)
+                {
+                    <tr>
+                        <td>@order.OrderId</td>               
+                        <td>@order.OrderStatus</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <p>No order history found.</p>
+    }
+</div>

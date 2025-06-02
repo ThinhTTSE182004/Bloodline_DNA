@@ -1,0 +1,57 @@
+﻿@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" />
+}
+
+<div class="login-header">
+    Đăng nhập tài khoản Bloodline DNA
+</div>
+<div class="login-main">
+    <div class="login-form-container">
+        <h2>Đăng nhập</h2>
+        @model Login.Models.User
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger text-center">
+                @ViewBag.Error
+            </div>
+        }
+
+        <form asp-action="Login" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="Password" class="form-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <div class="d-flex justify-content-between">        
+                    <a asp-controller="Account" asp-action="VerifyEmail" class="text-decoration-none small">
+                        Forgot password?
+                    </a>
+                </div>
+            </div>
+
+            <div class="text-center mb-3">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+
+
+            <p class="text-center mt-2">
+                Don't have an account? <a asp-controller="Account" asp-action="Register" class="text-decoration-none">Register</a>
+            </p>
+
+            <p class="text-center mt-2">
+                Are you forget a password? <a asp-controller="Account" asp-action="ForgotPassword" class="text-decoration-none">Forgot Password?</a>
+            </p>
+            <div class="text-center">
+                <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back</a>
+            </div>
+        </form>
+    </div>
+</div>

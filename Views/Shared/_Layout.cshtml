@@ -1,0 +1,101 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Login</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/Login.styles.css" asp-append-version="true" />
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css"/>
+    <!-- Remixicon -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet" />
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+
+    <!-- Footer Start -->
+    <div class="container-fluid footer py-5 wow fadeIn" data-wow-delay="0.2s">
+        <div class="container py-5">
+            <div class="row g-5">
+                <div class="col-xl-12">
+                    <div class="mb-5">
+                        <div class="row g-4">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="footer-item">
+                                    <a href="index.html" class="p-0">
+                                        <h3 class="text-white"><i></i> Bloodline DNA</h3>
+                                    </a>
+                                    <p class="text-white mb-4">Bloodline DNA offers a full suite of genetic testing services designed to help you understand your ancestry, confirm biological relationships, and uncover genetic health risks. Your DNA tells a story—let us help you read it.
+                                    </p>                
+                                    <div class="footer-btn d-flex">
+                                        <a class="btn btn-md-square rounded-circle me-3" href="#"><i class="fab fa-facebook-f"></i></a>
+                                        <a class="btn btn-md-square rounded-circle me-3" href="#"><i class="fab fa-twitter"></i></a>
+                                        <a class="btn btn-md-square rounded-circle me-3" href="#"><i class="fab fa-instagram"></i></a>
+                                        <a class="btn btn-md-square rounded-circle me-0" href="#"><i class="fab fa-linkedin-in"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-5" style="border-top: 1px solid rgba(255, 255, 255, 0.08);">
+                        <div class="row g-0">
+                            <div class="col-12">
+                                <div class="row g-4">
+                                    <div class="col-lg-4 col-xl-4">
+                                        <div class="d-flex">
+                                            <div class="btn-xl-square bg-primary text-white rounded p-4 me-4">
+                                                <i class="fas fa-map-marker-alt fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-white">Address</h4>
+                                                <p class="mb-0">123 Street New York.USA</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-xl-4">
+                                        <div class="d-flex">
+                                            <div class="btn-xl-square bg-primary text-white rounded p-4 me-4">
+                                                <i class="fas fa-envelope fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-white">Mail Us</h4>
+                                                <p class="mb-0">info@example.com</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-4 col-xl-4">
+                                        <div class="d-flex">
+                                            <div class="btn-xl-square bg-primary text-white rounded p-4 me-4">
+                                                <i class="fa fa-phone-alt fa-2x"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-white">Telephone</h4>
+                                                <p class="mb-0">(+012) 3456 7890</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

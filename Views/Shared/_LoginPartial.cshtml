@@ -1,0 +1,58 @@
+﻿@{
+    string username = User.Identity.IsAuthenticated
+        ? User.Identity.Name
+        : null;
+}
+
+<!-- Bootstrap Icons -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center gap-3">
+    @if (string.IsNullOrEmpty(username))
+    {
+        <li class="nav-item">
+            <a class="btn btn-outline-primary rounded" asp-action="Login" asp-controller="Account">Đăng nhập</a>
+        </li>
+        <li class="nav-item">
+            <a class="btn btn-outline-secondary rounded" asp-action="Register" asp-controller="Account">Đăng ký</a>
+        </li>
+    }
+    else
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                const badge = document.getElementById('cart-count');
+                if (badge) {
+                    badge.textContent = cart.length;
+                }
+            });
+        </script>
+
+        <!-- Giỏ hàng -->
+        <li class="nav-item">
+            <button type="button" class="btn btn-outline-primary position-relative" onclick="window.location.href='/Cart/ViewCart'">
+                <i class="bi bi-cart-fill"></i>
+                <span class="d-none d-md-inline">Giỏ hàng</span>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cart-count">
+                    0
+                </span>
+            </button>
+        </li>
+
+        <!-- Dropdown người dùng -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="fa fa-user-circle me-1"></i> <span class="d-none d-md-inline">Hello, <strong>@username</strong></span>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" asp-action="Profile" asp-controller="Customer">Hồ sơ cá nhân</a></li>
+                <li><a class="dropdown-item" asp-action="AccountSettings" asp-controller="Customer">Cài đặt tài khoản</a></li>
+                <li><hr class="dropdown-divider" /></li>
+                <li><a class="dropdown-item text-danger" asp-action="Logout" asp-controller="Account">Đăng xuất</a></li>
+            </ul>
+        </li>
+    }
+</ul>

@@ -1,0 +1,196 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css');
+
+body {
+  background: #f6f8fb;
+  font-family: Arial, 'Segoe UI', sans-serif;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+  color: #015fc9;
+  font-size: 2.2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  justify-content: center;
+}
+
+.card {
+  border-radius: 18px;
+  box-shadow: 0 4px 24px rgba(1, 95, 201, 0.10);
+  border: none;
+  background: #fff;
+  transition: transform 0.25s cubic-bezier(.4,2,.6,1), box-shadow 0.2s;
+  min-width: 260px;
+  max-width: 350px;
+  width: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  /* animate.css hiệu ứng xuất hiện */
+  animation: fadeInUp 0.7s;
+}
+
+.card:hover {
+  transform: translateY(-12px) scale(1.04) rotateZ(-1deg);
+  box-shadow: 0 12px 36px rgba(1, 95, 201, 0.18);
+}
+
+.card-img-top {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  border-radius: 18px 18px 0 0;
+  transition: transform 0.4s cubic-bezier(.4,2,.6,1), box-shadow 0.3s;
+  box-shadow: 0 2px 8px rgba(1, 95, 201, 0.08);
+}
+
+.card:hover .card-img-top {
+  transform: scale(1.08) rotateZ(2deg);
+  box-shadow: 0 8px 24px rgba(1, 95, 201, 0.15);
+}
+
+.card-body {
+  padding: 2rem 1.5rem 1.5rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+
+.card-content {
+  flex: 1 1 auto;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.card-title {
+  color: #015fc9;
+  font-size: 1.3rem;
+  font-weight: bold;
+  margin-bottom: 0.7rem;
+}
+
+.card-text {
+  color: #444;
+  font-size: 1.05rem;
+  margin-bottom: 1.2rem;
+}
+
+.card-footer {
+  margin-top: auto;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0 0 1rem 0;
+}
+
+.btn-primary, .btn-secondary {
+  background: linear-gradient(90deg, #015fc9 0%, #4e8cff 100%);
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  padding: 0.7rem 1.5rem;
+  color: #fff;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(1, 95, 201, 0.08);
+}
+
+.btn-primary:hover, .btn-secondary:hover {
+  background: linear-gradient(90deg, #4e8cff 0%, #015fc9 100%);
+  color: #fff;
+  box-shadow: 0 4px 16px rgba(1, 95, 201, 0.13);
+}
+
+/* Chi tiết dịch vụ */
+.service-detail-card {
+  background: #fff;
+  border-radius: 18px;
+  box-shadow: 0 4px 32px rgba(1, 95, 201, 0.10);
+  max-width: 600px;
+  margin: 2rem auto;
+  padding: 2.5rem 2rem 2rem 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.service-detail-card h1 {
+  font-size: 2rem;
+  margin-bottom: 1.2rem;
+  text-align: left;
+}
+
+.service-detail-card p {
+  font-size: 1.1rem;
+  color: #333;
+  margin-bottom: 0.7rem;
+}
+
+@media (max-width: 1200px) {
+  .row {
+    gap: 1.2rem;
+  }
+  .card {
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 900px) {
+  .row {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1.2rem;
+    align-items: center;
+  }
+  .card {
+    max-width: 45vw;
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 700px) {
+  .row {
+    flex-direction: column;
+    gap: 1.2rem;
+    align-items: center;
+  }
+  .card {
+    max-width: 95vw;
+  }
+  .service-detail-card {
+    max-width: 98vw;
+    padding: 1.2rem 0.5rem 1.2rem 0.5rem;
+  }
+  h1 {
+    font-size: 1.3rem;
+  }
+}
+
+/* Animate.css fadeInUp nếu dùng animate__fadeInUp */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 40px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

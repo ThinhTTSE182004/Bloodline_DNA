@@ -1,0 +1,216 @@
+﻿@model List<Login.ViewModel.BookingViewModel>
+
+@{
+    ViewData["Title"] = "Nhập thông tin đặt dịch vụ";
+}
+
+<div class="card mb-4">
+    <div class="card-header">
+        <h4>Tóm tắt dịch vụ đã chọn</h4>
+    </div>
+    <div class="card-body">
+        <div id="selected-services">
+            <!-- Danh sách dịch vụ sẽ được render bằng JavaScript -->
+        </div>
+        <hr>
+        <div class="text-end">
+            <strong>Tổng tiền: </strong>
+            <span id="total-price" class="text-primary h5">0 VNĐ</span>
+        </div>
+    </div>
+</div>
+
+<h2>Nhập thông tin chi tiết cho các dịch vụ</h2>
+
+<form asp-action="FillBookingForm" method="post">
+    @for (int i = 0; i < Model.Count; i++)
+    {
+        var relationOptions = GetRelationOptions(Model[i].ServiceName);
+
+        <fieldset class="border p-3 mb-3">
+            <legend>
+                @Model[i].ServiceName
+                <span class="service-price text-primary" data-index="@i"></span>
+            </legend>
+            @Html.HiddenFor(m => m[i].SelectedServiceId)
+            @Html.HiddenFor(m => m[i].ServiceName)
+            @Html.HiddenFor(m => m[i].Price)
+
+            <div class="form-group">
+                <label>Loại hình xét nghiệm</label>
+                <select asp-for="@Model[i].TestType" class="form-control test-type" data-index="@i">
+                    <option value="">-- Chọn loại hình --</option>
+                    <option value="Hành chính">Hành chính</option>
+                    <option value="Dân sự">Dân sự</option>
+                </select>
+                <span asp-validation-for="@Model[i].TestType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Hình thức lấy mẫu</label>
+                <select asp-for="@Model[i].SampleMethod" class="form-control sample-method" data-index="@i">
+                    <option value="">-- Chọn hình thức lấy mẫu --</option>
+                    <option value="Tại nhà">Tại nhà</option>
+                    <option value="Tại cơ sở y tế">Tại cơ sở y tế</option>
+                </select>
+                <span asp-validation-for="@Model[i].SampleMethod" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Loại mẫu</label>
+                <select asp-for="@Model[i].SampleType" class="form-control">
+                    <option value="">-- Chọn loại mẫu --</option>
+                    <option value="Máu">Máu</option>
+                    <option value="Tóc">Tóc</option>
+                    <option value="Móng tay">Móng tay</option>
+                </select>
+                <span asp-validation-for="@Model[i].SampleType" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Họ tên người đăng ký</label>
+                <input asp-for="@Model[i].FullName" class="form-control" />
+                <span asp-validation-for="@Model[i].FullName" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Giới tính</label>
+                <select asp-for="@Model[i].Sex" class="form-control">
+                    <option value="">-- Chọn giới tính --</option>
+                    <option value="Male">Nam</option>
+                    <option value="Female">Nữ</option>
+                    <option value="Other">Khác</option>
+                </select>
+                <span asp-validation-for="@Model[i].Sex" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Ngày sinh</label>
+                <input asp-for="@Model[i].BirthDate" type="date" class="form-control" />
+                <span asp-validation-for="@Model[i].BirthDate" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Số điện thoại</label>
+                <input asp-for="@Model[i].Phone" class="form-control" />
+                <sƯpan asp-validation-for="@Model[i].Phone" class="text-danger"></sƯpan>
+            </div>
+
+            <div class="form-group">
+                <label>Email</label>
+                <input asp-for="@Model[i].Email" class="form-control" />
+                <span asp-validation-for="@Model[i].Email" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Địa chỉ</label>
+                <input asp-for="@Model[i].Address" class="form-control" />
+                <span asp-validation-for="@Model[i].Address" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Mối quan hệ với bệnh nhân</label>
+                <select asp-for="@Model[i].Relationship" class="form-control">
+                    <option value="">-- Chọn mối quan hệ --</option>
+                    @foreach (var option in relationOptions)
+                    {
+                        if (option == Model[i].Relationship)
+                        {
+                            <option value="@option" selected="selected">@option</option>
+                        }
+                        else
+                        {
+                            <option value="@option">@option</option>
+                        }
+                    }
+                </select>
+                <span asp-validation-for="@Model[i].Relationship" class="text-danger"></span>
+            </div>
+
+            <div class="form-group">
+                <label>Họ tên người liên quan</label>
+                <input asp-for="@Model[i].Name" class="form-control" placeholder="Nhập tên người liên quan" />
+                <span asp-validation-for="@Model[i].Name" class="text-danger"></span>
+            </div>
+        </fieldset>
+    }
+
+    <button type="submit" class="btn btn-success">Gửi đơn hàng</button>
+</form>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script>
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+        }
+
+        function updateServiceSummary() {
+            let html = '<ul class="list-unstyled">';
+            let total = 0;
+
+            @for (int i = 0; i < Model.Count; i++)
+            {
+                @:html += `<li>${'@Model[i].ServiceName'} - ${formatPrice(@Model[i].Price)}</li>`;
+                @:total += @Model[i].Price;
+                @:$(`.service-price[data-index="${@i}"]`).text(` - ${formatPrice(@Model[i].Price)}`);
+            }
+
+            html += '</ul>';
+            $('#selected-services').html(html);
+            $('#total-price').text(formatPrice(total));
+        }
+
+        $(document).ready(function () {
+            updateServiceSummary();
+
+            // Kiểm tra nếu chọn Hành chính thì disable option "Tại nhà"
+            $(".test-type").change(function () {
+                var index = $(this).data("index");
+                var testType = $(this).val();
+                var sampleMethodSelect = $(".sample-method[data-index='" + index + "']");
+
+                if (testType === "Hành chính") {
+                    // Không cho chọn "Tại nhà"
+                    sampleMethodSelect.find("option[value='Tại nhà']").attr("disabled", true);
+                    // Nếu đang chọn "Tại nhà" thì đổi sang "Tại cơ sở y tế"
+                    if (sampleMethodSelect.val() === "Tại nhà") {
+                        sampleMethodSelect.val("Tại cơ sở y tế");
+                    }
+                }
+                else {
+                    // Cho phép chọn "Tại nhà"
+                    sampleMethodSelect.find("option[value='Tại nhà']").removeAttr("disabled");
+                }
+            });
+
+            // Trigger lần đầu để áp dụng trạng thái
+            $(".test-type").each(function () {
+                $(this).trigger("change");
+            });
+        });
+    </script>
+}
+
+@functions {
+    List<string> GetRelationOptions(string serviceName)
+    {
+        switch (serviceName)
+        {
+            case "Maternal Ancestry Test":
+                return new List<string> { "Mẹ", "Con" };
+            case "Paternal Ancestry Test":
+                return new List<string> { "Cha", "Con" };
+            case "Sibling Relationship Test":
+                return new List<string> { "Anh/chị/em" };
+            case "Family Ancestry Test":
+                return new List<string> { "Thành viên" };
+            case "Parentage Verification Test":
+                return new List<string> { "Cha/Mẹ", "Con" };
+            default:
+                return new List<string> { "Người liên quan" };
+        }
+    }
+}
+
