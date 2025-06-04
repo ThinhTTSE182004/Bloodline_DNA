@@ -3,35 +3,40 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<h2>Giỏ hàng của bạn</h2>
+<div class="view-cart">
+    <h2>Giỏ hàng của bạn</h2>
 
-<table class="table table-bordered" id="cart-table">
-    <thead>
-        <tr>
-            <th>Tên dịch vụ</th>
-            <th>Giá</th>
-            <th>Chọn</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        <!-- Dữ liệu render từ localStorage -->
-    </tbody>
-    <tfoot>
-        <tr>
-            <td colspan="1"><strong>Tổng tiền:</strong></td>
-            <td colspan="3"><strong id="total-price">0 VNĐ</strong></td>
-        </tr>
-    </tfoot>
-</table>
+    <div class="table-responsive">
+        <table class="table table-bordered" id="cart-table">
+            <thead>
+                <tr>
+                    <th>Tên dịch vụ</th>
+                    <th>Giá</th>
+                    <th>Chọn</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dữ liệu render từ localStorage -->
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="1"><strong>Tổng tiền:</strong></td>
+                    <td colspan="3"><strong id="total-price">0 VNĐ</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
-<form id="order-form" method="post" asp-controller="Booking" asp-action="StartBooking">
-    <input type="hidden" name="jsonCart" id="jsonCart" />
-    <button type="submit" class="btn btn-primary">Đặt hàng</button>
-</form>
+    <form id="order-form" method="post" asp-controller="Booking" asp-action="StartBooking">
+        <input type="hidden" name="jsonCart" id="jsonCart" />
+        <button type="submit" class="btn btn-primary">Đặt hàng</button>
+    </form>
+</div>
 
 @section Scripts {
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <link rel="stylesheet" href="~/css/view-cart.css" />
 
     <script>
         // Khai báo biến cart ở scope global của script
