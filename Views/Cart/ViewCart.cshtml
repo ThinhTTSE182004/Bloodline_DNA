@@ -1,28 +1,28 @@
 ﻿@{
-    ViewData["Title"] = "Giỏ hàng";
+    ViewData["Title"] = "Shopping Cart";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="view-cart">
-    <h2>Giỏ hàng của bạn</h2>
+    <h2>Your Shopping Cart</h2>
 
     <div class="table-responsive">
         <table class="table table-bordered" id="cart-table">
             <thead>
                 <tr>
-                    <th>Tên dịch vụ</th>
-                    <th>Giá</th>
-                    <th>Chọn</th>
+                    <th>Service Name</th>
+                    <th>Price</th>
+                    <th>Select</th>
                     <th></th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Dữ liệu render từ localStorage -->
+                <!-- Data rendered from localStorage -->
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="1"><strong>Tổng tiền:</strong></td>
-                    <td colspan="3"><strong id="total-price">0 VNĐ</strong></td>
+                    <td colspan="1"><strong>Total:</strong></td>
+                    <td colspan="3"><strong id="total-price">0 VND</strong></td>
                 </tr>
             </tfoot>
         </table>
@@ -30,7 +30,7 @@
 
     <form id="order-form" method="post" asp-controller="Booking" asp-action="StartBooking">
         <input type="hidden" name="jsonCart" id="jsonCart" />
-        <button type="submit" class="btn btn-primary">Đặt hàng</button>
+        <button type="submit" class="btn btn-primary">Place Order</button>
     </form>
 </div>
 
@@ -39,11 +39,11 @@
     <link rel="stylesheet" href="~/css/view-cart.css" />
 
     <script>
-        // Khai báo biến cart ở scope global của script
+        // Declare cart variable in the global scope of the script
         let cart = [];
 
         function formatPrice(price) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'VND' }).format(price);
         }
 
         function updateTotalPrice() {
@@ -58,11 +58,11 @@
         }
 
         $(document).ready(function () {
-            // Lấy cart từ localStorage
+            // Get cart from localStorage
             cart = JSON.parse(localStorage.getItem('cart') || '[]');
 
             if (cart.length === 0) {
-                $('#cart-table tbody').html('<tr><td colspan="4">Chưa có dịch vụ nào trong giỏ hàng.</td></tr>');
+                $('#cart-table tbody').html('<tr><td colspan="4">No services in the cart.</td></tr>');
                 $('#order-form').hide();
             } else {
                 let html = '';
@@ -75,14 +75,14 @@
                                 <input type="checkbox" class="select-service" data-index="${index}" />
                             </td>
                             <td>
-                                <button class="btn btn-sm btn-danger btn-remove" data-index="${index}">Xoá</button>
+                                <button class="btn btn-sm btn-danger btn-remove" data-index="${index}">Remove</button>
                             </td>
                         </tr>`;
                 });
                 $('#cart-table tbody').html(html);
             }
 
-            // Xóa dịch vụ trong giỏ
+            // Remove service from cart
             $(document).on('click', '.btn-remove', function () {
                 const index = $(this).data('index');
                 if (index >= 0 && index < cart.length) {
@@ -92,12 +92,12 @@
                 }
             });
 
-            // Cập nhật tổng tiền khi chọn/bỏ chọn dịch vụ
+            // Update total price when selecting/deselecting services
             $(document).on('change', '.select-service', function() {
                 updateTotalPrice();
             });
 
-            // Submit form gửi dịch vụ được chọn lên server
+            // Submit form to send selected services to the server
             $('#order-form').submit(function () {
                 const selectedServices = [];
                 $('.select-service:checked').each(function () {
@@ -111,7 +111,7 @@
                     }
                 });
                 if (selectedServices.length === 0) {
-                    alert('Vui lòng chọn ít nhất một dịch vụ!');
+                    alert('Please select at least one service!');
                     return false;
                 }
                 $('#jsonCart').val(JSON.stringify(selectedServices));

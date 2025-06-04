@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Login.Models;
 
@@ -33,4 +34,6 @@ public partial class ServicePackage
 
     [InverseProperty("ServicePackage")]
     public virtual ICollection<ServicePrice> ServicePrices { get; set; } = new List<ServicePrice>();
+
+    public int? FirstPrice => ServicePrices.FirstOrDefault()?.Price;
 }

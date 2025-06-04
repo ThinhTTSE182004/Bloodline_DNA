@@ -3,11 +3,11 @@
 }
 
 <div class="login-header">
-    Đăng nhập tài khoản Bloodline DNA
+    Login to Bloodline DNA Account
 </div>
 <div class="login-main">
     <div class="login-form-container">
-        <h2>Đăng nhập</h2>
+        <h2>Login</h2>
         @model Login.Models.User
         @if (ViewBag.Error != null)
         {
@@ -47,7 +47,7 @@
             </p>
 
             <p class="text-center mt-2">
-                Are you forget a password? <a asp-controller="Account" asp-action="ForgotPassword" class="text-decoration-none">Forgot Password?</a>
+                Forgot your password? <a asp-controller="Account" asp-action="ForgotPassword" class="text-decoration-none">Forgot Password?</a>
             </p>
             <div class="text-center">
                 <a asp-controller="Home" asp-action="Index" class="text-decoration-none mt-3">Back</a>

@@ -4,21 +4,178 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 }
 
-<h1 class="mb-4 animate__animated animate__fadeInDown">Tất cả dịch vụ</h1>
+<nav class="navbar navbar-expand-lg navbar-light">
+    <a asp-action="Index" asp-controller="Home" class="navbar-brand p-0">
+        <img src="~/img/logo.png" alt="Logo" class="img-fluid" style="max-height: 60px;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+        <span class="fa fa-bars"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarCollapse">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0 d-flex align-items-center">
+            <li class="nav-item">
+                <a asp-action="Index" asp-controller="Home" class="nav-link active">Home</a>
+            </li>
+            <li class="nav-item">
+                <a href="#Feature" class="nav-link">Feature</a>
+            </li>
+            <li class="nav-item">
+                <a href="#About" class="nav-link">About</a>
+            </li>
+            <li class="nav-item">
+                <a asp-action="Services" asp-controller="Home" class="nav-link">Services</a>
+            </li>
+            <li class="nav-item">
+                <a href="#Facilities" class="nav-link">Facilities</a>
+            </li>
+            <li class="nav-item">
+                <a asp-action="Guide" asp-controller="Home" class="nav-link">Guide</a>
+            </li>
+            <li class="nav-item">
+                <a href="#FAQ" class="nav-link">FAQ</a>
+            </li>
+            <li class="nav-item">
+                <a asp-action="Blog" asp-controller="Home" class="nav-link">Blog</a>
+            </li>
+            <li class="nav-item">
+                <partial name="_LoginPartial" />
+            </li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container mt-3">
+    <form id="filterForm">
+        <div class="row">
+            <div class="col-md-4">
+                <input type="text" class="form-control" placeholder="Search by name" id="searchName">
+            </div>
+            <div class="col-md-4">
+                <input type="date" class="form-control" id="filterDate">
+            </div>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<h1 class="mb-4 animate__animated animate__fadeInDown">All Services</h1>
 <div class="row g-3">
 @foreach (var service in Model)
 {
     <div class="col-md-3 mb-3 animate__animated animate__fadeInUp">
         <div class="card h-100 d-flex flex-column">
-            <img src="~/img/adn.png" class="card-img-top" alt="Ảnh dịch vụ" />
+            <img src="~/img/adn.png" class="card-img-top" alt="Service Image" />
             <div class="card-body d-flex flex-column">
                 <h5 class="card-title">@service.ServiceName</h5>
                 <p class="card-text">@service.Description</p>
-                <div class="d-flex justify-content-center mt-auto">
-                    <a asp-action="Services" asp-controller="Home" asp-route-id="@service.ServicePackageId" class="btn btn-primary">Xem chi tiết</a>
+                <div class="d-flex justify-content-between mt-auto">
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#serviceDetailModal" data-id="@service.ServicePackageId">View Details</button>
+                    <button class="btn btn-success btn-add-cart" data-id="@service.ServicePackageId" data-name="@service.ServiceName" data-price="@service.FirstPrice">Add to Cart</button>
                 </div>
             </div>
         </div>
     </div>
 }
 </div>
+
+<!-- Modal for Service Details -->
+<div class="modal fade" id="serviceDetailModal" tabindex="-1" aria-labelledby="serviceDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="serviceDetailModalLabel">Service Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h1 id="modalServiceName"></h1>
+                <p><strong>Category:</strong> <span id="modalCategory"></span></p>
+                <p><strong>Description:</strong> <span id="modalDescription"></span></p>
+                <p><strong>Duration:</strong> <span id="modalDuration"></span></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Event listener for the modal
+            $('#serviceDetailModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget); // Button that triggered the modal
+                var serviceId = button.data('id'); // Extract info from data-* attributes
+                console.log("Service ID:", serviceId); // Log Service ID
+
+                // Make an AJAX call to get service details
+                $.get(`/Services/Detail?serviceId=${serviceId}`, function(data) {
+                    console.log("Service Data:", data); // Log Service Data
+                    if (data) {
+                        $('#modalServiceName').text(data.serviceName);
+                        $('#modalCategory').text(data.category);
+                        $('#modalDescription').text(data.description);
+                        $('#modalDuration').text(data.duration ? data.duration + " minutes" : "Not specified");
+                    } else {
+                        $('#modalServiceName').text("No service information found.");
+                        $('#modalCategory').text("");
+                        $('#modalDescription').text("");
+                        $('#modalDuration').text("");
+                    }
+                    $('#serviceDetailModal').modal('show'); // Show the modal after setting data
+                }).fail(function() {
+                    console.error("Error fetching service details."); // Log error
+                });
+            });
+
+            // Handle filter form submission
+            $('#filterForm').on('submit', function (event) {
+                event.preventDefault(); // Prevent the default form submission
+
+                var searchName = $('#searchName').val().toLowerCase(); // Get the search name
+                var filterDate = $('#filterDate').val(); // Get the filter date
+
+                // Filter the services
+                $('.row.g-3 .col-md-3').each(function () {
+                    var serviceName = $(this).find('.card-title').text().toLowerCase(); // Get the service name
+                    var serviceDate = $(this).data('date'); // Assuming you have a data attribute for date
+
+                    // Check if the service name matches the search name and if the date matches
+                    if (serviceName.includes(searchName) && (filterDate === "" || serviceDate === filterDate)) {
+                        $(this).show(); // Show the service
+                    } else {
+                        $(this).hide(); // Hide the service
+                    }
+                });
+            });
+
+            // Add to cart functionality
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            function updateCartCount() {
+                $('#cart-count').text(cart.length);
+            }
+
+            $('.btn-add-cart').click(function () {
+                const serviceId = $(this).data('id');
+                const serviceName = $(this).data('name');
+                const price = $(this).data('price');
+
+                // Add service to cart
+                cart.push({
+                    serviceId,
+                    serviceName,
+                    price
+                });
+
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                alert(`Added "${serviceName}" to cart!`);
+            });
+
+            updateCartCount();
+        });
+    </script>
+}

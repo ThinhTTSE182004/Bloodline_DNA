@@ -1,5 +1,5 @@
 ﻿@{
-    ViewData["Title"] = "Thanh toán thành công";
+    ViewData["Title"] = "Payment Successful";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
@@ -14,27 +14,27 @@
                     @if (ViewBag.PaymentMethod == "banking")
                     {
                         <div class="alert alert-info mt-4">
-                            <h4>Thông tin chuyển khoản</h4>
-                            <p>Vui lòng chuyển khoản theo thông tin sau:</p>
+                            <h4>Bank Transfer Information</h4>
+                            <p>Please transfer the payment using the following information:</p>
                             <ul class="list-unstyled">
-                                <li>Ngân hàng: BIDV</li>
-                                <li>Số tài khoản: 123456789</li>
-                                <li>Chủ tài khoản: CÔNG TY TNHH XÉT NGHIỆM ADN</li>
-                                <li>Nội dung: ADN@ViewBag.OrderId</li>
+                                <li>Bank: BIDV</li>
+                                <li>Account Number: 123456789</li>
+                                <li>Account Holder: DNA TESTING COMPANY LIMITED</li>
+                                <li>Note: ADN@ViewBag.OrderId</li>
                             </ul>
                         </div>
                     }
                     else if (ViewBag.PaymentMethod == "cod")
                     {
                         <div class="alert alert-info mt-4">
-                            <p>Bạn đã chọn phương thức thanh toán khi lấy mẫu.</p>
-                            <p>Vui lòng chuẩn bị số tiền chính xác khi nhân viên đến lấy mẫu.</p>
-                            <p>Mã đơn hàng của bạn: <strong>ADN@ViewBag.OrderId</strong></p>
+                            <p>You have chosen to pay upon sample collection.</p>
+                            <p>Please prepare the exact amount when our staff arrives to collect the sample.</p>
+                            <p>Your order code: <strong>ADN@ViewBag.OrderId</strong></p>
                         </div>
                     }
 
                     <div class="mt-4">
-                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Quay lại trang chủ</a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Back to Home</a>
                     </div>
                 </div>
             </div>
@@ -46,15 +46,15 @@
     <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
     <script>
         $(document).ready(function() {
-            // Lấy danh sách dịch vụ đã chọn từ localStorage
+            // Get the list of selected services from localStorage
             const cart = JSON.parse(localStorage.getItem('cart') || '[]');
             const selectedServices = cart.filter(item => item.isSelected);
             
-            // Xóa các dịch vụ đã chọn khỏi giỏ hàng
+            // Remove selected services from the cart
             const remainingServices = cart.filter(item => !item.isSelected);
             localStorage.setItem('cart', JSON.stringify(remainingServices));
 
-            // Cập nhật số lượng hiển thị trên giỏ hàng
+            // Update the cart count display
             $('#cart-count').text(remainingServices.length);
         });
     </script>

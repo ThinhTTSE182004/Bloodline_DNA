@@ -1,26 +1,26 @@
 ﻿@model List<Login.ViewModel.BookingViewModel>
 
 @{
-    ViewData["Title"] = "Nhập thông tin đặt dịch vụ";
+    ViewData["Title"] = "Enter Booking Information";
 }
 
 <div class="card mb-4">
     <div class="card-header">
-        <h4>Tóm tắt dịch vụ đã chọn</h4>
+        <h4>Selected Service Summary</h4>
     </div>
     <div class="card-body">
         <div id="selected-services">
-            <!-- Danh sách dịch vụ sẽ được render bằng JavaScript -->
+            <!-- The list of services will be rendered by JavaScript -->
         </div>
         <hr>
         <div class="text-end">
-            <strong>Tổng tiền: </strong>
-            <span id="total-price" class="text-primary h5">0 VNĐ</span>
+            <strong>Total: </strong>
+            <span id="total-price" class="text-primary h5">0 VND</span>
         </div>
     </div>
 </div>
 
-<h2>Nhập thông tin chi tiết cho các dịch vụ</h2>
+<h2>Enter detailed information for the services</h2>
 
 <form asp-action="FillBookingForm" method="post">
     @for (int i = 0; i < Model.Count; i++)
@@ -37,63 +37,63 @@
             @Html.HiddenFor(m => m[i].Price)
 
             <div class="form-group">
-                <label>Loại hình xét nghiệm</label>
+                <label>Test Type</label>
                 <select asp-for="@Model[i].TestType" class="form-control test-type" data-index="@i">
-                    <option value="">-- Chọn loại hình --</option>
-                    <option value="Hành chính">Hành chính</option>
-                    <option value="Dân sự">Dân sự</option>
+                    <option value="">-- Select test type --</option>
+                    <option value="Hành chính">Administrative</option>
+                    <option value="Dân sự">Civil</option>
                 </select>
                 <span asp-validation-for="@Model[i].TestType" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Hình thức lấy mẫu</label>
+                <label>Sample Collection Method</label>
                 <select asp-for="@Model[i].SampleMethod" class="form-control sample-method" data-index="@i">
-                    <option value="">-- Chọn hình thức lấy mẫu --</option>
-                    <option value="Tại nhà">Tại nhà</option>
-                    <option value="Tại cơ sở y tế">Tại cơ sở y tế</option>
+                    <option value="">-- Select sample collection method --</option>
+                    <option value="Tại nhà">At Home</option>
+                    <option value="Tại cơ sở y tế">At Medical Facility</option>
                 </select>
                 <span asp-validation-for="@Model[i].SampleMethod" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Loại mẫu</label>
+                <label>Sample Type</label>
                 <select asp-for="@Model[i].SampleType" class="form-control">
-                    <option value="">-- Chọn loại mẫu --</option>
-                    <option value="Máu">Máu</option>
-                    <option value="Tóc">Tóc</option>
-                    <option value="Móng tay">Móng tay</option>
+                    <option value="">-- Select sample type --</option>
+                    <option value="Máu">Blood</option>
+                    <option value="Tóc">Hair</option>
+                    <option value="Móng tay">Nail</option>
                 </select>
                 <span asp-validation-for="@Model[i].SampleType" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Họ tên người đăng ký</label>
+                <label>Registrant's Full Name</label>
                 <input asp-for="@Model[i].FullName" class="form-control" />
                 <span asp-validation-for="@Model[i].FullName" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Giới tính</label>
+                <label>Gender</label>
                 <select asp-for="@Model[i].Sex" class="form-control">
-                    <option value="">-- Chọn giới tính --</option>
-                    <option value="Male">Nam</option>
-                    <option value="Female">Nữ</option>
-                    <option value="Other">Khác</option>
+                    <option value="">-- Select gender --</option>
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                    <option value="Other">Other</option>
                 </select>
                 <span asp-validation-for="@Model[i].Sex" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Ngày sinh</label>
+                <label>Date of Birth</label>
                 <input asp-for="@Model[i].BirthDate" type="date" class="form-control" />
                 <span asp-validation-for="@Model[i].BirthDate" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Số điện thoại</label>
+                <label>Phone Number</label>
                 <input asp-for="@Model[i].Phone" class="form-control" />
-                <sƯpan asp-validation-for="@Model[i].Phone" class="text-danger"></sƯpan>
+                <span asp-validation-for="@Model[i].Phone" class="text-danger"></span>
             </div>
 
             <div class="form-group">
@@ -103,15 +103,15 @@
             </div>
 
             <div class="form-group">
-                <label>Địa chỉ</label>
+                <label>Address</label>
                 <input asp-for="@Model[i].Address" class="form-control" />
                 <span asp-validation-for="@Model[i].Address" class="text-danger"></span>
             </div>
 
             <div class="form-group">
-                <label>Mối quan hệ với bệnh nhân</label>
+                <label>Relationship to Patient</label>
                 <select asp-for="@Model[i].Relationship" class="form-control">
-                    <option value="">-- Chọn mối quan hệ --</option>
+                    <option value="">-- Select relationship --</option>
                     @foreach (var option in relationOptions)
                     {
                         if (option == Model[i].Relationship)
@@ -128,14 +128,14 @@
             </div>
 
             <div class="form-group">
-                <label>Họ tên người liên quan</label>
-                <input asp-for="@Model[i].Name" class="form-control" placeholder="Nhập tên người liên quan" />
+                <label>Related Person's Full Name</label>
+                <input asp-for="@Model[i].Name" class="form-control" placeholder="Enter related person's name" />
                 <span asp-validation-for="@Model[i].Name" class="text-danger"></span>
             </div>
         </fieldset>
     }
 
-    <button type="submit" class="btn btn-success">Gửi đơn hàng</button>
+    <button type="submit" class="btn btn-success">Submit Order</button>
 </form>
 
 @section Scripts {
@@ -143,7 +143,7 @@
 
     <script>
         function formatPrice(price) {
-            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+            return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'VND' }).format(price);
         }
 
         function updateServiceSummary() {
@@ -165,27 +165,27 @@
         $(document).ready(function () {
             updateServiceSummary();
 
-            // Kiểm tra nếu chọn Hành chính thì disable option "Tại nhà"
+            // If "Administrative" is selected, disable "At Home" option
             $(".test-type").change(function () {
                 var index = $(this).data("index");
                 var testType = $(this).val();
                 var sampleMethodSelect = $(".sample-method[data-index='" + index + "']");
 
                 if (testType === "Hành chính") {
-                    // Không cho chọn "Tại nhà"
+                    // Do not allow selecting "At Home"
                     sampleMethodSelect.find("option[value='Tại nhà']").attr("disabled", true);
-                    // Nếu đang chọn "Tại nhà" thì đổi sang "Tại cơ sở y tế"
+                    // If currently selected, change to "At Medical Facility"
                     if (sampleMethodSelect.val() === "Tại nhà") {
                         sampleMethodSelect.val("Tại cơ sở y tế");
                     }
                 }
                 else {
-                    // Cho phép chọn "Tại nhà"
+                    // Allow selecting "At Home"
                     sampleMethodSelect.find("option[value='Tại nhà']").removeAttr("disabled");
                 }
             });
 
-            // Trigger lần đầu để áp dụng trạng thái
+            // Trigger initially to apply state
             $(".test-type").each(function () {
                 $(this).trigger("change");
             });
@@ -199,17 +199,17 @@
         switch (serviceName)
         {
             case "Maternal Ancestry Test":
-                return new List<string> { "Mẹ", "Con" };
+                return new List<string> { "Mother", "Child" };
             case "Paternal Ancestry Test":
-                return new List<string> { "Cha", "Con" };
+                return new List<string> { "Father", "Child" };
             case "Sibling Relationship Test":
-                return new List<string> { "Anh/chị/em" };
+                return new List<string> { "Sibling" };
             case "Family Ancestry Test":
-                return new List<string> { "Thành viên" };
+                return new List<string> { "Family Member" };
             case "Parentage Verification Test":
-                return new List<string> { "Cha/Mẹ", "Con" };
+                return new List<string> { "Father/Mother", "Child" };
             default:
-                return new List<string> { "Người liên quan" };
+                return new List<string> { "Related Person" };
         }
     }
 }
