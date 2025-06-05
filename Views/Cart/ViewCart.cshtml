@@ -1,0 +1,116 @@
+﻿@{
+    ViewData["Title"] = "Giỏ hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Giỏ hàng của bạn</h2>
+
+<table class="table table-bordered" id="cart-table">
+    <thead>
+        <tr>
+            <th>Tên dịch vụ</th>
+            <th>Giá</th>
+            <th>Chọn</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Dữ liệu render từ localStorage -->
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="1"><strong>Tổng tiền:</strong></td>
+            <td colspan="3"><strong id="total-price">0 VNĐ</strong></td>
+        </tr>
+    </tfoot>
+</table>
+
+<form id="order-form" method="post" asp-controller="Booking" asp-action="StartBooking">
+    <input type="hidden" name="jsonCart" id="jsonCart" />
+    <button type="submit" class="btn btn-primary">Đặt hàng</button>
+</form>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        // Khai báo biến cart ở scope global của script
+        let cart = [];
+
+        function formatPrice(price) {
+            return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(price);
+        }
+
+        function updateTotalPrice() {
+            let total = 0;
+            $('.select-service:checked').each(function () {
+                const index = $(this).data('index');
+                if (cart[index] && cart[index].Price) {
+                    total += parseFloat(cart[index].Price);
+                }
+            });
+            $('#total-price').text(formatPrice(total));
+        }
+
+        $(document).ready(function () {
+            // Lấy cart từ localStorage
+            cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+            if (cart.length === 0) {
+                $('#cart-table tbody').html('<tr><td colspan="4">Chưa có dịch vụ nào trong giỏ hàng.</td></tr>');
+                $('#order-form').hide();
+            } else {
+                let html = '';
+                cart.forEach((item, index) => {
+                    html += `
+                        <tr>
+                            <td>${item?.ServiceName || ''}</td>
+                            <td>${formatPrice(item?.Price || 0)}</td>
+                            <td class="text-center">
+                                <input type="checkbox" class="select-service" data-index="${index}" />
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-danger btn-remove" data-index="${index}">Xoá</button>
+                            </td>
+                        </tr>`;
+                });
+                $('#cart-table tbody').html(html);
+            }
+
+            // Xóa dịch vụ trong giỏ
+            $(document).on('click', '.btn-remove', function () {
+                const index = $(this).data('index');
+                if (index >= 0 && index < cart.length) {
+                    cart.splice(index, 1);
+                    localStorage.setItem('cart', JSON.stringify(cart));
+                    location.reload();
+                }
+            });
+
+            // Cập nhật tổng tiền khi chọn/bỏ chọn dịch vụ
+            $(document).on('change', '.select-service', function() {
+                updateTotalPrice();
+            });
+
+            // Submit form gửi dịch vụ được chọn lên server
+            $('#order-form').submit(function () {
+                const selectedServices = [];
+                $('.select-service:checked').each(function () {
+                    const index = $(this).data('index');
+                    if (cart[index]) {
+                        selectedServices.push({
+                            SelectedServiceId: cart[index].SelectedServiceId,
+                            ServiceName: cart[index].ServiceName,
+                            Price: cart[index].Price
+                        });
+                    }
+                });
+                if (selectedServices.length === 0) {
+                    alert('Vui lòng chọn ít nhất một dịch vụ!');
+                    return false;
+                }
+                $('#jsonCart').val(JSON.stringify(selectedServices));
+            });
+        });
+    </script>
+}

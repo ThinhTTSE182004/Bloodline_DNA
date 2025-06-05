@@ -1,0 +1,46 @@
+@{
+    ViewData["Title"] = "Thanh toán thành công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-check-circle text-success" style="font-size: 64px;"></i>
+                    <h2 class="mt-3">@ViewBag.SuccessMessage</h2>
+
+                    @if (ViewBag.PaymentMethod == "banking")
+                    {
+                        <div class="alert alert-info mt-4">
+                            <h4>Thông tin chuyển khoản</h4>
+                            <p>Vui lòng chuyển khoản theo thông tin sau:</p>
+                            <ul class="list-unstyled">
+                                <li>Ngân hàng: BIDV</li>
+                                <li>Số tài khoản: 123456789</li>
+                                <li>Chủ tài khoản: CÔNG TY TNHH XÉT NGHIỆM ADN</li>
+                                <li>Nội dung: [Mã đơn hàng]</li>
+                            </ul>
+                        </div>
+                    }
+                    else if (ViewBag.PaymentMethod == "cod")
+                    {
+                        <div class="alert alert-info mt-4">
+                            <p>Bạn đã chọn phương thức thanh toán khi lấy mẫu.</p>
+                            <p>Vui lòng chuẩn bị số tiền chính xác khi nhân viên đến lấy mẫu.</p>
+                        </div>
+                    }
+
+                    <div class="mt-4">
+                        <a asp-controller="Customer" asp-action="ViewInformation" class="btn btn-primary">Quay lại trang chủ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://kit.fontawesome.com/your-font-awesome-kit.js"></script>
+} 

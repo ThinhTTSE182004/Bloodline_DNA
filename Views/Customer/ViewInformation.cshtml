@@ -1,0 +1,105 @@
+﻿@model List<Login.Models.ServicePackage>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<h2>Danh sách gói dịch vụ xét nghiệm ADN</h2>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>Tên dịch vụ</th>
+            <th>Loại</th>
+            <th>Mô tả</th>
+            <th>Thời gian trả kết quả (ngày)</th>
+            <th>Giá</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.ServiceName</td>
+                <td>@item.Category</td>
+                <td>@item.Description</td>
+                <td>@item.Duration</td>
+                <td class="service-price" data-id="@item.ServicePackageId">
+                    <div class="spinner-border spinner-border-sm" role="status">
+                        <span class="visually-hidden">Đang tải...</span>
+                    </div>
+                </td>
+                <td>
+                    <button class="btn btn-sm btn-success btn-add-cart"
+                            data-id="@item.ServicePackageId"
+                            data-name="@item.ServiceName">
+                        Thêm vào giỏ
+                    </button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function formatPrice(price) {
+            if (typeof price !== 'number') {
+                price = parseFloat(price) || 0;
+            }
+            return new Intl.NumberFormat('vi-VN', { 
+                style: 'currency', 
+                currency: 'VND',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(price);
+        }
+
+        $(document).ready(function () {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+            function updateCartCount() {
+                $('#cart-count').text(cart.length);
+            }
+
+            $('.service-price').each(function() {
+                const priceCell = $(this);
+                const serviceId = priceCell.data('id');
+
+                $.get(`/Cart/GetServicePrice?serviceId=${serviceId}`)
+                    .done(function(data) {
+                        if (data && typeof data.price !== 'undefined') {
+                            priceCell.text(formatPrice(data.price));
+                            priceCell.attr('data-price', data.price);
+                        } else {
+                            priceCell.text('Không có giá');
+                        }
+                    })
+                    .fail(function() {
+                        priceCell.text('Lỗi tải giá');
+                    });
+            });
+
+            $('.btn-add-cart').click(function () {
+                const SelectedServiceId = $(this).data('id');
+                const ServiceName = $(this).data('name');
+                const Price = parseFloat($(this).closest('tr').find('.service-price').attr('data-price')) || 0;
+
+                cart.push({
+                    SelectedServiceId,
+                    ServiceName,
+                    Price
+                });
+
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount();
+                alert(`Đã thêm "${ServiceName}" vào giỏ hàng!`);
+            });
+
+            updateCartCount();
+        });
+    </script>
+}
