@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
 
 namespace Login.Models;
 
 [Table("Service_package")]
-[Index("ServiceName", Name = "UQ__Service___4A8EDF39854693FF", IsUnique = true)]
+[Index("ServiceName", Name = "UQ__Service___4A8EDF39B43B3575", IsUnique = true)]
 public partial class ServicePackage
 {
     [Key]
@@ -34,6 +33,4 @@ public partial class ServicePackage
 
     [InverseProperty("ServicePackage")]
     public virtual ICollection<ServicePrice> ServicePrices { get; set; } = new List<ServicePrice>();
-
-    public int? FirstPrice => ServicePrices.FirstOrDefault()?.Price;
 }

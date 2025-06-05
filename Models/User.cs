@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Login.Models;
 
 [Table("USERS")]
-[Index("Email", Name = "UQ__USERS__AB6E61645513B201", IsUnique = true)]
+[Index("Email", Name = "UQ__USERS__AB6E616486853987", IsUnique = true)]
 public partial class User
 {
     [Key]

@@ -7,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 namespace Login.Models;
 
 [Table("Collection_method")]
-[Index("MethodName", Name = "UQ__Collecti__2DA2FAEEBDD685A8", IsUnique = true)]
 public partial class CollectionMethod
 {
     [Key]
@@ -16,16 +15,19 @@ public partial class CollectionMethod
 
     [Column("method_name")]
     [StringLength(20)]
-    public string MethodName { get; set; } = null!;
+    public string? MethodName { get; set; }
 
-    [Column("testtype")]
-    [StringLength(20)]
-    public string TestType { get; set; } = null!;
+    [Column("TestTypeID")]
+    public int TestTypeId { get; set; }
 
     [Column("description")]
     [StringLength(1000)]
     public string? Description { get; set; }
 
     [InverseProperty("CollectionMethod")]
-    public virtual Order? Order { get; set; }
+    public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+
+    [ForeignKey("TestTypeId")]
+    [InverseProperty("CollectionMethods")]
+    public virtual TestType TestType { get; set; } = null!;
 }

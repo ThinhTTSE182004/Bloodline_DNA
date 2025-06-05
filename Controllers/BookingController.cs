@@ -2,14 +2,8 @@
 using Login.ViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using System.Linq;
 
 namespace Login.Controllers
 {
@@ -55,6 +49,9 @@ namespace Login.Controllers
                 service.Price = servicePrices.FirstOrDefault(sp => sp.ServicePackageId == service.SelectedServiceId)?.Price ?? 0;
             }
 
+            // Lấy danh sách SampleTypes từ database
+            ViewBag.SampleTypes = _context.SampleTypes.ToList();
+
             TempData["jsonCart"] = jsonCart;
             return View(services);
         }
@@ -62,9 +59,16 @@ namespace Login.Controllers
         [HttpPost]
         public async Task<IActionResult> FillBookingForm(List<BookingViewModel> model)
         {
+            _logger.LogInformation("Starting FillBookingForm POST with {count} items", model?.Count ?? 0);
+
             if (!ModelState.IsValid)
             {
-                // Lấy lại giá dịch vụ khi form không hợp lệ
+                _logger.LogWarning("ModelState is invalid. Errors: {errors}",
+                    string.Join(", ", ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)));
+
+                // Lấy lại giá dịch vụ và sample types khi form không hợp lệ
                 var servicePrices = _context.ServicePrices
                     .Where(sp => model.Select(m => m.SelectedServiceId).Contains(sp.ServicePackageId))
                     .ToList();
@@ -73,41 +77,74 @@ namespace Login.Controllers
                 {
                     service.Price = servicePrices.FirstOrDefault(sp => sp.ServicePackageId == service.SelectedServiceId)?.Price ?? 0;
                 }
+
+                ViewBag.SampleTypes = _context.SampleTypes.ToList();
                 return View(model);
             }
 
-            // Kiểm tra bổ sung nếu muốn
-            for (int i = 0; i < model.Count; i++)
+            // Kiểm tra bổ sung và validate SampleType
+            try
             {
-                var booking = model[i];
-                if (string.IsNullOrWhiteSpace(booking.Relationship))
+                for (int i = 0; i < model.Count; i++)
                 {
-                    ModelState.AddModelError($"[{i}].Relationship", "Vui lòng chọn mối quan hệ.");
+                    var booking = model[i];
+
+                    // Validate SampleType exists in database
+                    var sampleTypeExists = await _context.SampleTypes
+                        .AnyAsync(st => st.Name == booking.SampleType);
+
+                    if (!sampleTypeExists)
+                    {
+                        _logger.LogError("Invalid SampleType: {sampleType} for booking index {index}",
+                            booking.SampleType, i);
+                        ModelState.AddModelError($"[{i}].SampleType", "Loại mẫu không hợp lệ.");
+                    }
+
+                    if (string.IsNullOrWhiteSpace(booking.Relationship))
+                    {
+                        ModelState.AddModelError($"[{i}].Relationship", "Vui lòng chọn mối quan hệ.");
+                    }
+                    if (string.IsNullOrWhiteSpace(booking.Name))
+                    {
+                        ModelState.AddModelError($"[{i}].Name", "Vui lòng nhập tên người liên quan.");
+                    }
                 }
-                if (string.IsNullOrWhiteSpace(booking.Name))
+
+                if (!ModelState.IsValid)
                 {
-                    ModelState.AddModelError($"[{i}].Name", "Vui lòng nhập tên người liên quan.");
+                    _logger.LogWarning("Additional validation failed. Errors: {errors}",
+                        string.Join(", ", ModelState.Values
+                            .SelectMany(v => v.Errors)
+                            .Select(e => e.ErrorMessage)));
+
+                    // Lấy lại giá dịch vụ và sample types khi form không hợp lệ
+                    var servicePrices = _context.ServicePrices
+                        .Where(sp => model.Select(m => m.SelectedServiceId).Contains(sp.ServicePackageId))
+                        .ToList();
+
+                    foreach (var service in model)
+                    {
+                        service.Price = servicePrices.FirstOrDefault(sp => sp.ServicePackageId == service.SelectedServiceId)?.Price ?? 0;
+                    }
+
+                    ViewBag.SampleTypes = _context.SampleTypes.ToList();
+                    return View(model);
                 }
+
+                // Lưu thông tin form vào TempData
+                TempData["BookingData"] = JsonConvert.SerializeObject(model);
+                _logger.LogInformation("Successfully validated and saved booking data to TempData");
+
+                return RedirectToAction("Payment");
             }
-
-            if (!ModelState.IsValid)
+            catch (Exception ex)
             {
-                // Lấy lại giá dịch vụ khi form không hợp lệ
-                var servicePrices = _context.ServicePrices
-                    .Where(sp => model.Select(m => m.SelectedServiceId).Contains(sp.ServicePackageId))
-                    .ToList();
+                _logger.LogError(ex, "Error occurred while processing FillBookingForm");
+                ModelState.AddModelError("", "Có lỗi xảy ra khi xử lý form. Vui lòng thử lại.");
 
-                foreach (var service in model)
-                {
-                    service.Price = servicePrices.FirstOrDefault(sp => sp.ServicePackageId == service.SelectedServiceId)?.Price ?? 0;
-                }
+                ViewBag.SampleTypes = _context.SampleTypes.ToList();
                 return View(model);
             }
-
-            // Lưu thông tin form vào TempData
-            TempData["BookingData"] = JsonConvert.SerializeObject(model);
-            
-            return RedirectToAction("Payment");
         }
 
         public async Task<IActionResult> Payment()
@@ -119,14 +156,14 @@ namespace Login.Controllers
             }
 
             var model = JsonConvert.DeserializeObject<List<BookingViewModel>>(bookingData);
-            
+
             // Lấy giá dịch vụ
             var servicePrices = await _context.ServicePrices
                 .Where(sp => model.Select(m => m.SelectedServiceId).Contains(sp.ServicePackageId))
                 .ToListAsync();
-            
+
             ViewBag.ServicePrices = servicePrices;
-            
+
             // Lưu lại để có thể sử dụng trong POST action
             TempData["BookingData"] = bookingData;
             return View(model);
@@ -181,17 +218,23 @@ namespace Login.Controllers
 
                     // Tìm hoặc tạo phương thức thu thập mẫu trước
                     var methodName = model[0].SampleMethod;
-                    var testType = model[0].TestType;
+                    var testType = await _context.TestTypes.FirstOrDefaultAsync(t => t.Name == model[0].TestType);
+                    if (testType == null)
+                    {
+                        _logger.LogError($"Không tìm thấy loại hình xét nghiệm: {model[0].TestType}");
+                        return RedirectToAction("FillBookingForm");
+                    }
+
                     var collectionMethod = await _context.CollectionMethods
-                        .FirstOrDefaultAsync(c => c.MethodName == methodName && c.TestType == testType);
+                        .FirstOrDefaultAsync(c => c.MethodName == methodName && c.TestTypeId == testType.TestTypeId);
 
                     if (collectionMethod == null)
                     {
                         collectionMethod = new CollectionMethod
                         {
                             MethodName = methodName ?? "",
-                            TestType = testType ?? "",
-                            Description = $"Phương thức lấy mẫu: {methodName} - Loại hình: {testType}"
+                            TestTypeId = testType.TestTypeId,
+                            Description = $"Phương thức lấy mẫu: {methodName} - Loại hình: {testType.Name}"
                         };
                         _context.CollectionMethods.Add(collectionMethod);
                         await _context.SaveChangesAsync();

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Login.Models;
 
 [Table("Result")]
-[Index("OrderDetailId", Name = "UQ__Result__3C5A4081DA9B3E92", IsUnique = true)]
+[Index("OrderDetailId", Name = "UQ__Result__3C5A4081AA9B04B7", IsUnique = true)]
 public partial class Result
 {
     [Key]

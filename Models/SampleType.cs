@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Login.Models;
 
 [Table("Sample_type")]
-[Index("Name", Name = "UQ__Sample_t__72E12F1B25024A15", IsUnique = true)]
+[Index("Name", Name = "UQ__Sample_t__72E12F1B7C9C29C3", IsUnique = true)]
 public partial class SampleType
 {
     [Key]

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Login.Models;
 
-[Index("RoleName", Name = "UQ__Roles__783254B1590D0F6A", IsUnique = true)]
+[Index("RoleName", Name = "UQ__Roles__783254B1A0C2FEB2", IsUnique = true)]
 public partial class Role
 {
     [Key]

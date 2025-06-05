@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Login.Models;
 
 [Table("Sample_kit")]
-[Index("KitCode", Name = "UQ__Sample_k__24769816AA225B49", IsUnique = true)]
+[Index("KitCode", Name = "UQ__Sample_k__24769816A791A305", IsUnique = true)]
 public partial class SampleKit
 {
     [Key]

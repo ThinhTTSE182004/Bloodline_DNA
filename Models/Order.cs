@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Login.Models;
 
-[Index("CollectionMethodId", Name = "UQ__Orders__1B185E46F0C25976", IsUnique = true)]
 public partial class Order
 {
     [Key]
@@ -30,7 +29,7 @@ public partial class Order
     public DateTime? UpdateAt { get; set; }
 
     [ForeignKey("CollectionMethodId")]
-    [InverseProperty("Order")]
+    [InverseProperty("Orders")]
     public virtual CollectionMethod CollectionMethod { get; set; } = null!;
 
     [ForeignKey("CustomerId")]

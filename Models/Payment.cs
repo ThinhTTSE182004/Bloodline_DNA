@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Login.Models;
 
 [Table("Payment")]
-[Index("OrderId", Name = "UQ__Payment__46596228D091F1C1", IsUnique = true)]
+[Index("OrderId", Name = "UQ__Payment__465962280B1AE090", IsUnique = true)]
 public partial class Payment
 {
     [Key]

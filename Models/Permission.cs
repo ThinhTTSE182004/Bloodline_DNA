@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Login.Models;
 
 [Table("Permission")]
-[Index("PermissionName", Name = "UQ__Permissi__81C0F5A2AF37A695", IsUnique = true)]
+[Index("PermissionName", Name = "UQ__Permissi__81C0F5A2EEE7F88D", IsUnique = true)]
 public partial class Permission
 {
     [Key]
