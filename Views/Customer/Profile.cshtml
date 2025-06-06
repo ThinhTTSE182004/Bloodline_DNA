@@ -9,6 +9,108 @@
     <link rel="stylesheet" href="~/css/profile.css">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .order {
+            background: #fff;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .order:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .order-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .order-summary p {
+            margin: 0;
+        }
+
+        .order-detail-popup {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+            width: 90%;
+            max-width: 600px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid #eee;
+        }
+
+        .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.1);
+            z-index: 999;
+        }
+
+        .popup-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #666;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .popup-close-btn:hover {
+            background: #f3f4f6;
+            color: #333;
+        }
+
+        .order-detail-popup h3 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--primary-blue);
+        }
+
+        .order-detail-popup h4 {
+            margin-top: 20px;
+            color: var(--primary-blue);
+        }
+
+        .order-detail-popup p {
+            margin: 10px 0;
+        }
+
+        .order-detail-popup hr {
+            margin: 15px 0;
+            border: none;
+            border-top: 1px solid var(--gray-200);
+        }
+    </style>
 </head>
 <body>
     <header class="header">
@@ -54,6 +156,7 @@
             </div>
         </div>
     </header>
+    <div class="popup-overlay"></div>
     <main class="container">
         <div class="profile-card">
             <div class="profile-info">
@@ -81,9 +184,78 @@
             {
                 foreach (var order in Model.Orders)
                 {
-                    <div class="order">
-                        <p>Order #@order.OrderId</p>
-                        <span>@order.OrderStatus</span>
+                    <div class="order" onclick="showOrderDetails(@order.OrderId)">
+                        <div class="order-summary">
+                            <p><strong>Order #</strong>@order.OrderId</p>
+                            @if (order.OrderDetails != null && order.OrderDetails.Any())
+                            {
+                                <p><strong>Service:</strong> @order.OrderDetails.First().ServicePackage?.ServiceName</p>
+                                @if (order.OrderDetails.First().Samples != null && order.OrderDetails.First().Samples.Any() && order.OrderDetails.First().Samples.First().Participant != null)
+                                {
+                                    var participant = order.OrderDetails.First().Samples.First().Participant;
+                                    <p><strong>Patient:</strong> @participant.FullName </p>
+                                    <p><strong>Relative:</strong> @participant.NameRelation (@participant.Relationship)</p>
+                                }
+                                else
+                                {
+                                    <p><strong>Patient:</strong> Not specified</p>
+                                }
+                            }
+                            <p><strong>Status:</strong> @order.OrderStatus</p>
+                        </div>
+                    </div>
+                }
+
+                @foreach (var order in Model.Orders)
+                {
+                    <div id="order-detail-@order.OrderId" class="order-detail-popup">
+                        <button class="popup-close-btn" onclick="hideOrderDetails(@order.OrderId)">×</button>
+                        <h3>Order #@order.OrderId Details</h3>
+                        <p><strong>Order Status:</strong> @order.OrderStatus</p>
+                        <p><strong>Order Created:</strong> @(order.CreateAt?.ToString("dd/MM/yyyy") ?? "N/A")</p>
+                        <p><strong>Collection Method:</strong> @(order.CollectionMethod?.MethodName ?? "Not Specified")</p>
+
+                        <h4>Services</h4>
+                        @foreach (var detail in order.OrderDetails)
+                        {
+                            <p><strong>Service:</strong> @(detail.ServicePackage?.ServiceName ?? "Not Specified")</p>
+                            @if (detail.MedicalStaff?.RoleId == 2)
+                            {
+                                <p><strong>Medical Staff:</strong> @detail.MedicalStaff.Name</p>
+                            }
+                            else 
+                            {
+                                <p><strong>Medical Staff:</strong> <span class="text-warning">Waiting for assignment</span></p>
+                            }
+                            @if (detail.Samples != null && detail.Samples.Any() && detail.Samples.First().Participant != null)
+                            {
+                                var participant = detail.Samples.First().Participant;
+                                <p><strong>Patient:</strong> @participant.FullName </p>
+                                <p><strong>Relative:</strong> @participant.NameRelation (@participant.Relationship)</p>
+                            }
+                            else
+                            {
+                                <p><strong>Patient:</strong> Not specified</p>
+                            }
+                            <p><strong>Result Status:</strong> @(detail.Result?.ResultStatus ?? "Pending")</p>
+                            @if (!string.IsNullOrEmpty(detail.Result?.ReportUrl))
+                            {
+                                <p><a href="@detail.Result.ReportUrl" target="_blank">View Report</a></p>
+                            }
+                            <hr />
+                        }
+
+                        @if (order.CollectionMethod?.MethodName?.ToLower().Contains("At Home") == true)
+                        {
+                            <h4>Delivery Information</h4>
+                            <p><strong>Delivery Address:</strong> @(order.Delivery?.DeliveryAddress ?? "Not Provided")</p>
+                            <p><strong>Delivery Status:</strong> @(order.Delivery?.DeliveryStatus ?? "Pending")</p>
+                        }
+
+                        <h4>Payment Information</h4>
+                        <p><strong>Payment Method:</strong> @(order.Payment?.PaymentMethod ?? "Not Specified")</p>
+                        <p><strong>Payment Status:</strong> @(order.Payment?.PaymentStatus ?? "Pending")</p>
+                        <p><strong>Total:</strong> @(order.Payment != null ? order.Payment.Total.ToString("N0") + " đ" : "Not Available")</p>
                     </div>
                 }
             }
@@ -94,9 +266,35 @@
         </div>
     </main>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // JavaScript functionality can be added here
+        function showOrderDetails(orderId) {
+            var popup = document.getElementById('order-detail-' + orderId);
+            var overlay = document.querySelector('.popup-overlay');
+            if (popup && overlay) {
+                popup.style.display = 'block';
+                overlay.style.display = 'block';
+                document.body.style.overflow = 'hidden'; // Prevent background scrolling
+            }
+        }
+
+        function hideOrderDetails(orderId) {
+            var popup = document.getElementById('order-detail-' + orderId);
+            var overlay = document.querySelector('.popup-overlay');
+            if (popup && overlay) {
+                popup.style.display = 'none';
+                overlay.style.display = 'none';
+                document.body.style.overflow = ''; // Restore scrolling
+            }
+        }
+
+        // Close popup when clicking overlay
+        document.querySelector('.popup-overlay').addEventListener('click', function() {
+            var visiblePopup = document.querySelector('.order-detail-popup[style*="display: block"]');
+            if (visiblePopup) {
+                var orderId = visiblePopup.id.replace('order-detail-', '');
+                hideOrderDetails(orderId);
+            }
         });
     </script>
 </body>
 </html>
+

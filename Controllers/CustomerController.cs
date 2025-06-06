@@ -30,8 +30,20 @@ namespace Login.Controllers
                 return NotFound();
 
             var orders = _context.Orders
-                .Where(o => o.CustomerId == userId)
-                .ToList();
+       .Where(o => o.CustomerId == userId)
+       .Include(o => o.CollectionMethod)
+       .Include(o => o.Delivery)
+       .Include(o => o.Payment)
+       .Include(o => o.OrderDetails)
+           .ThenInclude(od => od.ServicePackage)
+       .Include(o => o.OrderDetails)
+           .ThenInclude(od => od.MedicalStaff)
+       .Include(o => o.OrderDetails)
+           .ThenInclude(od => od.Result)
+       .Include(o => o.OrderDetails)
+           .ThenInclude(od => od.Samples)
+               .ThenInclude(s => s.Participant)
+       .ToList();
 
             Console.WriteLine($"Orders for user {userId}: {orders.Count} đơn hàng");
 
