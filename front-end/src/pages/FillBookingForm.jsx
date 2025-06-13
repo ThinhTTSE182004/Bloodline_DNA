@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { FaClipboardList, FaPencilAlt, FaFlask, FaPrescriptionBottleAlt, FaUser, FaTransgender, FaCalendarAlt, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUsers, FaUserFriends, FaCheckCircle } from 'react-icons/fa';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
+import { useServices } from '../context/ServiceContext';
 
 const FillBookingForm = () => {
-  const [cartItems, setCartItems] = useState([]);
   const [formData, setFormData] = useState({
     testType: '',
     sampleCollectionMethod: '',
@@ -20,16 +21,39 @@ const FillBookingForm = () => {
     relatedPersonName: '',
   });
   const navigate = useNavigate();
+  const location = useLocation();
+  const { cartItems } = useCart();
+  const { services } = useServices();
+  const [selectedServices, setSelectedServices] = useState([]);
 
-  // Giả định dữ liệu giỏ hàng được tải từ localStorage hoặc truyền qua props
   useEffect(() => {
-    // Ví dụ: Lấy dữ liệu giỏ hàng từ localStorage
-    const storedCartItems = JSON.parse(localStorage.getItem('cartItems')) || [
-      { id: 1, name: "Parentage Verification Test", price: 2000.00 },
-      { id: 2, name: "Paternal Ancestry Test", price: 2500.00 }
-    ];
-    setCartItems(storedCartItems);
-  }, []);
+    const searchParams = new URLSearchParams(location.search);
+    const serviceId = searchParams.get('service');
+
+    if (serviceId) {
+      // Tìm trong cart hoặc services (so sánh cùng kiểu)
+      let service = cartItems.find(item => String(item.servicePackageId) === String(serviceId));
+      if (!service) {
+        service = services.find(item => String(item.servicePackageId) === String(serviceId));
+      }
+      if (service) {
+        setSelectedServices([service]);
+        return;
+      }
+    }
+    // Nếu không có serviceId, lấy từ localStorage
+    const saved = localStorage.getItem('selectedServices');
+    if (saved) {
+      try {
+        const arr = JSON.parse(saved);
+        if (Array.isArray(arr) && arr.length > 0) {
+          setSelectedServices(arr);
+        }
+      } catch {
+        setSelectedServices([]);
+      }
+    }
+  }, [location.search, cartItems, services]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -40,48 +64,38 @@ const FillBookingForm = () => {
   };
 
   const calculateTotalAmount = () => {
-    return cartItems.reduce((total, item) => total + item.price, 0).toFixed(2);
+    return selectedServices.reduce((total, service) => total + (service.price || 0), 0).toLocaleString();
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log('Form Data Submitted:', formData);
-    console.log('Cart Items:', cartItems);
-
-    // Save formData to localStorage for Payment page to access
-    localStorage.setItem('bookingFormData', JSON.stringify(formData));
-
-    // TODO: Tích hợp API xử lý thanh toán và gửi thông tin đơn hàng xuống database
-    /*
-    fetch('/api/process-order', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ formData, cartItems }),
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('Order placed successfully!');
-        // Xóa giỏ hàng sau khi đặt hàng thành công
-        localStorage.removeItem('cartItems');
-        setCartItems([]);
-        // Chuyển hướng hoặc hiển thị thông báo thành công
-      } else {
-        alert('Order failed: ' + data.message);
-      }
-    })
-    .catch(error => {
-      console.error('Error placing order:', error);
-      alert('An error occurred while placing your order.');
-    });
-    */
-    
-    // Simulate successful order and navigate to payment page
-    alert('Form submitted successfully! Proceeding to payment.');
-    navigate('/payment'); // Navigate to the Payment page
+    localStorage.setItem('bookingFormData', JSON.stringify({
+      ...formData,
+      selectedServices
+    }));
+    navigate('/payment');
   };
+
+  if (!selectedServices || selectedServices.length === 0) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex flex-col">
+        <Navbar />
+        <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-2xl font-bold text-red-600">No service selected</h2>
+            <p className="mt-4 text-gray-600">Please select a service from the services page.</p>
+            <button
+              onClick={() => navigate('/services')}
+              className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300"
+            >
+              Go to Services
+            </button>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col">
@@ -92,15 +106,16 @@ const FillBookingForm = () => {
           <div className="bg-white shadow rounded-lg p-6 md:p-8">
             <h2 className="text-xl font-bold text-blue-600 mb-6 flex items-center">
               <FaClipboardList className="w-6 h-6 mr-3" />
-              SELECTED SERVICES SUMMARY
+              SELECTED SERVICES DETAILS
             </h2>
             <div className="space-y-4">
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex items-center justify-between text-gray-700">
+              {selectedServices.map((service) => (
+                <div key={service.servicePackageId} className="flex items-center justify-between text-gray-700">
                   <span className="flex items-center">
                     <FaCheckCircle className="text-green-500 mr-2" />
-                    {item.name} - {item.price.toFixed(0)} đ
+                    {service.serviceName}
                   </span>
+                  <span className="font-semibold">{service.price?.toLocaleString()} đ</span>
                 </div>
               ))}
               <div className="flex justify-end pt-4 border-t border-gray-200">
@@ -115,7 +130,15 @@ const FillBookingForm = () => {
               <FaPencilAlt className="w-6 h-6 mr-3" />
               ENTER SERVICE DETAILS
             </h2>
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form
+              onSubmit={handleSubmit}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && e.target.type !== 'textarea' && e.target.type !== 'submit') {
+                  e.preventDefault();
+                }
+              }}
+              className="space-y-6"
+            >
               {/* Test Type */}
               <div>
                 <label htmlFor="testType" className="block text-sm font-medium text-gray-700 flex items-center">
@@ -130,9 +153,8 @@ const FillBookingForm = () => {
                   onChange={handleChange}
                 >
                   <option value="">-- Select Type --</option>
-                  <option value="parentage">Parentage Verification</option>
-                  <option value="ancestry">Ancestry Test</option>
-                  <option value="relationship">Relationship Test</option>
+                  <option value="civil">Civil</option>
+                  <option value="administrative">Administrative</option>
                 </select>
               </div>
 
@@ -151,7 +173,7 @@ const FillBookingForm = () => {
                 >
                   <option value="">-- Select Collection Method --</option>
                   <option value="clinic">At Clinic</option>
-                  <option value="home_kit">Home Kit</option>
+                  <option value="home_kit" disabled={formData.testType === 'administrative'}>Home Kit</option>
                 </select>
               </div>
 
@@ -169,7 +191,7 @@ const FillBookingForm = () => {
                   onChange={handleChange}
                 >
                   <option value="">-- Select Sample Type --</option>
-                  <option value="buccal_swab">Buccal Swab</option>
+                  <option value="fingernail">Fingernail</option>
                   <option value="blood">Blood</option>
                   <option value="hair">Hair</option>
                 </select>
@@ -223,6 +245,7 @@ const FillBookingForm = () => {
                   name="dateOfBirth"
                   id="dateOfBirth"
                   className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                  placeholder="--/--/----"
                   value={formData.dateOfBirth}
                   onChange={handleChange}
                 />

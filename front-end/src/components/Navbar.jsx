@@ -2,23 +2,27 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaShoppingCart, FaBars, FaTimes } from 'react-icons/fa';
 import { FaDna } from "react-icons/fa6";
+import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
-  const [userName, setUserName] = useState(localStorage.getItem('name') || '');
+  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
+  const { cartCount } = useCart();
 
-  // Cập nhật tên khi localStorage thay đổi (ví dụ sau login)
   useEffect(() => {
-    setIsLoggedIn(!!localStorage.getItem('token'));
-    setUserName(localStorage.getItem('name') || '');
+    const token = localStorage.getItem('token');
+    const storedUserName = localStorage.getItem('userName');
+    setIsLoggedIn(!!token);
+    setUserName(storedUserName || '');
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('name');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('isLoggedIn');
     setIsLoggedIn(false);
     setUserName('');
     setShowDropdown(false);
@@ -46,7 +50,11 @@ const Navbar = () => {
             <Link to="/cart" className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center">
               <FaShoppingCart className="w-5 h-5 mr-2" />
               CART
-              <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">7</span>
+              {cartCount > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                  {cartCount}
+                </span>
+              )}
             </Link>
             {isLoggedIn ? (
               <div className="relative">
@@ -54,7 +62,7 @@ const Navbar = () => {
                   onClick={() => setShowDropdown(!showDropdown)}
                   className="text-black font-medium hover:text-blue-600 transition-colors duration-300 focus:outline-none"
                 >
-                  Hello, {userName}!
+                  Hi, {userName}!
                 </button>
                 {showDropdown && (
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
@@ -126,7 +134,11 @@ const Navbar = () => {
             <Link to="/cart" className="block w-full text-left px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center" onClick={() => setIsOpen(false)}>
               <FaShoppingCart className="w-5 h-5 mr-2" />
               CART
-              <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">7</span>
+              {cartCount > 0 && (
+                <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                  {cartCount}
+                </span>
+              )}
             </Link>
             {isLoggedIn ? (
               <div className="mt-4">
@@ -137,7 +149,7 @@ const Navbar = () => {
                   }}
                   className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300 focus:outline-none"
                 >
-                  Hello, {userName}!
+                  Hi, {userName}!
                 </button>
                 {showDropdown && (
                   <div className="px-3 py-1 space-y-1">

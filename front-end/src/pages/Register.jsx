@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import logo from '/img/logo.png'; // Assuming logo.png is directly in public/img
 import backgroundImage from '/img/bg-breadcrumb.jpg'; // Assuming bg-breadcrumb.jpg is directly in public/img
 
 const Register = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: '',
+    username: '',
     email: '',
-    phoneNumber: '',
+    phone: '',
     password: '',
     confirmPassword: '',
     agreeTerms: false,
   });
+
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -19,40 +22,57 @@ const Register = () => {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
+    setError(''); // Clear error when user types
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate API call - for static page transition
-    console.log('Form submitted:', formData);
+    setError('');
 
-    // TODO: Integrate with backend API here
-    /*
-    fetch('/api/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        // Redirect to login or home page
-        window.location.href = '/login'; // Or use navigate from react-router-dom
+    // Validate passwords match
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match');
+      return;
+    }
+
+    // Validate password length
+    if (formData.password.length < 6) {
+      setError('Password must be at least 6 characters long');
+      return;
+    }
+
+    // Validate phone number format
+    const phoneRegex = /^[0-9]{10}$/;
+    if (!phoneRegex.test(formData.phone)) {
+      setError('Phone number must be 10 digits');
+      return;
+    }
+
+    try {
+      const response = await fetch('https://localhost:7113/api/Auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+          email: formData.email,
+          phone: formData.phone
+        }),
+      });
+
+      if (response.ok) {
+        alert('Registration successful! Please login.');
+        navigate('/login');
       } else {
-        // Show error message
-        alert(data.message);
+        const errorData = await response.json();
+        setError(errorData.message || 'Registration failed. Please try again.');
       }
-    })
-    .catch(error => {
+    } catch (error) {
       console.error('Error during registration:', error);
-      alert('Registration failed. Please try again.');
-    });
-    */
-
-    // For static page transition, redirect to home for now
-    window.location.href = '/'; // Redirect to home page after "successful" registration
+      setError('Registration failed. Please try again.');
+    }
   };
 
   return (
@@ -66,103 +86,94 @@ const Register = () => {
               Register
             </h2>
           </div>
+          {error && (
+            <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
           <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
             <div className="rounded-md shadow-sm -space-y-px">
               <div>
-                <label htmlFor="fullName" className="sr-only">Full Name</label>
+                <label htmlFor="username" className="sr-only">Username</label>
                 <input
-                  id="fullName"
-                  name="fullName"
+                  id="username"
+                  name="username"
                   type="text"
-                  autoComplete="name"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Full Name"
-                  value={formData.fullName}
+                  placeholder="Username"
+                  value={formData.username}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label htmlFor="email-address" className="sr-only">Email address</label>
+                <label htmlFor="email" className="sr-only">Email address</label>
                 <input
-                  id="email-address"
+                  id="email"
                   name="email"
                   type="email"
                   autoComplete="email"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Thithinh03456@gmail.com"
+                  placeholder="Email address"
                   value={formData.email}
                   onChange={handleChange}
                 />
               </div>
               <div>
-                <label htmlFor="phoneNumber" className="sr-only">Phone Number</label>
+                <label htmlFor="phone" className="sr-only">Phone Number</label>
                 <input
-                  id="phoneNumber"
-                  name="phoneNumber"
+                  id="phone"
+                  name="phone"
                   type="tel"
-                  autoComplete="tel"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                  placeholder="Phone Number"
-                  value={formData.phoneNumber}
+                  placeholder="Phone Number (10 digits)"
+                  value={formData.phone}
                   onChange={handleChange}
                 />
               </div>
-              <div className="relative">
+              <div>
                 <label htmlFor="password" className="sr-only">Password</label>
                 <input
                   id="password"
                   name="password"
                   type="password"
-                  autoComplete="new-password"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Password"
                   value={formData.password}
                   onChange={handleChange}
                 />
-                 {/* Eye icon - static for now, functional if needed */}
-                <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
-                  <svg className="h-5 w-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                </span>
               </div>
-              <div className="relative">
+              <div>
                 <label htmlFor="confirmPassword" className="sr-only">Confirm Password</label>
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
                   type="password"
-                  autoComplete="new-password"
                   required
                   className="appearance-none rounded-none relative block w-full px-3 py-3 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                   placeholder="Confirm Password"
                   value={formData.confirmPassword}
                   onChange={handleChange}
                 />
-                {/* Eye icon - static for now, functional if needed */}
-                <span className="absolute inset-y-0 right-0 pr-3 flex items-center text-sm leading-5">
-                  <svg className="h-5 w-5 text-gray-400 cursor-pointer" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                </span>
               </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center">
-                <input
-                  id="agree-terms"
-                  name="agreeTerms"
-                  type="checkbox"
-                  required
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                  checked={formData.agreeTerms}
-                  onChange={handleChange}
-                />
-                <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-900">
-                  I agree to the <Link to="/terms" className="font-medium text-blue-600 hover:text-blue-500">Terms of Use</Link> and <Link to="/privacy" className="font-medium text-blue-600 hover:text-blue-500">Privacy Policy</Link>
-                </label>
-              </div>
+            <div className="flex items-center">
+              <input
+                id="agree-terms"
+                name="agreeTerms"
+                type="checkbox"
+                required
+                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                checked={formData.agreeTerms}
+                onChange={handleChange}
+              />
+              <label htmlFor="agree-terms" className="ml-2 block text-sm text-gray-900">
+                I agree to the <Link to="/terms" className="font-medium text-blue-600 hover:text-blue-500">Terms of Use</Link> and <Link to="/privacy" className="font-medium text-blue-600 hover:text-blue-500">Privacy Policy</Link>
+              </label>
             </div>
 
             <div>

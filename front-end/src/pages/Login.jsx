@@ -22,11 +22,20 @@ const Login = () => {
       });
 
       if (response.ok) {
-        const data = await response.json();
-        localStorage.setItem('token', data.token);
-        localStorage.setItem('name', data.name || ''); // Lưu tên người dùng
+        const token = await response.text(); // Thay đổi từ response.json() sang response.text()
+        
+        // Lưu token vào localStorage
+        localStorage.setItem('token', token);
+        // Lưu trạng thái đăng nhập
         localStorage.setItem('isLoggedIn', 'true');
-   
+        
+        // Phân tích token để lấy thông tin người dùng
+        const tokenParts = token.split('.');
+        const payload = JSON.parse(atob(tokenParts[1]));
+        const userName = payload.name || email.split('@')[0]; // Sử dụng email nếu không có name
+        
+        // Lưu tên người dùng
+        localStorage.setItem('userName', userName);
 
         alert('Đăng nhập thành công!');
         navigate('/');

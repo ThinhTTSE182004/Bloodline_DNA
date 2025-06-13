@@ -1,93 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
-import dnaImage from '/img/adn.png'; // Reusing the DNA image for cart items
-import { FaTrash, FaShoppingBag, FaPlus, FaShieldAlt, FaTruck, FaHeadphones } from 'react-icons/fa';
+import { FaTrash, FaShoppingBag, FaShieldAlt, FaTruck, FaHeadphones } from 'react-icons/fa';
+import { useCart } from '../context/CartContext';
+import ServiceDetail from '../components/ServiceDetail';
 
 const Cart = () => {
-  const [cartItems, setCartItems] = useState([]);
   const [selectedItems, setSelectedItems] = useState({});
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
   const navigate = useNavigate();
-
-  // Static cart data for demonstration
-  const staticCartItems = [
-    {
-      id: 5,
-      name: "Parentage Verification Test",
-      price: 2000.00,
-      serviceId: 5,
-      image: dnaImage
-    },
-    {
-      id: 2,
-      name: "Paternal Ancestry Test",
-      price: 2500.00,
-      serviceId: 2,
-      image: dnaImage
-    },
-    {
-      id: 7, // Unique ID for demonstration of multiple same services
-      name: "Paternal Ancestry Test",
-      price: 2500.00,
-      serviceId: 2,
-      image: dnaImage
-    },
-    {
-      id: 3,
-      name: "Family Ancestry Test",
-      price: 4000.00,
-      serviceId: 3,
-      image: dnaImage
-    },
-    {
-      id: 8, // Unique ID for demonstration of multiple same services
-      name: "Family Ancestry Test",
-      price: 4000.00,
-      serviceId: 3,
-      image: dnaImage
-    },
-    {
-      id: 4,
-      name: "Sibling Relationship Test",
-      price: 6000.00,
-      serviceId: 4,
-      image: dnaImage
-    },
-    {
-      id: 1,
-      name: "Maternal Ancestry Test",
-      price: 3000.00,
-      serviceId: 1,
-      image: dnaImage
-    },
-  ];
-
-  useEffect(() => {
-    // TODO: Tích hợp API để tải các sản phẩm trong giỏ hàng
-    /*
-    fetch('/api/cart/items')
-      .then(response => response.json())
-      .then(data => {
-        setCartItems(data);
-        const initialSelected = {};
-        data.forEach(item => {
-          initialSelected[item.id] = false; // Or true if items should be selected by default
-        });
-        setSelectedItems(initialSelected);
-      })
-      .catch(error => console.error('Error fetching cart items:', error));
-    */
-    
-    // Simulate loading static data
-    setCartItems(staticCartItems);
-    const initialSelected = {};
-    staticCartItems.forEach(item => {
-      initialSelected[item.id] = false;
-    });
-    setSelectedItems(initialSelected);
-
-  }, []);
+  const { cartItems, removeFromCart } = useCart();
 
   const handleSelectItem = (id) => {
     setSelectedItems(prevSelected => ({
@@ -96,49 +20,39 @@ const Cart = () => {
     }));
   };
 
-  const handleDeleteItem = (id) => {
-    // TODO: Tích hợp API để xóa sản phẩm khỏi giỏ hàng
-    /*
-    fetch(`/api/cart/items/${id}`, {
-      method: 'DELETE',
-    })
-    .then(response => {
-      if (response.ok) {
-        setCartItems(prevItems => prevItems.filter(item => item.id !== id));
-        setSelectedItems(prevSelected => {
-          const newSelected = { ...prevSelected };
-          delete newSelected[id];
-          return newSelected;
-        });
-      } else {
-        console.error('Failed to delete item');
-      }
-    })
-    .catch(error => console.error('Error deleting cart item:', error));
-    */
-
-    // Simulate deleting static data
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+  const handleDeleteItem = (serviceId) => {
+    removeFromCart(serviceId);
     setSelectedItems(prevSelected => {
       const newSelected = { ...prevSelected };
-      delete newSelected[id];
+      delete newSelected[serviceId];
       return newSelected;
     });
   };
 
+  const handleOpenDetailModal = (service) => {
+    setSelectedService(service);
+    setShowDetailModal(true);
+  };
+
+  const handleCloseDetailModal = () => {
+    setShowDetailModal(false);
+    setSelectedService(null);
+  };
+
   const selectedItemsCount = Object.values(selectedItems).filter(Boolean).length;
   const subtotal = cartItems.reduce((sum, item) => {
-    return selectedItems[item.id] ? sum + item.price : sum;
+    return selectedItems[item.servicePackageId] ? sum + item.price : sum;
   }, 0);
-  const total = subtotal; // Assuming total is the same as subtotal for now
+  const total = subtotal;
 
   const handlePlaceOrder = () => {
-    const itemsToOrder = cartItems.filter(item => selectedItems[item.id]);
+    const itemsToOrder = cartItems.filter(item => selectedItems[item.servicePackageId]);
     if (itemsToOrder.length === 0) {
       alert('Please select at least one service to place an order.');
       return;
     }
-    localStorage.setItem('cartItems', JSON.stringify(itemsToOrder));
+    // Save selected items to localStorage
+    localStorage.setItem('selectedServices', JSON.stringify(itemsToOrder));
     navigate('/fill-booking-form');
   };
 
@@ -186,30 +100,39 @@ const Cart = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {cartItems.map((item) => (
-                    <tr key={item.id}>
+                    <tr key={item.servicePackageId}>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <img src={item.image} alt={item.name} className="h-10 w-10 rounded-full object-cover mr-4" />
+                          <img
+                            src="\img\DNA.png"
+                            alt={item.serviceName}
+                            className="h-10 w-10 rounded-full object-cover mr-4"
+                          />
                           <div>
-                            <div className="text-sm font-medium text-gray-900">{item.name}</div>
-                            <div className="text-sm text-gray-500">Service ID: {item.serviceId}</div>
+                            <button
+                              onClick={() => handleOpenDetailModal(item)}
+                              className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors duration-300 text-left"
+                            >
+                              {item.serviceName}
+                            </button>
+                            <div className="text-sm text-gray-500">Service ID: {item.servicePackageId}</div>
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-blue-600 font-semibold">
-                        đ{item.price.toFixed(2)}
+                        ${item.price.toLocaleString()}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <input
                           type="checkbox"
                           className="form-checkbox h-5 w-5 text-blue-600 rounded"
-                          checked={selectedItems[item.id] || false}
-                          onChange={() => handleSelectItem(item.id)}
+                          checked={selectedItems[item.servicePackageId] || false}
+                          onChange={() => handleSelectItem(item.servicePackageId)}
                         />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <button
-                          onClick={() => handleDeleteItem(item.id)}
+                          onClick={() => handleDeleteItem(item.servicePackageId)}
                           className="text-red-600 hover:text-red-900 focus:outline-none"
                         >
                           <FaTrash className="w-6 h-6" />
@@ -239,11 +162,11 @@ const Cart = () => {
                   </div>
                   <div className="flex justify-between text-gray-700">
                     <span>Subtotal:</span>
-                    <span>đ{subtotal.toFixed(2)}</span>
+                    <span>${subtotal.toLocaleString()}</span>
                   </div>
                   <div className="border-t border-gray-200 pt-3 mt-3 flex justify-between text-xl font-bold text-blue-600">
                     <span>Total:</span>
-                    <span>đ{total.toFixed(2)}</span>
+                    <span>${total.toLocaleString()}</span>
                   </div>
                 </div>
                 <button
@@ -257,7 +180,6 @@ const Cart = () => {
                   to="/services"
                   className="mt-4 w-full px-6 py-3 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-300 flex items-center justify-center text-lg font-semibold"
                 >
-                  <FaPlus className="w-6 h-6 mr-3" />
                   Add More Services
                 </Link>
               </div>
@@ -290,6 +212,12 @@ const Cart = () => {
           </div>
         </div>
       </main>
+      {showDetailModal && (
+        <ServiceDetail 
+          service={selectedService} 
+          onClose={handleCloseDetailModal}
+        />
+      )}
       <Footer />
     </div>
   );
