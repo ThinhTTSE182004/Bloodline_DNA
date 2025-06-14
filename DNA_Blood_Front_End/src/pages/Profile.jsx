@@ -1,47 +1,143 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 const Profile = () => {
-  // Dữ liệu giả định cho profile và order history
-  const [userProfile] = useState({
-    name: "Trần Thái Thịnh",
-    memberSince: "June 2025",
-    email: "Thaithinh03456@gmail.com",
-    phone: "0348064033",
-  });
+  const [userProfile, setUserProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
-  const [orderHistory] = useState([
-    {
-      orderId: 1,
-      service: "Paternal Ancestry Test",
-      patient: "Trần Thế Thanh",
-      relative: "Trần Thế Thanh (Child)",
-      status: "Pending",
-    },
-    {
-      orderId: 2,
-      service: "Family Ancestry Test",
-      patient: "Nguyễn Trọng Tấn",
-      relative: "Hồ Văn Cao (Member)",
-      status: "Pending",
-    },
-    {
-      orderId: 3,
-      service: "Sibling Relationship Test",
-      patient: "Phạm Thế Quang",
-      relative: "Hồ Văn Cao (Sibling)",
-      status: "Pending",
-    },
-    {
-      orderId: 4,
-      service: "Sibling Relationship Test",
-      patient: "Phạm Thế Quang",
-      relative: "Hồ Văn Cao (Sibling)",
-      status: "Pending",
-    },
-  ]);
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+          console.log('No token found');
+          navigate('/login');
+          return;
+        }
+
+        console.log('Token being used:', token);
+
+        const response = await fetch('https://localhost:7113/api/UserProfile/me', {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token.trim()}`,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+          },
+          mode: 'cors'
+        });
+
+        console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+        if (response.status === 401) {
+          console.log('Token expired or invalid');
+          localStorage.removeItem('token');
+          navigate('/login');
+          return;
+        }
+
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('API Error:', errorText);
+          throw new Error(`Failed to fetch profile data: ${response.status} - ${errorText}`);
+        }
+
+        const data = await response.json();
+        console.log('Profile data:', data);
+
+        // Xử lý dữ liệu từ token JWT
+        const tokenData = JSON.parse(atob(token.split('.')[1]));
+        console.log('Token data:', tokenData);
+
+        // Kết hợp dữ liệu từ API và token
+        const profileData = {
+          name: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || data.name,
+          email: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || data.email,
+          phone: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'] || data.phone,
+          updatedAt: data.updatedAt
+        };
+
+        console.log('Combined profile data:', profileData);
+
+        if (!profileData.name || !profileData.email || !profileData.phone) {
+          throw new Error('Invalid profile data received');
+        }
+
+        setUserProfile(profileData);
+      } catch (err) {
+        console.error('Error fetching profile:', err);
+        if (err.message.includes('Failed to fetch')) {
+          setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng của bạn.');
+        } else {
+          setError(err.message);
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, [navigate]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+        <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
+              <div className="animate-pulse flex space-x-4">
+                <div className="rounded-full bg-gradient-to-r from-blue-400 to-blue-600 h-24 w-24"></div>
+                <div className="flex-1 space-y-4 py-1">
+                  <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-3/4"></div>
+                  <div className="space-y-2">
+                    <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded"></div>
+                    <div className="h-4 bg-gradient-to-r from-gray-200 to-gray-300 rounded w-5/6"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+        <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
+              <div className="text-red-600 text-center">
+                <div className="flex justify-center mb-4">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-16 h-16 text-red-500 animate-bounce">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" />
+                  </svg>
+                </div>
+                <p className="text-lg font-semibold mb-4">Error loading profile: {error}</p>
+                <button 
+                  onClick={() => navigate('/login')}
+                  className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-lg hover:from-blue-600 hover:to-blue-700 transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                >
+                  Back to Login
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -49,98 +145,67 @@ const Profile = () => {
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* User Profile Card */}
-          <div className="bg-white shadow rounded-lg p-6 md:p-8">
+          <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
               <div className="flex-shrink-0">
-                <div className="h-24 w-24 bg-blue-600 rounded-full flex items-center justify-center text-white text-4xl">
+                <div className="h-24 w-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-4xl transform transition-all duration-300 hover:scale-110">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-12 h-12">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                   </svg>
                 </div>
               </div>
               <div className="flex-grow text-center md:text-left">
-                <h1 className="text-3xl font-bold text-gray-900">{userProfile.name}</h1>
-                <p className="text-gray-600">Member since {userProfile.memberSince}</p>
+                <h1 className="text-3xl font-bold text-gray-900 mb-2">{userProfile.name}</h1>
+                <p className="text-gray-600 flex items-center justify-center md:justify-start">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2 text-blue-500">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+                  </svg>
+                  Last updated: {new Date(userProfile.updatedAt).toLocaleDateString()}
+                </p>
                 <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-3">
-                  <button className="flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300">
+                  <Link 
+                    to="/settings"
+                    className="flex items-center px-6 py-3 bg-white border-2 border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14.25v4.5m-2.25-2.25h4.5" />
-                    </svg>
-                    Edit Profile
-                  </button>
-                  <button className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition-colors duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.17.971c.093.535.344 1.04.704 1.46L19 7.75c.42.42.61.99.503 1.55l-.3 1.714a1.875 1.875 0 0 1-1.02 1.258l-.8.47a1.875 1.875 0 0 0-.749 2.19l.292 1.683c.092.536-.123 1.083-.582 1.411L15 21.75c-.473.34-.993.53-1.55.503l-1.715-.3a1.875 1.875 0 0 0-2.19.749l-.47.8c-.34.473-.886.683-1.411.582l-1.683-.292c-.536-.092-1.083.123-1.411.582L2.25 19.5c-.34-.473-.53-.993-.503-1.55l.3-1.715a1.875 1.875 0 0 0-1.258-1.02l-.47-.8a1.875 1.875 0 0 0-2.19-.749l-1.683.292c-.536.092-1.083-.123-1.411-.582L.75 4.5c.473-.34.993-.53 1.55-.503l1.715.3a1.875 1.875 0 0 0 2.19-.749l.47-.8c.34-.473.886-.683 1.411-.582l1.683.292c.536.092 1.083-.123 1.411-.582Zm2.25 6.5a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" clipRule="evenodd" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 0 1 1.37.49l1.296 2.247a1.125 1.125 0 0 1-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 0 1 0 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 0 1-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 0 1-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 0 1-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 0 1-1.369-.49l-1.297-2.247a1.125 1.125 0 0 1 .26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 0 1 0-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 0 1-.26-1.43l1.297-2.247a1.125 1.125 0 0 1 1.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281Z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                     </svg>
                     Account Settings
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Personal Information Card */}
-          <div className="bg-white shadow rounded-lg p-6 md:p-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-600">
-                <path strokeLinecap="round" strokeLinejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.852l.708-2.836a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.852l.708-2.836a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.852l.708-2.836c.11-.447.5-.75.952-.75h.923l.169.117a3.75 3.75 0 0 0 1.157 1.057c.928.397 1.764.86 2.505 1.418.156.115.31.233.461.353a.925.925 0 0 0 .94-.029c.14-.124.27-.267.387-.425a.916.916 0 0 0 .195-.444c.036-.2.072-.401.072-.602v-1.086c0-.986-.17-1.9-.49-2.73a.75.75 0 0 0-.25-.333l-.226-.153a.75.75 0 0 1-.364-.672V8.5C21.468 7.373 20.266 6 18.25 6h-2.5a.75.75 0 0 0-.75.75v3.25c0 .248-.09.485-.257.653l-.261.261a.75.75 0 0 0-.279.52v.75Z" clipRule="evenodd" />
+          <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-500">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
               </svg>
               Personal Information
             </h2>
-            <div className="space-y-3">
-              <p className="flex items-center text-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2 text-gray-500">
+            <div className="space-y-4">
+              <div className="flex items-center p-4 bg-gray-50 rounded-lg transform transition-all duration-300 hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-3 text-blue-500">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5H4.5A2.25 2.25 0 0 0 2.25 6.75m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L2.52 8.91A2.25 2.25 0 0 1 1.5 6.993V6.75" />
                 </svg>
-                Email: {userProfile.email}
-              </p>
-              <p className="flex items-center text-gray-700">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2 text-gray-500">
+                <div>
+                  <p className="text-sm text-gray-500">Email Address</p>
+                  <p className="text-gray-900 font-medium">{userProfile.email}</p>
+                </div>
+              </div>
+              <div className="flex items-center p-4 bg-gray-50 rounded-lg transform transition-all duration-300 hover:bg-gray-100">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-3 text-blue-500">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0-1.036.84-1.875 1.875-1.875h16.5c1.035 0 1.875.84 1.875 1.875v10.5a1.875 1.875 0 0 1-1.875 1.875H4.125A1.875 1.875 0 0 1 2.25 17.25V6.75Z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 0 3 3m-3-3-3 3M12 18.75h.008v.008H12v-.008Z" />
                 </svg>
-                Phone: {userProfile.phone}
-              </p>
-            </div>
-          </div>
-
-          {/* Order History Section */}
-          <div className="bg-white shadow rounded-lg p-6 md:p-8">
-            <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-600">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.185 3.185M18.007 9.348l-3.185-3.185m0 0v-4.992m0 0h4.992" />
-              </svg>
-              Order History
-            </h2>
-            <div className="space-y-4">
-              {orderHistory.map((order) => (
-                <div key={order.orderId} className="border border-gray-200 rounded-md p-4">
-                  <div className="flex items-center justify-between text-lg font-medium text-gray-900 mb-2">
-                    <span className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2 text-gray-500"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 12h16.5m-16.5 0a2.25 2.25 0 0 0 2.25 2.25h12.75a2.25 2.25 0 0 0 2.25-2.25M3.75 12m0-2.25a2.25 2.25 0 0 1 2.25-2.25h12.75a2.25 2.25 0 0 1 2.25 2.25M3.75 12m0 2.25a2.25 2.25 0 0 0 2.25 2.25h12.75a2.25 2.25 0 0 0 2.25-2.25" /></svg>
-                      Order #{order.orderId}
-                    </span>
-                    <span className="flex items-center text-sm text-blue-600">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4 mr-1"><path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" /></svg>
-                      Service: {order.service}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-gray-700 text-sm">
-                    <p className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4 mr-1"><path strokeLinecap="round" strokeLinejoin="round" d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" /></svg>
-                      Patient: {order.patient}
-                    </p>
-                    <p className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4 mr-1"><path strokeLinecap="round" strokeLinejoin="round" d="m15.75 11.25.166.166a.75.75 0 0 1-.53 1.284H9.001a.75.75 0 0 1-.53-1.284l.166-.166M10.867 15.75L7.5 21V3m3.367 12.75L7.5 21m3.367-12.75 3.366 12.75m-3.366-12.75L12 21V3m3.367 12.75L16.5 21V3" /></svg>
-                      Relative: {order.relative}
-                    </p>
-                    <p className="flex items-center">
-                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4 mr-1"><path strokeLinecap="round" strokeLinejoin="round" d="M11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.852l.708-2.836a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.852l.708-2.836c.11-.447.5-.75.952-.75h.923l.169.117a3.75 3.75 0 0 0 1.157 1.057c.928.397 1.764.86 2.505 1.418.156.115.31.233.461.353a.925.925 0 0 0 .94-.029c.14-.124.27-.267.387-.425a.916.916 0 0 0 .195-.444c.036-.2.072-.401.072-.602v-1.086c0-.986-.17-1.9-.49-2.73a.75.75 0 0 0-.25-.333l-.226-.153a.75.75 0 0 1-.364-.672V8.5C21.468 7.373 20.266 6 18.25 6h-2.5a.75.75 0 0 0-.75.75v3.25c0 .248-.09.485-.257.653l-.261.261a.75.75 0 0 0-.279.52v.75Z" clipRule="evenodd" /></svg>
-                      Status: <span className="font-semibold text-orange-500">{order.status}</span>
-                    </p>
-                  </div>
+                <div>
+                  <p className="text-sm text-gray-500">Phone Number</p>
+                  <p className="text-gray-900 font-medium">{userProfile.phone}</p>
                 </div>
-              ))}
+              </div>
             </div>
           </div>
         </div>
