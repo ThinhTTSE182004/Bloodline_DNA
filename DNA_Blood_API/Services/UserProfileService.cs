@@ -36,18 +36,24 @@ namespace DNA_API1.Services
             if (existing == null)
                 return null;
 
+            // Cập nhật thông tin
             existing.Name = dto.Name;
             existing.Phone = dto.Phone;
+            existing.Email = dto.Email;
             existing.UpdatedAt = DateTime.Now;
 
-            await _userProfileRepository.UpdateAsync(existing);
+            // Lưu thay đổi
+            var updated = await _userProfileRepository.UpdateUserProfileAsync(existing);
+            if (updated == null)
+                return null;
 
+            // Trả về thông tin đã cập nhật
             return new UpdateUserProfile
             {
-                Name = existing.Name,
-                Email = existing.Email,
-                Phone = existing.Phone,
-                UpdatedAt = existing.UpdatedAt
+                Name = updated.Name,
+                Email = updated.Email,
+                Phone = updated.Phone,
+                UpdatedAt = updated.UpdatedAt
             };
         }
     }

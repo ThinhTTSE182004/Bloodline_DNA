@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("User_profile")]
-[Index("Email", Name = "UQ__User_pro__AB6E616401BE1AED", IsUnique = true)]
-[Index("UserId", Name = "UQ__User_pro__B9BE370ED6A231F0", IsUnique = true)]
+[Index("Email", Name = "UQ__User_pro__AB6E616423174062", IsUnique = true)]
+[Index("UserId", Name = "UQ__User_pro__B9BE370E24C03489", IsUnique = true)]
 public partial class UserProfile
 {
     [Key]
@@ -29,6 +29,11 @@ public partial class UserProfile
     [Column("phone")]
     [StringLength(20)]
     public string? Phone { get; set; }
+
+    [StringLength(100)]
+    public string? Specialization { get; set; }
+
+    public int? YearsOfExperience { get; set; }
 
     [Column("created_at", TypeName = "datetime")]
     public DateTime? CreatedAt { get; set; }

@@ -1,4 +1,5 @@
 ﻿using DNA_API1.Models;
+using DNA_API1.Repository;
 using DNA_API1.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,21 +7,43 @@ namespace DNA_API1.Services
 {
     public class OrderService : IOrderService
     {
-        private readonly BloodlineDnaContext _context;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IStaffAssignmentService _staffAssignmentService;
 
-        public OrderService(BloodlineDnaContext context)
+        public OrderService(
+            IOrderRepository orderRepository,
+            IStaffAssignmentService staffAssignmentService)
         {
-            _context = context;
+            _orderRepository = orderRepository;
+            _staffAssignmentService = staffAssignmentService;
         }
 
         public async Task<int> CreateOrderWithPaymentAsync(CreateOrderWithPaymentDTO dto)
         {
-            // Bắt đầu transaction để đảm bảo tất cả thành công hoặc rollback
-            using var transaction = await _context.Database.BeginTransactionAsync();
+            // Validate test type by name
+            var testType = await _orderRepository.GetTestTypeByNameAsync(dto.TestTypeName);
+            if (testType == null)
+            {
+                throw new Exception($"Test type '{dto.TestTypeName}' not found");
+            }
+
+            // Validate sample type by name
+            var sampleType = await _orderRepository.GetSampleTypeByNameAsync(dto.SampleTypeName);
+            if (sampleType == null)
+            {
+                throw new Exception($"Sample type '{dto.SampleTypeName}' not found");
+            }
+
+            // Validate collection method by name
+            var collectionMethod = await _orderRepository.GetCollectionMethodByNameAsync(dto.MethodTypeName);
+            if (collectionMethod == null)
+            {
+                throw new Exception($"Collection method '{dto.MethodTypeName}' not found");
+            }
 
             try
             {
-                // 1. Tạo thông tin người tham gia (Participant)
+                // 1. Create participant
                 var participant = new Participant
                 {
                     FullName = dto.Participant.FullName,
@@ -31,74 +54,61 @@ namespace DNA_API1.Services
                     NameRelation = dto.Participant.NameRelation
                 };
 
-                _context.Participants.Add(participant);
-                await _context.SaveChangesAsync(); // Lưu để có ParticipantId
-
-                // 2. Tạo đơn hàng (Order)
+                // 2. Create order
                 var order = new Order
                 {
                     CustomerId = dto.CustomerId,
-                    CollectionMethodId = dto.CollectionMethodId,
-                    OrderStatus = dto.OrderStatus,
+                    CollectionMethodId = collectionMethod.CollectionMethodId,
+                    OrderStatus = "Pending",  // Set mặc định là Pending
                     CreateAt = DateTime.Now
                 };
 
-                _context.Orders.Add(order);
-                await _context.SaveChangesAsync();
+                // 3. Create order details and samples
+                var details = new List<OrderDetail>();
+                var samples = new List<Sample>();
 
-                // 3. Thêm chi tiết đơn hàng (OrderDetail) và Sample
                 foreach (var detailDto in dto.Details)
                 {
-                    // Tạo OrderDetail
+                    // Tự động phân công staff
+                    var (medicalStaffId, staffId) = await _staffAssignmentService.AssignStaffAsync(detailDto.ServicePackageId);
+
                     var detail = new OrderDetail
                     {
-                        OrderId = order.OrderId,
                         ServicePackageId = detailDto.ServicePackageId,
-                        MedicalStaffId = detailDto.MedicalStaffId
+                        MedicalStaffId = medicalStaffId
                     };
+                    details.Add(detail);
 
-                    _context.OrderDetails.Add(detail);
-                    await _context.SaveChangesAsync(); // Lưu để có OrderDetailId
-
-                    // Tạo Sample kết nối Participant với OrderDetail
                     var sample = new Sample
                     {
-                        ParticipantId = participant.ParticipantId,
-                        OrderDetailId = detail.OrderDetailId,
-                        SampleTypeId = 1, // Sử dụng loại mẫu mặc định
-                        StaffId = 1, // Sử dụng MedicalStaffId làm StaffId
-                        SampleStatus = "Pending", // Trạng thái mặc định
-                        CollectedDate = null, // Chưa có ngày lấy mẫu
-                        ReceivedDate = null // Chưa có ngày nhận mẫu
+                        SampleTypeId = sampleType.SampleTypeId,
+                        StaffId = staffId,
+                        SampleStatus = "Pending",
+                        CollectedDate = null,
+                        ReceivedDate = null
                     };
-
-                    _context.Samples.Add(sample);
+                    samples.Add(sample);
                 }
 
-                // 4. Tạo thông tin thanh toán (Payment)
+                // 4. Create payment
                 var payment = new Payment
                 {
-                    OrderId = order.OrderId,
                     PaymentMethod = dto.Payment.PaymentMethod,
                     PaymentStatus = "Pending",
                     PaymentDate = DateTime.Now,
                     Total = (int)dto.Payment.Total
                 };
 
-                _context.Payments.Add(payment);
-
-                // 5. Lưu toàn bộ vào database
-                await _context.SaveChangesAsync();
-
-                // 6. Commit transaction
-                await transaction.CommitAsync();
-
-                return order.OrderId;
+                // 5. Save everything using repository
+                return await _orderRepository.CreateOrderWithDetailsAsync(
+                    participant,
+                    order,
+                    details,
+                    samples,
+                    payment);
             }
             catch (Exception)
             {
-                // Nếu có lỗi, rollback tất cả
-                await transaction.RollbackAsync();
                 throw; // báo lỗi lên Controller
             }
         }

@@ -28,15 +28,18 @@ namespace DNA_API1.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderWithPaymentDTO dto)
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
             var customerId = GetUserIdFromToken();
             if (customerId == null)
                 return Unauthorized();
 
             try
             {
-                // Gán customerId từ token vào DTO (ghi đè nếu client cố tình gửi ID khác)
                 dto.CustomerId = customerId.Value;
-
                 var orderId = await _orderService.CreateOrderWithPaymentAsync(dto);
 
                 return Ok(new

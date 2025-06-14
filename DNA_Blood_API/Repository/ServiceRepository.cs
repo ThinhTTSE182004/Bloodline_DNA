@@ -24,6 +24,8 @@ namespace DNA_API1.Repository
                     {
                         ServicePackageId = package.ServicePackageId,
                         ServiceName = package.ServiceName,
+                        Category =package.Category,
+                        Description =package.Description,
                         Price = price.Price
                     }
                 )

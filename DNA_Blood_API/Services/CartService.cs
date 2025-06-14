@@ -35,9 +35,7 @@ namespace DNA_API1.Services
             var cartItem = new CartItemDTO
             {
                 ServicePackageId = service.ServicePackageId,
-                AddedAt = DateTime.Now,
                 ServiceName = service.ServiceName,
-                Description = service.Description,
                 Category = service.Category,
                 Price = service.ServicePrices?.FirstOrDefault()?.Price ?? 0
             };

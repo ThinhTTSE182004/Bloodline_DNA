@@ -78,6 +78,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IRoleRepository, RoleRepository>();
             builder.Services.AddScoped<IServicePackageRepository, ServicePackageRepository>();
             builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
+            builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 
             // Service Registration
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -86,6 +87,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IUserProfileService, UserProfileService>();
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IServiceService, ServiceService>();
+            builder.Services.AddScoped<IStaffAssignmentService, StaffAssignmentService>();
 
             // CORS
             builder.Services.AddCors(options =>
