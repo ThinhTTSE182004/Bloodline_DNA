@@ -36,32 +36,113 @@ const Payment = () => {
     return orderSummary.reduce((total, item) => total + item.price, 0).toFixed(0); // VND usually no decimals
   };
 
-  const handleConfirmPayment = () => {
-    // Lấy danh sách các service đã thanh toán (orderSummary)
-    const paidIds = orderSummary.map(item => item.servicePackageId || item.id);
+  const handleConfirmPayment = async () => {
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Please login to continue');
+        navigate('/login');
+        return;
+      }
 
-    // Lấy lại cartItems gốc
-    const allCart = JSON.parse(localStorage.getItem('cart')) || [];
-    // Giữ lại các service chưa thanh toán
-    const newCart = allCart.filter(item => !paidIds.includes(item.servicePackageId || item.id));
-    localStorage.setItem('cart', JSON.stringify(newCart));
-    refreshCart();
+      // Get user ID from token
+      const tokenData = JSON.parse(atob(token.split('.')[1]));
+      const customerId = parseInt(tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']);
 
-    // Lưu thông tin thanh toán vào sessionStorage trước khi xóa bookingFormData
-    const paymentInfo = {
-      ...userDetails,
-      selectedServices: orderSummary,
-      paymentMethod,
-      paymentDate: new Date().toISOString(),
-      orderId: `ORD${Date.now().toString().slice(-6)}`
-    };
-    sessionStorage.setItem('lastPaidBooking', JSON.stringify(paymentInfo));
+      // Debug log user details
+      console.log('User Details:', userDetails);
 
-    // Xóa thông tin bookingFormData
-    localStorage.removeItem('bookingFormData');
-    
-    // Chuyển hướng sang trang PaymentSuccess
-    navigate('/payment-success');
+      // Map gender to sex
+      const genderMap = {
+        'male': 'Male',
+        'female': 'Female',
+        'other': 'Other'
+      };
+
+      // Map relationship values
+      const relationshipMap = {
+        'self': 'Self',
+        'child': 'Child',
+        'parent': 'Parent',
+        'sibling': 'Sibling',
+        'other': 'Other'
+      };
+
+      // Prepare order data according to API format
+      const orderData = {
+        customerId: customerId,
+        participant: {
+          fullName: userDetails.fullName || '',
+          sex: genderMap[userDetails.gender?.toLowerCase()] || 'Male',
+          birthDate: userDetails.dateOfBirth || '',
+          phone: parseInt(userDetails.phoneNumber?.replace(/\D/g, '')) || 0,
+          relationship: relationshipMap[userDetails.relationshipToPatient?.toLowerCase()] || 'Self',
+          nameRelation: userDetails.relatedPersonName || ''
+        },
+        details: orderSummary.map(item => ({
+          servicePackageId: parseInt(item.servicePackageId || item.id)
+        })),
+        payment: {
+          paymentMethod: paymentMethod === 'bankTransfer' ? 'Bank Transfer' : 'Cash on Delivery',
+          total: parseInt(calculateTotalAmount().replace(/\D/g, ''))
+        },
+        testTypeName: userDetails.testType || 'Civil',
+        sampleTypeName: userDetails.sampleType || 'Blood',
+        methodTypeName: userDetails.sampleCollectionMethod || 'At Medical Center'
+      };
+
+      // Debug log order data
+      console.log('Order Data:', orderData);
+
+      // Call API to create order with authentication token
+      const response = await fetch('https://localhost:7113/api/Order', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(orderData)
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        console.error('API Error Response:', errorData);
+        throw new Error(errorData.message || 'Failed to create order');
+      }
+
+      const responseData = await response.json();
+      console.log('API Success Response:', responseData);
+
+      // Lấy danh sách các service đã thanh toán (orderSummary)
+      const paidIds = orderSummary.map(item => item.servicePackageId || item.id);
+
+      // Lấy lại cartItems gốc
+      const allCart = JSON.parse(localStorage.getItem('cart')) || [];
+      // Giữ lại các service chưa thanh toán
+      const newCart = allCart.filter(item => !paidIds.includes(item.servicePackageId || item.id));
+      localStorage.setItem('cart', JSON.stringify(newCart));
+      refreshCart();
+
+      // Lưu thông tin thanh toán vào sessionStorage trước khi xóa bookingFormData
+      const paymentInfo = {
+        ...userDetails,
+        selectedServices: orderSummary,
+        paymentMethod,
+        paymentDate: new Date().toISOString(),
+        orderId: `ORD${Date.now().toString().slice(-6)}`
+      };
+      sessionStorage.setItem('lastPaidBooking', JSON.stringify(paymentInfo));
+
+      // Xóa thông tin bookingFormData
+      localStorage.removeItem('bookingFormData');
+      
+      // Chuyển hướng sang trang PaymentSuccess
+      navigate('/payment-success');
+    } catch (error) {
+      console.error('Error creating order:', error);
+      alert(error.message || 'Failed to create order. Please try again.');
+    }
   };
 
   return (

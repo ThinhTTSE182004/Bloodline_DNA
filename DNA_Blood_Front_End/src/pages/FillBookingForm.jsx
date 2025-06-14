@@ -153,8 +153,8 @@ const FillBookingForm = () => {
                   onChange={handleChange}
                 >
                   <option value="">-- Select Type --</option>
-                  <option value="civil">Civil</option>
-                  <option value="administrative">Administrative</option>
+                  <option value="Civil">Civil</option>
+                  <option value="Legal">Legal</option>
                 </select>
               </div>
 
@@ -172,8 +172,8 @@ const FillBookingForm = () => {
                   onChange={handleChange}
                 >
                   <option value="">-- Select Collection Method --</option>
-                  <option value="clinic">At Clinic</option>
-                  <option value="home_kit" disabled={formData.testType === 'administrative'}>Home Kit</option>
+                  <option value="At Medical Center">At Medical Center</option>
+                  <option value="At Home" disabled={formData.testType === 'Legal'}>At Home</option>
                 </select>
               </div>
 
@@ -191,9 +191,9 @@ const FillBookingForm = () => {
                   onChange={handleChange}
                 >
                   <option value="">-- Select Sample Type --</option>
-                  <option value="fingernail">Fingernail</option>
-                  <option value="blood">Blood</option>
-                  <option value="hair">Hair</option>
+                  <option value="Blood">Blood</option>
+                  <option value="Hair">Hair</option>
+                  <option value="Fingernail">Fingernail</option>
                 </select>
               </div>
 
