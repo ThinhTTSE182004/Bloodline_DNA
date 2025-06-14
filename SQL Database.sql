@@ -1,4 +1,7 @@
 ALTER DATABASE Bloodline_DNA SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+DROP DATABASE Bloodline_DNA;
+
+ALTER DATABASE Bloodline_DNA SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
 
 CREATE TABLE Roles (
     role_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -29,6 +32,8 @@ user_id INT unique not null,
 name NVARCHAR(100) NOT NULL,
 email NVARCHAR(100) NOT NULL UNIQUE,
 phone NVARCHAR(20),
+Specialization NVARCHAR(100), 
+YearsOfExperience INT,
 created_at DATETIME DEFAULT GETDATE(),
 updated_at DATETIME DEFAULT GETDATE(),
 FOREIGN KEY (user_id) REFERENCES USERS(user_id)
@@ -235,11 +240,41 @@ INSERT INTO [Bloodline_DNA].[dbo].[Roles] ([role_name]) VALUES
 ('Medical Staff');
 
 
-INSERT INTO [Bloodline_DNA].[dbo].[USERS] (
-    [name], [email], [phone], [password], [role_id], [created_at], [updated_at]
-) VALUES
-('Tran Thai Thinh', 'thinhtran@gmail.com', '142892422', '12345678', 4, '2025-06-07 16:14:50.563', '2025-06-07 16:14:50.563'),
-('Nguyen Duy khoi', 'KhoiNguyen@gmail.con', '2284287274', '12345678', 2, '2025-06-07 16:17:18.453', '2025-06-07 16:17:18.453');
+-- USERS: Staff
+INSERT INTO USERS (name, email, phone, password, role_id)
+VALUES
+(N'Nguyễn Văn An', 'an.staff@example.com', '0901000001', 'hashed_pw_1', 2),
+(N'Trần Thị Bình', 'binh.staff@example.com', '0901000002', 'hashed_pw_2', 2),
+(N'Lê Văn Cường', 'cuong.staff@example.com', '0901000003', 'hashed_pw_3', 2),
+(N'Phạm Thị Dung', 'dung.staff@example.com', '0901000004', 'hashed_pw_4', 2),
+(N'Hoàng Minh Đức', 'duc.staff@example.com', '0901000005', 'hashed_pw_5', 2);
+
+-- USER_PROFILE: Staff
+INSERT INTO User_profile (user_id, name, email, phone)
+VALUES
+(1, N'Nguyễn Văn An', 'an.staff@example.com', '0901000001'),
+(2, N'Trần Thị Bình', 'binh.staff@example.com', '0901000002'),
+(3, N'Lê Văn Cường', 'cuong.staff@example.com', '0901000003'),
+(4, N'Phạm Thị Dung', 'dung.staff@example.com', '0901000004'),
+(5, N'Hoàng Minh Đức', 'duc.staff@example.com', '0901000005');
+
+-- USERS: Medical Staff
+INSERT INTO USERS (name, email, phone, password, role_id)
+VALUES
+(N'TS. Nguyễn Thị Hồng', 'hong.med@example.com', '0912000001', 'hashed_pw_6', 4),
+(N'BS. Trần Văn Khánh', 'khanh.med@example.com', '0912000002', 'hashed_pw_7', 4),
+(N'ThS. Lê Thị Minh', 'minh.med@example.com', '0912000003', 'hashed_pw_8', 4),
+(N'BS. Phạm Anh Quân', 'quan.med@example.com', '0912000004', 'hashed_pw_9', 4),
+(N'ThS. Hoàng Thị Trang', 'trang.med@example.com', '0912000005', 'hashed_pw_10', 4);
+
+-- USER_PROFILE: Medical Staff
+INSERT INTO User_profile (user_id, name, email, phone, Specialization, YearsOfExperience)
+VALUES
+(6, N'TS. Nguyễn Thị Hồng', 'hong.med@example.com', '0912000001', N'Maternal Ancestry', 6),
+(7, N'BS. Trần Văn Khánh', 'khanh.med@example.com', '0912000002', N'Paternal Ancestry', 8),
+(8, N'ThS. Lê Thị Minh', 'minh.med@example.com', '0912000003', N'Family Ancestry', 7),
+(9, N'BS. Phạm Anh Quân', 'quan.med@example.com', '0912000004', N'Sibling Relationship', 5),
+(10, N'ThS. Hoàng Thị Trang', 'trang.med@example.com', '0912000005', N'Parentage Testing', 9);
 
 INSERT INTO [Bloodline_DNA].[dbo].[TestType] ([TestTypeID], [Name]) VALUES
 (1, 'Civil'),
@@ -287,5 +322,6 @@ INSERT INTO [Bloodline_DNA].[dbo].[Sample_type] (
 ('Blood', 'Biological fluid responsible for transporting oxygen and nutrients. Commonly used for DNA analysis, disease screening, and blood typing.'),
 ('Hair', 'Protein filament (keratin) growing from follicles. Used in toxicology, drug history analysis, and mitochondrial DNA testing'),
 ('Fingernail', 'Keratin-based tissue from fingertips. Useful in detecting long-term exposure to toxins, trace element analysis, and forensic testing.');
+
 
 

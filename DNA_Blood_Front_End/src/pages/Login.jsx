@@ -41,8 +41,13 @@ const Login = () => {
         navigate('/');
       }
       else {
-        const errorData = await response.json();
-        alert(`Đăng nhập thất bại: ${errorData.message || 'Sai email hoặc mật khẩu'}`);
+        const errorText = await response.text();
+        try {
+          const errorData = JSON.parse(errorText);
+          alert(`Đăng nhập thất bại: ${errorData.message || 'Sai email hoặc mật khẩu'}`);
+        } catch {
+          alert(`Đăng nhập thất bại: ${errorText || 'Sai email hoặc mật khẩu'}`);
+        }
       }
     } catch (error) {
       console.error('Lỗi khi login:', error);

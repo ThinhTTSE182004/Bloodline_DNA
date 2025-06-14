@@ -51,7 +51,7 @@ const AccountSetting = () => {
         return;
       }
 
-      const response = await fetch('https://localhost:7113/api/UserProfile/me', {
+      const response = await fetch('https://localhost:7113/api/UserProfile/GetUserProfile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
@@ -115,7 +115,7 @@ const AccountSetting = () => {
         return;
       }
 
-      const response = await fetch('https://localhost:7113/api/UserProfile/me', {
+      const response = await fetch('https://localhost:7113/api/UserProfile/UpdateUserProfile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token.trim()}`,

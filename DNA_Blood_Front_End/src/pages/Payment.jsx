@@ -96,7 +96,7 @@ const Payment = () => {
       console.log('Order Data:', orderData);
 
       // Call API to create order with authentication token
-      const response = await fetch('https://localhost:7113/api/Order', {
+      const response = await fetch('https://localhost:7113/api/Order/CreateOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

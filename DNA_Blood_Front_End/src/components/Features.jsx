@@ -1,92 +1,115 @@
 import React from 'react';
-import { scrollToSection } from '../utils/scroll';
-import { FaDna, FaUsers, FaLock, FaBolt, FaArrowRight } from 'react-icons/fa';
+import { motion } from 'framer-motion';
+import { FaFlask, FaUserShield, FaChartLine, FaClock, FaGlobe, FaHeadset } from 'react-icons/fa';
+
+const features = [
+  {
+    icon: <FaFlask className="w-8 h-8" />,
+    title: "Advanced Technology",
+    description: "State-of-the-art DNA testing equipment and methodologies for accurate results."
+  },
+  {
+    icon: <FaUserShield className="w-8 h-8" />,
+    title: "Privacy Guaranteed",
+    description: "Your data is protected with industry-leading security measures and strict confidentiality."
+  },
+  {
+    icon: <FaChartLine className="w-8 h-8" />,
+    title: "High Accuracy",
+    description: "99.9% accuracy rate in all our DNA testing services and results."
+  },
+  {
+    icon: <FaClock className="w-8 h-8" />,
+    title: "Quick Results",
+    description: "Fast turnaround time with detailed reports and expert analysis."
+  },
+  {
+    icon: <FaGlobe className="w-8 h-8" />,
+    title: "Global Standards",
+    description: "Compliant with international DNA testing standards and regulations."
+  },
+  {
+    icon: <FaHeadset className="w-8 h-8" />,
+    title: "24/7 Support",
+    description: "Round-the-clock customer support for all your queries and concerns."
+  }
+];
 
 const Features = () => {
-  const features = [
-    {
-      title: "Advanced DNA Analysis",
-      description: "State-of-the-art technology for precise genetic testing and analysis.",
-      icon: (<FaDna className="w-8 h-8" />)
-    },
-    {
-      title: "Expert Genetic Counselors",
-      description: "Professional guidance from certified genetic counselors throughout your journey.",
-      icon: (<FaUsers className="w-8 h-8" />)
-    },
-    {
-      title: "Secure & Confidential",
-      description: "Your genetic data is protected with industry-leading security measures.",
-      icon: (<FaLock className="w-8 h-8" />)
-    },
-    {
-      title: "Fast Results",
-      description: "Get your results quickly with our efficient processing system.",
-      icon: (<FaBolt className="w-8 h-8" />)
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2
+      }
     }
-  ];
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5
+      }
+    }
+  };
 
   return (
-    <div id="features" className="py-20 bg-gray-50">
+    <div className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center">
-          <h2 className="text-3xl font-bold text-blue-900 sm:text-4xl">
+        <div className="text-center mb-16">
+          <motion.h2
+            initial={{ opacity: 0, y: -20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-3xl md:text-4xl font-bold text-gray-900 mb-4"
+          >
             Why Choose Our DNA Testing Services?
-          </h2>
-          <p className="mt-4 text-lg text-blue-700">
-            Experience the best in genetic testing with our comprehensive features
-          </p>
+          </motion.h2>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+            className="text-lg text-gray-600 max-w-2xl mx-auto"
+          >
+            We provide comprehensive DNA testing solutions with cutting-edge technology
+            and exceptional customer service.
+          </motion.p>
         </div>
 
-        <div className="mt-20 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
+        <motion.div
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        >
           {features.map((feature, index) => (
-            <div
+            <motion.div
               key={index}
-              className="relative group bg-white p-6 rounded-lg shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 border border-blue-100"
+              variants={itemVariants}
+              className="group relative bg-white p-6 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1"
             >
-              <div className="absolute -top-4 left-6">
-                <div className="p-2 bg-blue-100 rounded-lg text-blue-600 group-hover:bg-blue-200 transition-colors">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-50 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="relative">
+                <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mb-4 group-hover:bg-blue-600 group-hover:text-white transition-colors duration-300">
                   {feature.icon}
                 </div>
-              </div>
-              <div className="mt-4">
-                <h3 className="text-lg font-semibold text-blue-900">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
                   {feature.title}
                 </h3>
-                <p className="mt-2 text-blue-700">
+                <p className="text-gray-600">
                   {feature.description}
                 </p>
               </div>
-            </div>
+            </motion.div>
           ))}
-        </div>
-
-        {/* Additional Info Section */}
-        <div className="mt-20 bg-white rounded-lg p-8 shadow-lg border border-blue-100">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
-            <div>
-              <h3 className="text-2xl font-bold text-blue-900">
-                Ready to Discover Your Genetic Story?
-              </h3>
-              <p className="mt-4 text-blue-700">
-                Take the first step towards understanding your genetic makeup and heritage.
-                Our expert team is here to guide you through every step of the process.
-              </p>
-              <div className="mt-6">
-                <button
-                  onClick={() => scrollToSection('contact')}
-                  className="inline-flex items-center px-6 py-3 border-2 border-blue-600 text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 transition-all duration-300 shadow-md hover:shadow-lg"
-                >
-                  Get Started
-                  <FaArrowRight className="ml-2 w-5 h-5" />
-                </button>
-              </div>
-            </div>
-            <div className="flex justify-center">
-              <FaDna className="w-64 h-64 text-blue-200" />
-            </div>
-          </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

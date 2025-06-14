@@ -8,6 +8,8 @@ const Profile = () => {
   const [userProfile, setUserProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [orderHistory, setOrderHistory] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
   const navigate = useNavigate();
 
   const fetchProfile = async () => {
@@ -22,7 +24,7 @@ const Profile = () => {
 
       console.log('Token being used:', token);
 
-      const response = await fetch('https://localhost:7113/api/UserProfile/me', {
+      const response = await fetch('https://localhost:7113/api/UserProfile/GetUserProfile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
@@ -82,37 +84,89 @@ const Profile = () => {
     }
   };
 
+  const fetchOrderHistory = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch('https://localhost:7113/api/UserProfile/GetOrderHistory', {
+        headers: {
+          'Authorization': `Bearer ${token.trim()}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch order history');
+      }
+
+      const data = await response.json();
+      setOrderHistory(data);
+    } catch (err) {
+      console.error('Error fetching order history:', err);
+    }
+  };
+
+  const fetchOrderDetail = async (orderId) => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+
+      const response = await fetch(`https://localhost:7113/api/UserProfile/GetOrderDetail?orderId=${orderId}`, {
+        headers: {
+          'Authorization': `Bearer ${token.trim()}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch order detail');
+      }
+
+      const data = await response.json();
+      setSelectedOrder(data);
+    } catch (err) {
+      console.error('Error fetching order detail:', err);
+    }
+  };
+
   useEffect(() => {
     fetchProfile();
-
-    // Thiết lập kết nối SignalR
-    const setupSignalR = async () => {
-      try {
-        await signalRService.startConnection();
-        
-        // Lắng nghe sự kiện cập nhật profile
-        signalRService.onUserProfileUpdate((updatedProfile) => {
-          console.log('Profile updated via SignalR:', updatedProfile);
-          if (updatedProfile) {
-            setUserProfile(prevProfile => ({
-              ...prevProfile,
-              ...updatedProfile
-            }));
-          }
-        });
-      } catch (error) {
-        console.error('Error setting up SignalR:', error);
-      }
-    };
-
+    fetchOrderHistory();
     setupSignalR();
 
-    // Cleanup khi component unmount
+    // Cleanup function
     return () => {
-      signalRService.offUserProfileUpdate();
       signalRService.stopConnection();
     };
   }, []);
+
+  const setupSignalR = async () => {
+    try {
+      // Stop any existing connection first
+      await signalRService.stopConnection();
+      
+      // Start new connection
+      await signalRService.startConnection();
+      
+      // Join user group
+      const tokenData = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
+      await signalRService.joinUserGroup(tokenData.nameid);
+      
+      // Listen for profile updates
+      signalRService.onUserProfileUpdate((updatedProfile) => {
+        console.log('Profile updated via SignalR:', updatedProfile);
+        if (updatedProfile) {
+          setUserProfile(prevProfile => ({
+            ...prevProfile,
+            ...updatedProfile
+          }));
+        }
+      });
+    } catch (error) {
+      console.error('Error setting up SignalR:', error);
+    }
+  };
 
   if (loading) {
     return (
@@ -237,6 +291,110 @@ const Profile = () => {
               </div>
             </div>
           </div>
+
+          {/* Order History Section */}
+          <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-500">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
+              </svg>
+              Order History
+            </h2>
+            <div className="space-y-4">
+              {orderHistory.map((order) => (
+                <div 
+                  key={order.orderId}
+                  className="w-full h-[100px] bg-gray-50 rounded-lg p-4 cursor-pointer transform transition-all duration-300 hover:bg-gray-100 hover:shadow-md"
+                  onClick={() => fetchOrderDetail(order.orderId)}
+                >
+                  <div className="flex justify-between items-center h-full">
+                    <div className="flex-1">
+                      <h3 className="text-lg font-semibold text-gray-900">{order.serviceName}</h3>
+                      <p className="text-sm text-gray-600">Order ID: {order.orderId}</p>
+                      <p className="text-sm text-gray-600">
+                        {new Date(order.orderDate).toLocaleDateString()}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        order.orderStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                        order.orderStatus === 'Completed' ? 'bg-green-100 text-green-800' :
+                        'bg-blue-100 text-blue-800'
+                      }`}>
+                        {order.orderStatus}
+                      </span>
+                      <p className="mt-2 text-lg font-semibold text-blue-600">
+                        {order.totalAmount.toLocaleString()} VND
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Order Detail Modal */}
+          {selectedOrder && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+              <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-xl font-semibold text-gray-900">Order Details</h3>
+                  <button 
+                    onClick={() => setSelectedOrder(null)}
+                    className="text-gray-500 hover:text-gray-700"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm text-gray-500">Order ID</p>
+                      <p className="font-medium">{selectedOrder.orderId}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Service</p>
+                      <p className="font-medium">{selectedOrder.serviceName}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Test Type</p>
+                      <p className="font-medium">{selectedOrder.testType}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Sample Type</p>
+                      <p className="font-medium">{selectedOrder.sampleType}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Participant</p>
+                      <p className="font-medium">{selectedOrder.participantName}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Relationship</p>
+                      <p className="font-medium">{selectedOrder.relationship}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Collection Method</p>
+                      <p className="font-medium">{selectedOrder.collectionMethod}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Payment Method</p>
+                      <p className="font-medium">{selectedOrder.paymentMethod}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Total Amount</p>
+                      <p className="font-medium">{selectedOrder.total.toLocaleString()} VND</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Status</p>
+                      <p className="font-medium">{selectedOrder.orderStatus}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </main>
       <Footer />
