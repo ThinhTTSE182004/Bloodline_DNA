@@ -1,58 +1,178 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
+import { useNavigate } from 'react-router-dom';
 
 const AccountSetting = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    fullName: "Trần Thái Thịnh",
-    email: "Thaithinh03456@gmail.com",
-    phoneNumber: "0348064033",
-    currentPassword: '',
-    newPassword: '',
-    confirmNewPassword: '',
-    receiveEmail: true,
-    receiveSms: true,
-    orderUpdates: true,
+    name: '',
+    email: '',
+    phone: '',
+    updatedAt: ''
   });
+  const [isEditing, setIsEditing] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
+
+  useEffect(() => {
+    fetchProfileData();
+  }, []);
+
+  const fetchProfileData = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+
+      console.log('Token being used:', token);
+
+      const response = await fetch('https://localhost:7113/api/UserProfile/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token.trim()}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        mode: 'cors'
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error:', errorText);
+        throw new Error(`Failed to fetch profile data: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Profile data:', data);
+
+      // Xử lý dữ liệu từ token JWT
+      const tokenData = JSON.parse(atob(token.split('.')[1]));
+      console.log('Token data:', tokenData);
+
+      // Kết hợp dữ liệu từ API và token
+      const profileData = {
+        name: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || data.name,
+        email: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || data.email,
+        phone: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'] || data.phone,
+        updatedAt: data.updatedAt
+      };
+
+      console.log('Combined profile data:', profileData);
+
+      if (!profileData.name || !profileData.email || !profileData.phone) {
+        throw new Error('Invalid profile data received');
+      }
+
+      setFormData(profileData);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      if (err.message.includes('Failed to fetch')) {
+        setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng của bạn.');
+      } else {
+        setError(err.message);
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Saving changes:', formData);
+    setError(null);
+    setSuccessMessage('');
 
-    // TODO: Tích hợp API để lưu các thay đổi
-    /*
-    fetch('/api/user/settings', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    })
-    .then(response => response.json())
-    .then(data => {
-      if (data.success) {
-        alert('Changes saved successfully!');
-        // Optionally update local storage or user context if needed
-      } else {
-        alert('Failed to save changes:' + data.message);
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        navigate('/login');
+        return;
       }
-    })
-    .catch(error => {
-      console.error('Error saving changes:', error);
-      alert('An error occurred while saving changes.');
-    });
-    */
 
-    alert('Changes saved successfully (simulated)!');
+      const response = await fetch('https://localhost:7113/api/UserProfile/me', {
+        method: 'PUT',
+      headers: {
+          'Authorization': `Bearer ${token.trim()}`,
+        'Content-Type': 'application/json',
+          'Accept': 'application/json'
+      },
+        body: JSON.stringify({
+          name: formData.name,
+          email: formData.email,
+          phone: formData.phone,
+          updatedAt: new Date().toISOString()
+        }),
+        mode: 'cors'
+      });
+
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error:', errorText);
+        throw new Error(`Failed to update profile: ${response.status} - ${errorText}`);
+      }
+
+      setSuccessMessage('Profile updated successfully!');
+      setIsEditing(false);
+      await fetchProfileData();
+    } catch (err) {
+      console.error('Error updating profile:', err);
+      setError('Failed to update profile');
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100">
+        <Navbar />
+        <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-4xl mx-auto">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-1/4 mx-auto mb-8"></div>
+              <div className="space-y-8">
+                <div className="bg-white shadow rounded-lg p-6 md:p-8">
+                  <div className="space-y-4">
+                    <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                    <div className="space-y-3">
+                      <div className="h-10 bg-gray-200 rounded"></div>
+                      <div className="h-10 bg-gray-200 rounded"></div>
+                      <div className="h-10 bg-gray-200 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -63,25 +183,69 @@ const AccountSetting = () => {
             Account Settings
           </h1>
 
-          <form onSubmit={handleSubmit} className="space-y-8">
-            {/* Personal Information */}
+          {error && (
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {successMessage && (
+            <div className="bg-green-50 border-l-4 border-green-400 p-4 mb-4">
+              <div className="flex">
+                <div className="flex-shrink-0">
+                  <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                <div className="ml-3">
+                  <p className="text-sm text-green-700">{successMessage}</p>
+                </div>
+              </div>
+            </div>
+          )}
+
             <div className="bg-white shadow rounded-lg p-6 md:p-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-600">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
                 Personal Information
               </h2>
+              {!isEditing && (
+                <button
+                  onClick={() => setIsEditing(true)}
+                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14.25v4.5m-2.25-2.25h4.5" />
+                  </svg>
+                  Edit Profile
+                </button>
+              )}
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-4">
                 <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">Full Name</label>
+                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">Full Name</label>
                   <input
                     type="text"
-                    name="fullName"
-                    id="fullName"
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={formData.fullName}
+                    name="name"
+                    id="name"
+                    className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${!isEditing ? 'bg-gray-50' : ''}`}
+                    value={formData.name}
                     onChange={handleChange}
+                    readOnly={!isEditing}
                   />
                 </div>
                 <div>
@@ -90,135 +254,47 @@ const AccountSetting = () => {
                     type="email"
                     name="email"
                     id="email"
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm bg-gray-50"
                     value={formData.email}
-                    onChange={handleChange}
-                    readOnly // Email thường không được thay đổi trực tiếp qua form này
+                    readOnly
                   />
                 </div>
                 <div>
-                  <label htmlFor="phoneNumber" className="block text-sm font-medium text-gray-700">Phone Number</label>
+                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
                   <input
                     type="tel"
-                    name="phoneNumber"
-                    id="phoneNumber"
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={formData.phoneNumber}
+                    name="phone"
+                    id="phone"
+                    className={`mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm ${!isEditing ? 'bg-gray-50' : ''}`}
+                    value={formData.phone}
                     onChange={handleChange}
+                    readOnly={!isEditing}
                   />
-                </div>
               </div>
             </div>
 
-            {/* Security */}
-            <div className="bg-white shadow rounded-lg p-6 md:p-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-600">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 1.5h9v2.25a2.25 2.25 0 0 1-2.25 2.25H6.75a2.25 2.25 0 0 1-2.25-2.25v-2.25h9Z" />
-                </svg>
-                Security
-              </h2>
-              <div className="space-y-4">
-                <div>
-                  <label htmlFor="currentPassword" className="block text-sm font-medium text-gray-700">Current Password</label>
-                  <input
-                    type="password"
-                    name="currentPassword"
-                    id="currentPassword"
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={formData.currentPassword}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700">New Password</label>
-                  <input
-                    type="password"
-                    name="newPassword"
-                    id="newPassword"
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={formData.newPassword}
-                    onChange={handleChange}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="confirmNewPassword" className="block text-sm font-medium text-gray-700">Confirm New Password</label>
-                  <input
-                    type="password"
-                    name="confirmNewPassword"
-                    id="confirmNewPassword"
-                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                    value={formData.confirmNewPassword}
-                    onChange={handleChange}
-                  />
-                </div>
-              </div>
-            </div>
-
-            {/* Notifications */}
-            <div className="bg-white shadow rounded-lg p-6 md:p-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-600">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.04 5.455 1.31m5.714 0a24.248 24.248 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-                </svg>
-                Notifications
-              </h2>
-              <div className="space-y-3">
-                <div className="flex items-center">
-                  <input
-                    id="receiveEmail"
-                    name="receiveEmail"
-                    type="checkbox"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    checked={formData.receiveEmail}
-                    onChange={handleChange}
-                  />
-                  <label htmlFor="receiveEmail" className="ml-2 block text-sm text-gray-900">
-                    Receive email notifications
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    id="receiveSms"
-                    name="receiveSms"
-                    type="checkbox"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    checked={formData.receiveSms}
-                    onChange={handleChange}
-                  />
-                  <label htmlFor="receiveSms" className="ml-2 block text-sm text-gray-900">
-                    Receive SMS notifications
-                  </label>
-                </div>
-                <div className="flex items-center">
-                  <input
-                    id="orderUpdates"
-                    name="orderUpdates"
-                    type="checkbox"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    checked={formData.orderUpdates}
-                    onChange={handleChange}
-                  />
-                  <label htmlFor="orderUpdates" className="ml-2 block text-sm text-gray-900">
-                    Order status updates
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Save Changes Button */}
-            <div className="flex justify-end">
+              {isEditing && (
+                <div className="flex justify-end space-x-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditing(false);
+                      fetchProfileData(); // Reset form data
+                    }}
+                    className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                  >
+                    Cancel
+                  </button>
               <button
                 type="submit"
-                className="inline-flex justify-center py-2 px-6 border border-transparent shadow-sm text-base font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                    className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-                </svg>
-                SAVE CHANGES
+                    Save Changes
               </button>
             </div>
+              )}
           </form>
+          </div>
         </div>
       </main>
       <Footer />
