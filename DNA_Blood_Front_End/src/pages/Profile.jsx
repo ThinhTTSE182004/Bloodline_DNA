@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
+import signalRService from '../services/signalRService.js';
 
 const Profile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -9,81 +10,109 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
+  const fetchProfile = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        console.log('No token found');
+        navigate('/login');
+        return;
+      }
+
+      console.log('Token being used:', token);
+
+      const response = await fetch('https://localhost:7113/api/UserProfile/me', {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token.trim()}`,
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        mode: 'cors'
+      });
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
+
+      if (response.status === 401) {
+        console.log('Token expired or invalid');
+        localStorage.removeItem('token');
+        navigate('/login');
+        return;
+      }
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('API Error:', errorText);
+        throw new Error(`Failed to fetch profile data: ${response.status} - ${errorText}`);
+      }
+
+      const data = await response.json();
+      console.log('Profile data:', data);
+
+      // Xử lý dữ liệu từ token JWT
+      const tokenData = JSON.parse(atob(token.split('.')[1]));
+      console.log('Token data:', tokenData);
+
+      // Kết hợp dữ liệu từ API và token
+      const profileData = {
+        name: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || data.name,
+        email: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || data.email,
+        phone: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'] || data.phone,
+        updatedAt: data.updatedAt
+      };
+
+      console.log('Combined profile data:', profileData);
+
+      if (!profileData.name || !profileData.email || !profileData.phone) {
+        throw new Error('Invalid profile data received');
+      }
+
+      setUserProfile(profileData);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error fetching profile:', err);
+      if (err.message.includes('Failed to fetch')) {
+        setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng của bạn.');
+      } else {
+        setError(err.message);
+      }
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchProfile = async () => {
+    fetchProfile();
+
+    // Thiết lập kết nối SignalR
+    const setupSignalR = async () => {
       try {
-        const token = localStorage.getItem('token');
+        await signalRService.startConnection();
         
-        if (!token) {
-          console.log('No token found');
-          navigate('/login');
-          return;
-        }
-
-        console.log('Token being used:', token);
-
-        const response = await fetch('https://localhost:7113/api/UserProfile/me', {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token.trim()}`,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-          },
-          mode: 'cors'
+        // Lắng nghe sự kiện cập nhật profile
+        signalRService.onUserProfileUpdate((updatedProfile) => {
+          console.log('Profile updated via SignalR:', updatedProfile);
+          if (updatedProfile) {
+            setUserProfile(prevProfile => ({
+              ...prevProfile,
+              ...updatedProfile
+            }));
+          }
         });
-
-        console.log('Response status:', response.status);
-        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
-        if (response.status === 401) {
-          console.log('Token expired or invalid');
-          localStorage.removeItem('token');
-          navigate('/login');
-          return;
-        }
-
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error('API Error:', errorText);
-          throw new Error(`Failed to fetch profile data: ${response.status} - ${errorText}`);
-        }
-
-        const data = await response.json();
-        console.log('Profile data:', data);
-
-        // Xử lý dữ liệu từ token JWT
-        const tokenData = JSON.parse(atob(token.split('.')[1]));
-        console.log('Token data:', tokenData);
-
-        // Kết hợp dữ liệu từ API và token
-        const profileData = {
-          name: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || data.name,
-          email: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || data.email,
-          phone: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'] || data.phone,
-          updatedAt: data.updatedAt
-        };
-
-        console.log('Combined profile data:', profileData);
-
-        if (!profileData.name || !profileData.email || !profileData.phone) {
-          throw new Error('Invalid profile data received');
-        }
-
-        setUserProfile(profileData);
-      } catch (err) {
-        console.error('Error fetching profile:', err);
-        if (err.message.includes('Failed to fetch')) {
-          setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng của bạn.');
-        } else {
-          setError(err.message);
-        }
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        console.error('Error setting up SignalR:', error);
       }
     };
 
-    fetchProfile();
-  }, [navigate]);
+    setupSignalR();
+
+    // Cleanup khi component unmount
+    return () => {
+      signalRService.offUserProfileUpdate();
+      signalRService.stopConnection();
+    };
+  }, []);
 
   if (loading) {
     return (

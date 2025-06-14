@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DNA_API1.Services;
+using DNA_API1.Hubs;
 
 namespace DNA_API1
 {
@@ -89,14 +90,21 @@ namespace DNA_API1
             builder.Services.AddScoped<IServiceService, ServiceService>();
             builder.Services.AddScoped<IStaffAssignmentService, StaffAssignmentService>();
 
+            // Add SignalR
+            builder.Services.AddSignalR();
+
             // CORS
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.AllowAnyOrigin()
-                          .AllowAnyHeader()
-                          .AllowAnyMethod();
+                    policy.WithOrigins(
+                        "http://localhost:5173",
+                        "http://localhost:5174"
+                    )
+                    .AllowCredentials()
+                    .AllowAnyHeader()
+                    .AllowAnyMethod();
                 });
             });
 
@@ -116,6 +124,9 @@ namespace DNA_API1
             app.UseAuthorization();
 
             app.MapControllers();
+
+            // Configure SignalR endpoint
+            app.MapHub<UserHub>("/userHub");
 
             app.Run();
         }

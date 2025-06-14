@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
+import signalRService from '../services/signalRService.js';
 
 const AccountSetting = () => {
   const navigate = useNavigate();
@@ -18,7 +19,29 @@ const AccountSetting = () => {
 
   useEffect(() => {
     fetchProfileData();
+    setupSignalR();
   }, []);
+
+  const setupSignalR = async () => {
+    try {
+      await signalRService.startConnection();
+      
+      // Lắng nghe sự kiện cập nhật profile
+      signalRService.onUserProfileUpdate((updatedProfile) => {
+        console.log('Profile updated via SignalR:', updatedProfile);
+        if (updatedProfile) {
+          setFormData(prevData => ({
+            ...prevData,
+            ...updatedProfile
+          }));
+          setSuccessMessage('Profile updated successfully!');
+          setIsEditing(false);
+        }
+      });
+    } catch (error) {
+      console.error('Error setting up SignalR:', error);
+    }
+  };
 
   const fetchProfileData = async () => {
     try {
@@ -27,8 +50,6 @@ const AccountSetting = () => {
         navigate('/login');
         return;
       }
-
-      console.log('Token being used:', token);
 
       const response = await fetch('https://localhost:7113/api/UserProfile/me', {
         method: 'GET',
@@ -40,9 +61,6 @@ const AccountSetting = () => {
         mode: 'cors'
       });
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
       if (response.status === 401) {
         localStorage.removeItem('token');
         navigate('/login');
@@ -51,26 +69,18 @@ const AccountSetting = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('API Error:', errorText);
         throw new Error(`Failed to fetch profile data: ${response.status} - ${errorText}`);
       }
 
       const data = await response.json();
-      console.log('Profile data:', data);
-
-      // Xử lý dữ liệu từ token JWT
       const tokenData = JSON.parse(atob(token.split('.')[1]));
-      console.log('Token data:', tokenData);
 
-      // Kết hợp dữ liệu từ API và token
       const profileData = {
         name: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || data.name,
         email: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || data.email,
         phone: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'] || data.phone,
         updatedAt: data.updatedAt
       };
-
-      console.log('Combined profile data:', profileData);
 
       if (!profileData.name || !profileData.email || !profileData.phone) {
         throw new Error('Invalid profile data received');
@@ -79,11 +89,7 @@ const AccountSetting = () => {
       setFormData(profileData);
     } catch (err) {
       console.error('Error fetching profile:', err);
-      if (err.message.includes('Failed to fetch')) {
-        setError('Không thể kết nối đến server. Vui lòng kiểm tra kết nối mạng của bạn.');
-      } else {
-        setError(err.message);
-      }
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -111,16 +117,15 @@ const AccountSetting = () => {
 
       const response = await fetch('https://localhost:7113/api/UserProfile/me', {
         method: 'PUT',
-      headers: {
+        headers: {
           'Authorization': `Bearer ${token.trim()}`,
-        'Content-Type': 'application/json',
+          'Content-Type': 'application/json',
           'Accept': 'application/json'
-      },
+        },
         body: JSON.stringify({
           name: formData.name,
           email: formData.email,
-          phone: formData.phone,
-          updatedAt: new Date().toISOString()
+          phone: formData.phone
         }),
         mode: 'cors'
       });
@@ -133,13 +138,11 @@ const AccountSetting = () => {
 
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('API Error:', errorText);
         throw new Error(`Failed to update profile: ${response.status} - ${errorText}`);
       }
 
-      setSuccessMessage('Profile updated successfully!');
+      // Không cần set success message ở đây vì sẽ được xử lý bởi SignalR
       setIsEditing(false);
-      await fetchProfileData();
     } catch (err) {
       console.error('Error updating profile:', err);
       setError('Failed to update profile');

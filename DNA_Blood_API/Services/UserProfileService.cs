@@ -1,6 +1,8 @@
 ﻿using DNA_API1.Models;
 using DNA_API1.Repository;
 using DNA_API1.ViewModels;
+using DNA_API1.Hubs;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace DNA_API1.Services
@@ -9,10 +11,14 @@ namespace DNA_API1.Services
     public class UserProfileService : IUserProfileService
     {
         private readonly IUserProfileRepository _userProfileRepository;
+        private readonly IHubContext<UserHub> _hubContext;
 
-        public UserProfileService(IUserProfileRepository userProfileRepository)
+        public UserProfileService(
+            IUserProfileRepository userProfileRepository,
+            IHubContext<UserHub> hubContext)
         {
             _userProfileRepository = userProfileRepository;
+            _hubContext = hubContext;
         }
 
         public async Task<UpdateUserProfile> GetUserProfileAsync(int userId)
@@ -47,14 +53,19 @@ namespace DNA_API1.Services
             if (updated == null)
                 return null;
 
-            // Trả về thông tin đã cập nhật
-            return new UpdateUserProfile
+            var updatedProfile = new UpdateUserProfile
             {
                 Name = updated.Name,
                 Email = updated.Email,
                 Phone = updated.Phone,
                 UpdatedAt = updated.UpdatedAt
             };
+
+            // Gửi thông báo cập nhật qua SignalR
+            await _hubContext.Clients.Group($"User_{userId}")
+                .SendAsync("UserProfileUpdated", updatedProfile);
+
+            return updatedProfile;
         }
     }
 }
