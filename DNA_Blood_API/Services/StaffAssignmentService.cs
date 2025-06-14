@@ -30,9 +30,16 @@ namespace DNA_API1.Services
 
             if (!availableMedicalStaff.Any())
             {
-                throw new Exception($"No available medical staff found for service: {servicePackage.ServiceName}. " +
-                                  $"Please check if there are medical staff with specialization matching '{servicePackage.ServiceName}' " +
-                                  $"and with at least 2 years of experience.");
+                // Nếu không tìm thấy medical staff phù hợp, tìm bất kỳ medical staff nào có kinh nghiệm
+                availableMedicalStaff = await _orderRepository.GetAvailableMedicalStaffAsync(
+                    "",  // Bỏ qua điều kiện specialization
+                    MAX_ORDERS_PER_DAY
+                );
+
+                if (!availableMedicalStaff.Any())
+                {
+                    throw new Exception("Không tìm thấy nhân viên y tế nào khả dụng. Vui lòng thử lại sau.");
+                }
             }
 
             // Chọn medical staff có ít đơn hàng nhất
@@ -42,7 +49,7 @@ namespace DNA_API1.Services
             var availableStaff = await _orderRepository.GetAvailableStaffAsync(MAX_ORDERS_PER_DAY);
             if (!availableStaff.Any())
             {
-                throw new Exception("No available regular staff found. All staff have reached their daily order limit.");
+                throw new Exception("Không tìm thấy nhân viên nào khả dụng. Vui lòng thử lại sau.");
             }
 
             // Chọn staff có ít đơn hàng nhất

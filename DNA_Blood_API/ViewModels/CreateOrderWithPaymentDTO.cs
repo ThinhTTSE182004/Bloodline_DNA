@@ -4,7 +4,7 @@
     {
         public int CustomerId { get; set; }
         // Thông tin người tham gia xét nghiệm
-        public ParticipantDTO Participant { get; set; }
+        public CreateParticipantDTO Participant { get; set; }
         
         // Thông tin gói dịch vụ
         public List<CreateOrderDetailDTO> Details { get; set; }

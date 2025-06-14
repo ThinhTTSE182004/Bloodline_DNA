@@ -18,5 +18,7 @@ namespace DNA_API1.Repository
         Task<List<User>> GetAvailableStaffAsync(int maxOrdersPerDay);
         Task<int> GetStaffOrderCountAsync(int staffId, DateTime date);
         Task<ServicePackage> GetServicePackageByIdAsync(int servicePackageId);
+        Task<List<OrderHistoryDTO>> GetOrderHistoryByUserIdAsync(int userId);
+        Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId);
     }
 } 

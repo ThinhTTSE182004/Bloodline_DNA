@@ -112,5 +112,10 @@ namespace DNA_API1.Services
                 throw; // báo lỗi lên Controller
             }
         }
+
+        public async Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId)
+        {
+            return await _orderRepository.GetOrderDetailByIdAsync(orderId, userId);
+        }
     }
 }

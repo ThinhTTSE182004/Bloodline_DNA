@@ -1,15 +1,101 @@
 using DNA_API1.Models;
+using DNA_API1.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
 namespace DNA_API1.Repository
 {
-    public class OrderRepository : IOrderRepository
+    public class OrderRepository : RepositoryBase<Order>, IOrderRepository
     {
-        private readonly BloodlineDnaContext _context;
-
-        public OrderRepository(BloodlineDnaContext context)
+        public OrderRepository(BloodlineDnaContext context) : base(context)
         {
-            _context = context;
+        }
+
+        public async Task<List<OrderHistoryDTO>> GetOrderHistoryByUserIdAsync(int userId)
+        {
+            return await _context.Orders
+                .Where(o => o.CustomerId == userId)
+                .Select(o => new OrderHistoryDTO
+                {
+                    OrderId = o.OrderId,
+                    ServiceName = o.OrderDetails.FirstOrDefault().ServicePackage.ServiceName,
+                    OrderDate = o.CreateAt ?? DateTime.Now,
+                    OrderStatus = o.OrderStatus,
+                    TotalAmount = o.Payment.Total,
+                    PaymentMethod = o.Payment.PaymentMethod,
+                    SampleCollectionMethod = o.CollectionMethod.MethodName
+                })
+                .OrderByDescending(o => o.OrderDate)
+                .ToListAsync();
+        }
+
+        public async Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId)
+        {
+            var order = await _context.Orders
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.ServicePackage)
+                        .ThenInclude(sp => sp.ServicePrices)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Samples)
+                        .ThenInclude(s => s.Participant)
+                .Include(o => o.Payment)
+                .Include(o => o.CollectionMethod)
+                    .ThenInclude(cm => cm.TestType)
+                .Include(o => o.Delivery)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Result)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId && o.CustomerId == userId);
+
+            if (order == null) return null;
+
+            var orderDetail = order.OrderDetails.FirstOrDefault();
+            if (orderDetail == null) return null;
+
+            var sample = orderDetail.Samples.FirstOrDefault();
+            var result = orderDetail.Result;
+            var servicePrice = orderDetail.ServicePackage?.ServicePrices.FirstOrDefault();
+
+            return new OrderDetailHistoryDTO
+            {
+                // 1. Thông tin đơn hàng
+                OrderId = order.OrderId,
+                CreateAt = order.CreateAt,
+                OrderStatus = order.OrderStatus,
+
+                // 2. Thông tin dịch vụ xét nghiệm
+                ServiceName = orderDetail.ServicePackage?.ServiceName ?? "Chưa xác định",
+                TestType = order.CollectionMethod?.TestType?.Name ?? "Chưa xác định",
+                SampleType = sample?.SampleType?.Name ?? "Chưa xác định",
+                Price = servicePrice?.Price ?? 0,
+
+                // 3. Thông tin người tham gia
+                ParticipantName = sample?.Participant?.FullName ?? "Chưa xác định",
+                Sex = sample?.Participant?.Sex ?? "Chưa xác định",
+                BirthYear = sample?.Participant?.BirthDate.Year ?? DateTime.Now.Year,
+                Relationship = sample?.Participant?.Relationship ?? "Chưa xác định",
+                NameRelation = sample?.Participant?.NameRelation ?? "Chưa xác định",
+
+                // 4. Tiến trình mẫu
+                CollectionMethod = order.CollectionMethod?.MethodName ?? "Chưa xác định",
+                CollectedDate = sample?.CollectedDate,
+                ReceivedDate = sample?.ReceivedDate,
+                SampleStatus = sample?.SampleStatus ?? "Chưa lấy mẫu",
+
+                // 5. Thông tin thanh toán
+                PaymentMethod = order.Payment?.PaymentMethod ?? "Chưa xác định",
+                PaymentStatus = order.Payment?.PaymentStatus ?? "Chưa xác định",
+                PaymentDate = order.Payment?.PaymentDate,
+                Total = order.Payment?.Total ?? 0,
+
+                // 6. Thông tin giao hàng
+                DeliveryAddress = order.Delivery?.DeliveryAddress,
+                DeliveryStatus = order.Delivery?.DeliveryStatus,
+                DeliveryDate = order.Delivery?.DeliveryDate,
+                DeliveryNote = order.Delivery?.Note,
+
+                // 7. Kết quả xét nghiệm
+                ResultStatus = result?.ResultStatus,
+                ResultFileUrl = result?.ReportUrl
+            };
         }
 
         public async Task<TestType> GetTestTypeByNameAsync(string name)
@@ -38,7 +124,7 @@ namespace DNA_API1.Repository
 
             try
             {
-                // 1. Add participant
+                // 1. Add participant first to get ParticipantId
                 _context.Participants.Add(participant);
                 await _context.SaveChangesAsync();
 
@@ -56,11 +142,12 @@ namespace DNA_API1.Repository
 
                     var sample = samples[i];
                     sample.OrderDetailId = detail.OrderDetailId;
+                    sample.ParticipantId = participant.ParticipantId; // Gán ParticipantId cho sample
                     _context.Samples.Add(sample);
                 }
 
                 // 4. Add payment
-                payment.OrderId = order.OrderId;  // Gán OrderId cho Payment
+                payment.OrderId = order.OrderId;
                 _context.Payments.Add(payment);
 
                 // 5. Save all changes

@@ -25,7 +25,7 @@ namespace DNA_API1.Controllers
             return claim != null && int.TryParse(claim.Value, out var id) ? id : null;
         }
 
-        [HttpPost]
+        [HttpPost("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderWithPaymentDTO dto)
         {
             if (!ModelState.IsValid)

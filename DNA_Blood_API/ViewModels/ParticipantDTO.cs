@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace DNA_API1.ViewModels
 {
-    public class ParticipantDTO
+    public class CreateParticipantDTO
     {
         [Required(ErrorMessage = "Họ tên không được để trống")]
         public string FullName { get; set; }

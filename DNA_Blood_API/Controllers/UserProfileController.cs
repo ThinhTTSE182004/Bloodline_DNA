@@ -20,30 +20,44 @@ namespace DNA_API1.Controllers
             _userProfileService = userProfileService;
         }
 
-        private int? GetUserIdFromToken()
+        [HttpGet("GetUserProfile")]
+        public async Task<ActionResult<UserProfileDTO>> GetUserProfile()
         {
-            var claim = User.FindFirst(ClaimTypes.NameIdentifier);
-            return claim != null && int.TryParse(claim.Value, out var id) ? id : null;
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var profile = await _userProfileService.GetUserProfileByIdAsync(userId);
+            if (profile == null)
+            {
+                return NotFound();
+            }
+            return Ok(profile);
         }
 
-        [HttpGet("me")]
-        public async Task<IActionResult> GetMyProfile()
+        [HttpPut("UpdateUserProfile")]
+        public async Task<ActionResult<UserProfileDTO>> UpdateUserProfile(UpdateUserProfile profile)
         {
-            var userId = GetUserIdFromToken();
-            if (userId == null) return Unauthorized();
-
-            var profileDto = await _userProfileService.GetUserProfileAsync(userId.Value);
-            return profileDto == null ? NotFound() : Ok(profileDto);
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var updatedProfile = await _userProfileService.UpdateUserProfileAsync(userId, profile);
+            if (updatedProfile == null)
+            {
+                return NotFound();
+            }
+            return Ok(updatedProfile);
         }
 
-        [HttpPut("me")]
-        public async Task<IActionResult> UpdateMyProfile([FromBody] UpdateUserProfile dto)
+        [HttpGet("GetOrderHistory")]
+        public async Task<IActionResult> GetOrderHistory()
         {
-            var userId = GetUserIdFromToken();
-            if (userId == null) return Unauthorized();
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var orderHistory = await _userProfileService.GetOrderHistoryAsync(userId);
+            return Ok(orderHistory);
+        }
 
-            var updatedDto = await _userProfileService.UpdateUserProfileAsync(userId.Value, dto);
-            return updatedDto == null ? NotFound() : Ok(updatedDto);
+        [HttpGet("GetOrderDetail")]
+        public async Task<IActionResult> GetOrderDetail(int orderId)
+        {
+            var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+            var orderDetail = await _userProfileService.GetOrderDetailAsync(orderId, userId);
+            return orderDetail == null ? NotFound() : Ok(orderDetail);
         }
     }
 }

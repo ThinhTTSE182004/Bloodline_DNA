@@ -75,7 +75,6 @@ namespace LoginAPI.Services
 
             return new UserProfileDTO
             {
-                ProfileId = createdProfile.ProfileId,
                 UserId = createdProfile.UserId,
                 Name = createdProfile.Name,
                 Email = createdProfile.Email,
