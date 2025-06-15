@@ -14,7 +14,6 @@ namespace DNA_API1.ViewModels
         public DateOnly BirthDate { get; set; }
 
         [Required(ErrorMessage = "Số điện thoại không được để trống")]
-        [Range(100000000, 999999999999, ErrorMessage = "Số điện thoại không hợp lệ (không được bắt đầu bằng 0)")]
         public decimal Phone { get; set; }
 
         [Required(ErrorMessage = "Mối quan hệ không được để trống")]

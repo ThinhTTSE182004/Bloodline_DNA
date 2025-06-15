@@ -1,4 +1,4 @@
-using DNA_API1.Models;
+﻿using DNA_API1.Models;
 using DNA_API1.ViewModels;
 
 namespace DNA_API1.Repository
@@ -13,12 +13,25 @@ namespace DNA_API1.Repository
             Order order,
             List<OrderDetail> details,
             List<Sample> samples,
-            Payment payment);
+            Payment payment,
+            List<SampleKit> sampleKit
+            );
         Task<List<User>> GetAvailableMedicalStaffAsync(string specialization, int maxOrdersPerDay);
         Task<List<User>> GetAvailableStaffAsync(int maxOrdersPerDay);
         Task<int> GetStaffOrderCountAsync(int staffId, DateTime date);
         Task<ServicePackage> GetServicePackageByIdAsync(int servicePackageId);
         Task<List<OrderHistoryDTO>> GetOrderHistoryByUserIdAsync(int userId);
+
+
         Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId);
+
+
+        // Cập nhật trạng thái Payment Status.
+        Task<Order?> GetOrderWithNavigationByIdAsync(int orderId);
+        Task UpdateOrderAsync(Order order);
+
+        Task<List<Order>> GetOrdersWithNavigationAsync();
+
+
     }
 } 

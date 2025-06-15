@@ -20,6 +20,8 @@ namespace DNA_API1.Controllers
             _userProfileService = userProfileService;
         }
 
+
+
         [HttpGet("GetUserProfile")]
         public async Task<ActionResult<UserProfileDTO>> GetUserProfile()
         {
@@ -31,6 +33,8 @@ namespace DNA_API1.Controllers
             }
             return Ok(profile);
         }
+
+
 
         [HttpPut("UpdateUserProfile")]
         public async Task<ActionResult<UserProfileDTO>> UpdateUserProfile(UpdateUserProfile profile)
