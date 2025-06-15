@@ -1,31 +1,59 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { FaShoppingCart, FaBars, FaTimes } from 'react-icons/fa';
+import { FaShoppingCart, FaBars, FaTimes, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import { FaDna } from "react-icons/fa6";
 import { useCart } from '../context/CartContext';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(!!localStorage.getItem('token'));
-  const [userName, setUserName] = useState(localStorage.getItem('userName') || '');
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState('');
+  const [userRole, setUserRole] = useState('');
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const location = useLocation();
 
   useEffect(() => {
+    // Kiểm tra trạng thái đăng nhập ban đầu
+    const checkLoginStatus = () => {
     const token = localStorage.getItem('token');
     const storedUserName = localStorage.getItem('userName');
+      const storedUserRole = localStorage.getItem('userRole');
+      
     setIsLoggedIn(!!token);
     setUserName(storedUserName || '');
+      setUserRole(storedUserRole || '');
+    };
+
+    // Lắng nghe sự kiện đăng nhập
+    const handleLogin = (event) => {
+      const { userName, userRole } = event.detail;
+      setIsLoggedIn(true);
+      setUserName(userName);
+      setUserRole(userRole);
+    };
+
+    // Kiểm tra trạng thái ban đầu
+    checkLoginStatus();
+
+    // Thêm event listener
+    window.addEventListener('userLogin', handleLogin);
+
+    // Cleanup
+    return () => {
+      window.removeEventListener('userLogin', handleLogin);
+    };
   }, []);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    localStorage.removeItem('userName');
     localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
     setIsLoggedIn(false);
     setUserName('');
+    setUserRole('');
     setShowDropdown(false);
     navigate('/login');
   };

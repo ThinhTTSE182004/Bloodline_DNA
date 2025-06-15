@@ -60,15 +60,6 @@ const Payment = () => {
         'other': 'Other'
       };
 
-      // Map relationship values
-      const relationshipMap = {
-        'self': 'Self',
-        'child': 'Child',
-        'parent': 'Parent',
-        'sibling': 'Sibling',
-        'other': 'Other'
-      };
-
       // Prepare order data according to API format
       const orderData = {
         customerId: customerId,
@@ -76,24 +67,44 @@ const Payment = () => {
           fullName: userDetails.fullName || '',
           sex: genderMap[userDetails.gender?.toLowerCase()] || 'Male',
           birthDate: userDetails.dateOfBirth || '',
-          phone: parseInt(userDetails.phoneNumber?.replace(/\D/g, '')) || 0,
-          relationship: relationshipMap[userDetails.relationshipToPatient?.toLowerCase()] || 'Self',
+          phone: userDetails.phoneNumber?.replace(/\D/g, '') || '',
+          relationship: userDetails.relationshipToPatient?.toLowerCase() || 'self',
           nameRelation: userDetails.relatedPersonName || ''
         },
         details: orderSummary.map(item => ({
           servicePackageId: parseInt(item.servicePackageId || item.id)
         })),
         payment: {
-          paymentMethod: paymentMethod === 'bankTransfer' ? 'Bank Transfer' : 'Cash on Delivery',
+          paymentMethod: paymentMethod === 'bankTransfer' ? 'Bank Transfer' : 'CUD',
           total: parseInt(calculateTotalAmount().replace(/\D/g, ''))
         },
         testTypeName: userDetails.testType || 'Civil',
         sampleTypeName: userDetails.sampleType || 'Blood',
-        methodTypeName: userDetails.sampleCollectionMethod || 'At Medical Center'
+        methodTypeName: userDetails.sampleCollectionMethod || 'At Home'
       };
 
       // Debug log order data
       console.log('Order Data:', orderData);
+
+      // Validate required fields
+      if (!orderData.customerId) {
+        throw new Error('Customer ID is required');
+      }
+      if (!orderData.participant.fullName) {
+        throw new Error('Full name is required');
+      }
+      if (!orderData.participant.birthDate) {
+        throw new Error('Date of birth is required');
+      }
+      if (!orderData.participant.phone) {
+        throw new Error('Phone number is required');
+      }
+      if (!orderData.details || orderData.details.length === 0) {
+        throw new Error('At least one service is required');
+      }
+      if (!orderData.payment.total) {
+        throw new Error('Total amount is required');
+      }
 
       // Call API to create order with authentication token
       const response = await fetch('https://localhost:7113/api/Order/CreateOrder', {
