@@ -143,7 +143,7 @@ namespace DNA_API1.Services
                         {
                             OrderDetail = detail,
                             StaffId = staffId,
-                            Name = "",             // để staff nhập sau
+                            Name = "",            
                             KitCode = "",
                             IntructionUrl = "",
                             CreateAt = DateTime.Now,

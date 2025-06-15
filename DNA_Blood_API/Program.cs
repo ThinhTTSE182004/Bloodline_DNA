@@ -92,6 +92,8 @@ namespace DNA_API1
             builder.Services.AddScoped<ISampleService, SampleService>();
             builder.Services.AddScoped<ISampleRepository, SampleRepository>();
 
+            builder.Services.AddScoped<ISampleTransferRepository, SampleTransferRepository>();
+            builder.Services.AddScoped<ISampleTransferService, SampleTransferService>();
 
 
             // Add SignalR
