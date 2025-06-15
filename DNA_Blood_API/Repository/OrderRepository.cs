@@ -214,7 +214,7 @@ namespace DNA_API1.Repository
             var tomorrow = today.AddDays(1);
 
             return await _context.Users
-                .Where(u => u.RoleId == 3)
+                .Where(u => u.RoleId == 2)
                 .Select(u => new
                 {
                     User = u,

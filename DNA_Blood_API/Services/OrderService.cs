@@ -97,7 +97,7 @@ namespace DNA_API1.Services
                     FullName = dto.Participant.FullName,
                     Sex = dto.Participant.Sex,
                     BirthDate = dto.Participant.BirthDate,
-                    Phone = dto.Participant.Phone,
+                    Phone = decimal.Parse(dto.Participant.Phone),
                     Relationship = dto.Participant.Relationship,
                     NameRelation = dto.Participant.NameRelation
                 };
@@ -142,9 +142,10 @@ namespace DNA_API1.Services
                         var sampleKit = new SampleKit
                         {
                             OrderDetail = detail,
+                            StaffId = staffId,  // staffId đã được validate là của staff (role_id = 2)
                             Name = "",             // để staff nhập sau
-                            KitCode = "",
-                            IntructionUrl = "",
+                            KitCode = $"KIT{DateTime.Now:MMddHHmm}{new Random().Next(100, 999)}", // Format ngắn hơn: KIT + MMDDHHMM + 3 số ngẫu nhiên
+                            IntructionUrl = "",    // để staff nhập sau
                             CreateAt = DateTime.Now,
                             UpdateAt = null,
                             SendDate = null,
