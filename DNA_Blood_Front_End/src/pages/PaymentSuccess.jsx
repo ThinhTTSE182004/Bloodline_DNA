@@ -50,12 +50,14 @@ const PaymentSuccess = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Navbar />
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <div className="bg-white shadow rounded-lg p-8 md:p-12 text-center max-w-2xl w-full" style={{ borderRadius: '5px' }}>
-          <FaCheckCircle className="text-green-500 w-20 h-20 mx-auto mb-6" />
-          <h1 className="text-3xl font-bold text-blue-600 mb-4">Payment Successful!</h1>
-          <p className="text-gray-700 text-lg mb-6">
-            Your order has been placed successfully. Thank you for your purchase!
-          </p>
+        <div className="bg-white shadow rounded-lg p-8 md:p-12 max-w-2xl w-full" style={{ borderRadius: '5px' }}>
+          <div className="text-center mb-8">
+            <FaCheckCircle className="text-green-500 w-20 h-20 mx-auto mb-6" />
+            <h1 className="text-3xl font-bold text-blue-600 mb-4">Payment Successful!</h1>
+            <p className="text-gray-700 text-lg">
+              Your order has been placed successfully. Thank you for your purchase!
+            </p>
+          </div>
 
           {userDetails ? (
             <div className="mb-6">
@@ -80,47 +82,95 @@ const PaymentSuccess = () => {
               {isExpanded && (
                 <div className="mt-4 space-y-6 animate-fade-in">
                   {/* User Information */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h2 className="text-xl font-bold text-blue-600 mb-4 flex items-center">
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <h2 className="text-xl font-bold text-blue-600 mb-6 flex items-center">
                       <FaUser className="mr-2" /> User Information
                     </h2>
-                    <div className="space-y-2 text-gray-700">
-                      <div className="flex items-center"><FaUser className="mr-2 text-blue-500" /><span className="font-semibold w-32 inline-block">Full Name:</span> {userDetails.fullName}</div>
-                      <div className="flex items-center"><FaEnvelope className="mr-2 text-blue-500" /><span className="font-semibold w-32 inline-block">Email:</span> {userDetails.email}</div>
-                      <div className="flex items-center"><FaPhone className="mr-2 text-blue-500" /><span className="font-semibold w-32 inline-block">Phone:</span> {userDetails.phoneNumber}</div>
-                      <div className="flex items-center"><FaMapMarkerAlt className="mr-2 text-blue-500" /><span className="font-semibold w-32 inline-block">Address:</span> {userDetails.address}</div>
-                      <div className="flex items-center"><FaCalendarAlt className="mr-2 text-blue-500" /><span className="font-semibold w-32 inline-block">Date of Birth:</span> {userDetails.dateOfBirth}</div>
-                      <div className="flex items-center"><FaTransgender className="mr-2 text-blue-500" /><span className="font-semibold w-32 inline-block">Gender:</span> {userDetails.gender}</div>
-                      <div className="flex items-center"><FaUsers className="mr-2 text-blue-500" /><span className="font-semibold w-32 inline-block">Relationship:</span> {userDetails.relationshipToPatient}</div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="flex items-start space-x-3">
+                        <FaUser className="mt-1 text-blue-500 w-5 h-5" />
+                        <div>
+                          <div className="text-sm text-gray-500">Full Name</div>
+                          <div className="font-medium text-gray-900">{userDetails.fullName}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <FaEnvelope className="mt-1 text-blue-500 w-5 h-5" />
+                        <div>
+                          <div className="text-sm text-gray-500">Email</div>
+                          <div className="font-medium text-gray-900">{userDetails.email}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <FaPhone className="mt-1 text-blue-500 w-5 h-5" />
+                        <div>
+                          <div className="text-sm text-gray-500">Phone</div>
+                          <div className="font-medium text-gray-900">{userDetails.phoneNumber}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <FaMapMarkerAlt className="mt-1 text-blue-500 w-5 h-5" />
+                        <div>
+                          <div className="text-sm text-gray-500">Address</div>
+                          <div className="font-medium text-gray-900">{userDetails.address}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <FaCalendarAlt className="mt-1 text-blue-500 w-5 h-5" />
+                        <div>
+                          <div className="text-sm text-gray-500">Date of Birth</div>
+                          <div className="font-medium text-gray-900">{userDetails.dateOfBirth}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <FaTransgender className="mt-1 text-blue-500 w-5 h-5" />
+                        <div>
+                          <div className="text-sm text-gray-500">Gender</div>
+                          <div className="font-medium text-gray-900">{userDetails.gender}</div>
+                        </div>
+                      </div>
+                      <div className="flex items-start space-x-3">
+                        <FaUsers className="mt-1 text-blue-500 w-5 h-5" />
+                        <div>
+                          <div className="text-sm text-gray-500">Relationship</div>
+                          <div className="font-medium text-gray-900">{userDetails.relationshipToPatient}</div>
+                        </div>
+                      </div>
                       {userDetails.relationshipToPatient !== 'self' && userDetails.relationshipToPatient !== '' && (
-                        <div className="flex items-center"><FaUserFriends className="mr-2 text-blue-500" /><span className="font-semibold w-32 inline-block">Related Person:</span> {userDetails.relatedPersonName}</div>
+                        <div className="flex items-start space-x-3">
+                          <FaUserFriends className="mt-1 text-blue-500 w-5 h-5" />
+                          <div>
+                            <div className="text-sm text-gray-500">Related Person</div>
+                            <div className="font-medium text-gray-900">{userDetails.relatedPersonName}</div>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </div>
 
                   {/* Services Information */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <h2 className="text-xl font-bold text-blue-600 mb-4 flex items-center">
+                  <div className="bg-gray-50 rounded-lg p-6">
+                    <h2 className="text-xl font-bold text-blue-600 mb-6 flex items-center">
                       <FaShoppingBag className="mr-2" /> Services Paid
                     </h2>
                     <div className="overflow-x-auto">
                       <table className="min-w-full divide-y divide-gray-200 rounded-lg border">
                         <thead className="bg-blue-50">
                           <tr>
-                            <th className="px-4 py-2 text-left text-xs font-bold text-blue-600 uppercase tracking-wider">Service</th>
-                            <th className="px-4 py-2 text-right text-xs font-bold text-blue-600 uppercase tracking-wider">Price</th>
+                            <th className="px-4 py-3 text-left text-sm font-bold text-blue-600 uppercase tracking-wider">Service</th>
+                            <th className="px-4 py-3 text-right text-sm font-bold text-blue-600 uppercase tracking-wider">Price</th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           {services.map((item) => (
                             <tr key={item.servicePackageId || item.id}>
-                              <td className="px-4 py-2 whitespace-nowrap text-sm font-medium text-gray-900">{item.serviceName || item.name}</td>
-                              <td className="px-4 py-2 whitespace-nowrap text-sm text-gray-700 text-right">{(item.price || 0).toLocaleString()} VND</td>
+                              <td className="px-4 py-3 whitespace-nowrap text-base font-medium text-gray-900">{item.serviceName || item.name}</td>
+                              <td className="px-4 py-3 whitespace-nowrap text-base text-gray-700 text-right">{(item.price || 0).toLocaleString()} VND</td>
                             </tr>
                           ))}
-                          <tr className="border-t border-gray-300 bg-blue-50">
-                            <td className="px-4 py-2 whitespace-nowrap text-base font-bold text-gray-900">Total</td>
-                            <td className="px-4 py-2 whitespace-nowrap text-base font-bold text-blue-600 text-right">{calculateTotal().toLocaleString()} VND</td>
+                          <tr className="border-t-2 border-gray-300 bg-blue-50">
+                            <td className="px-4 py-3 whitespace-nowrap text-lg font-bold text-gray-900">Total</td>
+                            <td className="px-4 py-3 whitespace-nowrap text-lg font-bold text-blue-600 text-right">{calculateTotal().toLocaleString()} VND</td>
                           </tr>
                         </tbody>
                       </table>
@@ -133,15 +183,17 @@ const PaymentSuccess = () => {
             <p className="text-gray-500 text-sm mb-8">No payment information found.</p>
           )}
 
-          <p className="text-gray-500 text-sm mb-8">
-            You will be redirected to the home page shortly, or you can click the button below.
-          </p>
-          <Link
-            to="/"
-            className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Go to Home
-          </Link>
+          <div className="text-center">
+            <p className="text-gray-500 text-sm mb-8">
+              You will be redirected to the home page shortly, or you can click the button below.
+            </p>
+            <Link
+              to="/"
+              className="inline-flex items-center px-8 py-3 border-2 border-transparent text-lg font-bold rounded-lg shadow-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transform transition-all duration-300 hover:scale-105"
+            >
+              Go to Home
+            </Link>
+          </div>
         </div>
       </main>
       <Footer />

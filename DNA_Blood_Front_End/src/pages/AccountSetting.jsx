@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
@@ -17,33 +17,7 @@ const AccountSetting = () => {
   const [error, setError] = useState(null);
   const [successMessage, setSuccessMessage] = useState('');
 
-  useEffect(() => {
-    fetchProfileData();
-    setupSignalR();
-  }, []);
-
-  const setupSignalR = async () => {
-    try {
-      await signalRService.startConnection();
-      
-      // Lắng nghe sự kiện cập nhật profile
-      signalRService.onUserProfileUpdate((updatedProfile) => {
-        console.log('Profile updated via SignalR:', updatedProfile);
-        if (updatedProfile) {
-          setFormData(prevData => ({
-            ...prevData,
-            ...updatedProfile
-          }));
-          setSuccessMessage('Profile updated successfully!');
-          setIsEditing(false);
-        }
-      });
-    } catch (error) {
-      console.error('Error setting up SignalR:', error);
-    }
-  };
-
-  const fetchProfileData = async () => {
+  const fetchProfileData = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) {
@@ -92,6 +66,32 @@ const AccountSetting = () => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  }, [navigate]);
+
+  useEffect(() => {
+    fetchProfileData();
+    setupSignalR();
+  }, [fetchProfileData]);
+
+  const setupSignalR = async () => {
+    try {
+      await signalRService.startConnection();
+      
+      // Lắng nghe sự kiện cập nhật profile
+      signalRService.onUserProfileUpdate((updatedProfile) => {
+        console.log('Profile updated via SignalR:', updatedProfile);
+        if (updatedProfile) {
+          setFormData(prevData => ({
+            ...prevData,
+            ...updatedProfile
+          }));
+          setSuccessMessage('Profile updated successfully!');
+          setIsEditing(false);
+        }
+      });
+    } catch (error) {
+      console.error('Error setting up SignalR:', error);
     }
   };
 
