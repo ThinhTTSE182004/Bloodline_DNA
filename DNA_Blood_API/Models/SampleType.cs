@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Sample_type")]
-[Index("Name", Name = "UQ__Sample_t__72E12F1B55457C46", IsUnique = true)]
+[Index("Name", Name = "UQ__Sample_t__72E12F1B989C1E37", IsUnique = true)]
 public partial class SampleType
 {
     [Key]

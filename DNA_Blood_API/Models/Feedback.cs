@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Feedback")]
-[Index("OrderId", Name = "UQ__Feedback__46596228BE399C7A", IsUnique = true)]
+[Index("OrderId", Name = "UQ__Feedback__46596228FDA96FB0", IsUnique = true)]
 public partial class Feedback
 {
     [Key]

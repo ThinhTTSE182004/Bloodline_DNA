@@ -19,6 +19,9 @@ public partial class SampleTransfer
     [Column("medical_staff_id")]
     public int MedicalStaffId { get; set; }
 
+    [Column("sample_id")]
+    public int SampleId { get; set; }
+
     [Column("transfer_date", TypeName = "datetime")]
     public DateTime? TransferDate { get; set; }
 
@@ -29,6 +32,10 @@ public partial class SampleTransfer
     [ForeignKey("MedicalStaffId")]
     [InverseProperty("SampleTransferMedicalStaffs")]
     public virtual User MedicalStaff { get; set; } = null!;
+
+    [ForeignKey("SampleId")]
+    [InverseProperty("SampleTransfers")]
+    public virtual Sample Sample { get; set; } = null!;
 
     [ForeignKey("StaffId")]
     [InverseProperty("SampleTransferStaffs")]

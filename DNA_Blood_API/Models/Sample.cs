@@ -47,6 +47,9 @@ public partial class Sample
     [InverseProperty("Samples")]
     public virtual Participant? Participant { get; set; }
 
+    [InverseProperty("Sample")]
+    public virtual ICollection<SampleTransfer> SampleTransfers { get; set; } = new List<SampleTransfer>();
+
     [ForeignKey("SampleTypeId")]
     [InverseProperty("Samples")]
     public virtual SampleType SampleType { get; set; } = null!;

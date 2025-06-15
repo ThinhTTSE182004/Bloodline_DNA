@@ -193,7 +193,7 @@ namespace DNA_API1.Repository
                 .Where(u => u.RoleId == 4 &&
                             u.UserProfile.Specialization != null &&
                             u.UserProfile.YearsOfExperience >= 2 &&
-                            u.UserProfile.Specialization.Contains(serviceName))
+                            serviceName.Contains(u.UserProfile.Specialization))
                 .Select(u => new
                 {
                     User = u,

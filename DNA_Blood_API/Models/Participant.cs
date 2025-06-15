@@ -24,8 +24,8 @@ public partial class Participant
     [Column("birth_date")]
     public DateOnly BirthDate { get; set; }
 
-    [Column("phone", TypeName = "decimal(12, 0)")]
-    public decimal? Phone { get; set; }
+    [Column("phone")]
+    public int? Phone { get; set; }
 
     [Column("relationship")]
     [StringLength(30)]

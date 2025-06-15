@@ -14,7 +14,7 @@ namespace DNA_API1.ViewModels
         public DateOnly BirthDate { get; set; }
 
         [Required(ErrorMessage = "Số điện thoại không được để trống")]
-        public decimal Phone { get; set; }
+        public int Phone { get; set; }
 
         [Required(ErrorMessage = "Mối quan hệ không được để trống")]
         public string Relationship { get; set; }
