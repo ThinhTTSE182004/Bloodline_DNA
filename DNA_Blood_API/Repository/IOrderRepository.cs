@@ -9,13 +9,13 @@ namespace DNA_API1.Repository
         Task<SampleType> GetSampleTypeByNameAsync(string name);
         Task<CollectionMethod> GetCollectionMethodByNameAsync(string name);
         Task<int> CreateOrderWithDetailsAsync(
-            Participant participant,
-            Order order,
-            List<OrderDetail> details,
-            List<Sample> samples,
-            Payment payment,
-            List<SampleKit> sampleKit
-            );
+    Participant participant,
+    Order order,
+    List<OrderDetail> details,
+    List<Sample> samples,
+    Payment payment,
+    List<SampleKit> sampleKits,
+    List<(int StaffId, int MedicalStaffId)> sampleTransferInfos);
         Task<List<User>> GetAvailableMedicalStaffAsync(string specialization, int maxOrdersPerDay);
         Task<List<User>> GetAvailableStaffAsync(int maxOrdersPerDay);
         Task<int> GetStaffOrderCountAsync(int staffId, DateTime date);

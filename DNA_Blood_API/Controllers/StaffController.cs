@@ -2,6 +2,7 @@
 using DNA_API1.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace DNA_API1.Controllers
 {
@@ -12,10 +13,12 @@ namespace DNA_API1.Controllers
     {
         private readonly IOrderService _orderService;
         private readonly ISampleService _sampleService;
-        public StaffController(IOrderService orderService, ISampleService sampleService)
+        private readonly ISampleTransferService _sampleTransferService;
+        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService)
         {
             _orderService = orderService;
             _sampleService = sampleService;
+            _sampleTransferService = sampleTransferService;
         }
 
         [HttpPut("confirm-order/{id}")]
@@ -66,5 +69,17 @@ namespace DNA_API1.Controllers
 
             return Ok("Sample updated successfully");
         }
+
+        //[HttpPost("create-sample-transfer/{sampleId}")]
+        //public async Task<IActionResult> CreateSampleTransfer(int sampleId)
+        //{
+        //    var result = await _sampleTransferService.CreateSampleTransferAsync(sampleId);
+        //    if (!result)
+        //        return NotFound("Không thể tạo sample transfer. Dữ liệu ánh xạ không tồn tại.");
+
+        //    return Ok("Tạo sample transfer thành công.");
+        //}
+
+
     }
 }

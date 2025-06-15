@@ -126,12 +126,13 @@ namespace DNA_API1.Repository
         }
 
         public async Task<int> CreateOrderWithDetailsAsync(
-            Participant participant,
-            Order order,
-            List<OrderDetail> details,
-            List<Sample> samples,
-            Payment payment,
-            List<SampleKit> sampleKits)
+     Participant participant,
+     Order order,
+     List<OrderDetail> details,
+     List<Sample> samples,
+     Payment payment,
+     List<SampleKit> sampleKits,
+     List<(int StaffId, int MedicalStaffId)> sampleTransferInfos)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -154,6 +155,18 @@ namespace DNA_API1.Repository
                     sample.OrderDetailId = detail.OrderDetailId;
                     sample.ParticipantId = participant.ParticipantId;
                     _context.Samples.Add(sample);
+                    await _context.SaveChangesAsync(); // Lưu để có SampleId
+
+                    // Tạo SampleTransfer tương ứng
+                    var (staffId, medicalStaffId) = sampleTransferInfos[i];
+                    var transfer = new SampleTransfer
+                    {
+                        StaffId = staffId,
+                        MedicalStaffId = medicalStaffId,
+                        TransferDate = DateTime.Now,
+                        SampleTransferStatus = "Pending"
+                    };
+                    _context.SampleTransfers.Add(transfer);
                 }
 
                 payment.OrderId = order.OrderId;
@@ -181,6 +194,7 @@ namespace DNA_API1.Repository
                 throw;
             }
         }
+
 
         public async Task<List<User>> GetAvailableMedicalStaffAsync(string serviceName, int maxOrdersPerDay)
         {
