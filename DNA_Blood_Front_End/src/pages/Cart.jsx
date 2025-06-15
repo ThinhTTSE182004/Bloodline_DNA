@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaShoppingBag, FaShieldAlt, FaTruck, FaHeadphones } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
@@ -240,7 +239,6 @@ const Cart = () => {
           onClose={handleCloseDetailModal}
         />
       )}
-      <Footer />
     </div>
   );
 };

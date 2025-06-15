@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
 import signalRService from '../services/signalRService.js';
 
@@ -188,7 +187,6 @@ const Profile = () => {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -217,7 +215,6 @@ const Profile = () => {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -397,7 +394,6 @@ const Profile = () => {
           )}
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

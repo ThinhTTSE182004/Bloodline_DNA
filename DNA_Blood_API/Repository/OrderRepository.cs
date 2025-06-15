@@ -166,7 +166,6 @@ namespace DNA_API1.Repository
                         MedicalStaffId = medicalStaffId,
                         TransferDate = DateTime.Now,
                         SampleTransferStatus = "Pending",
-                        SampleId = sample.SampleId  // Link to the sample
                     };
                     _context.SampleTransfers.Add(transfer);
                     await _context.SaveChangesAsync(); // Save after each transfer creation

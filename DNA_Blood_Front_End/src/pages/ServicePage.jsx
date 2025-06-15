@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { FaSearch, FaCalendarAlt, FaFilter, FaDna, FaShoppingCart } from 'react-icons/fa';
 import ServiceDetail from '../components/ServiceDetail';
 import { useCart } from '../context/CartContext';
@@ -46,7 +45,6 @@ const ServicePage = () => {
             <p className="mt-4 text-gray-600">Loading services...</p>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -60,7 +58,6 @@ const ServicePage = () => {
             <p>Error loading services: {error}</p>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -154,7 +151,6 @@ const ServicePage = () => {
           onAddToCart={handleAddToCart}
         />
       )}
-      <Footer />
     </div>
   );
 };

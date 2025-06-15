@@ -18,7 +18,6 @@ import Profile from './pages/Profile';
 import AccountSetting from './pages/AccountSetting';
 import ServicePage from './pages/ServicePage';
 import Cart from './pages/Cart';
-import Contact from './components/Contact';
 import Testimonials from './components/Testimonials';
 import FillBookingForm from './pages/FillBookingForm';
 import Payment from './pages/Payment';
@@ -91,9 +90,6 @@ const App = () => {
                         <FAQ />
                       </section>
                     </div>
-                    <section id="contact" className="py-20 bg-white" data-aos="fade-up" data-aos-duration="1000">
-                      <Contact />
-                    </section>
     </div>
   );
 

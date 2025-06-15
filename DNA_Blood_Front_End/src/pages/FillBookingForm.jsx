@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { FaClipboardList, FaPencilAlt, FaFlask, FaPrescriptionBottleAlt, FaUser, FaTransgender, FaCalendarAlt, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUsers, FaUserFriends, FaCheckCircle } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
@@ -92,7 +91,6 @@ const FillBookingForm = () => {
             </button>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -358,7 +356,6 @@ const FillBookingForm = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

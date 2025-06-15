@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaTransgender, FaUsers, FaUserFriends, FaChevronDown, FaChevronUp, FaReceipt, FaShoppingBag } from 'react-icons/fa';
 
@@ -196,7 +195,6 @@ const PaymentSuccess = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
