@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaMoneyBillWave, FaUniversity, FaCreditCard, FaCheckCircle, FaUser, FaTransgender, FaCalendarAlt, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUsers, FaUserFriends } from 'react-icons/fa';
 import { useCart } from '../context/CartContext';
@@ -321,7 +320,6 @@ const Payment = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };

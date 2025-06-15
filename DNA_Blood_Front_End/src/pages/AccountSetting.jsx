@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 import { useNavigate } from 'react-router-dom';
 import signalRService from '../services/signalRService.js';
 
@@ -172,7 +171,6 @@ const AccountSetting = () => {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
@@ -300,7 +298,6 @@ const AccountSetting = () => {
           </div>
         </div>
       </main>
-      <Footer />
     </div>
   );
 };
