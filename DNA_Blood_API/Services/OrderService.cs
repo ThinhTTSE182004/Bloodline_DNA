@@ -144,7 +144,7 @@ namespace DNA_API1.Services
                             OrderDetail = detail,
                             StaffId = staffId,
                             Name = "",             // để staff nhập sau
-                            KitCode = "",
+                            KitCode = $"KIT{DateTime.Now:yyyyMMddHHmmss}{new Random().Next(100, 999)}",
                             IntructionUrl = "",
                             CreateAt = DateTime.Now,
                             UpdateAt = null,
