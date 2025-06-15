@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
@@ -12,7 +12,7 @@ const Profile = () => {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const navigate = useNavigate();
 
-  const fetchProfile = async () => {
+  const fetchProfile = useCallback(async () => {
     try {
       const token = localStorage.getItem('token');
       
@@ -82,7 +82,7 @@ const Profile = () => {
       }
       setLoading(false);
     }
-  };
+  }, [navigate]);
 
   const fetchOrderHistory = async () => {
     try {
@@ -139,7 +139,7 @@ const Profile = () => {
     return () => {
       signalRService.stopConnection();
     };
-  }, []);
+  }, [fetchProfile]);
 
   const setupSignalR = async () => {
     try {

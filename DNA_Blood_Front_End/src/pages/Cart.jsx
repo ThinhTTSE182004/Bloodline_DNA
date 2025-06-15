@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { Link, useNavigate } from 'react-router-dom';
@@ -10,13 +10,8 @@ const Cart = () => {
   const [selectedItems, setSelectedItems] = useState({});
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
-  const [isPageLoaded, setIsPageLoaded] = useState(false);
   const navigate = useNavigate();
   const { cartItems, removeFromCart } = useCart();
-
-  useEffect(() => {
-    setIsPageLoaded(true);
-  }, []);
 
   const handleSelectItem = (id) => {
     setSelectedItems(prevSelected => ({
