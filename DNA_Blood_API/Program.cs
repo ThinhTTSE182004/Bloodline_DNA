@@ -89,6 +89,10 @@ namespace DNA_API1
             builder.Services.AddScoped<ICartService, CartService>();
             builder.Services.AddScoped<IServiceService, ServiceService>();
             builder.Services.AddScoped<IStaffAssignmentService, StaffAssignmentService>();
+            builder.Services.AddScoped<ISampleService, SampleService>();
+            builder.Services.AddScoped<ISampleRepository, SampleRepository>();
+
+
 
             // Add SignalR
             builder.Services.AddSignalR();
