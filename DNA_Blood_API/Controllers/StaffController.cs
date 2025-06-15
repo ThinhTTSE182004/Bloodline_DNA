@@ -70,15 +70,15 @@ namespace DNA_API1.Controllers
             return Ok("Sample updated successfully");
         }
 
-        [HttpPost("create-sample-transfer/{sampleId}")]
-        public async Task<IActionResult> CreateSampleTransfer(int sampleId)
-        {
-            var result = await _sampleTransferService.CreateSampleTransferAsync(sampleId);
-            if (!result)
-                return NotFound("Không thể tạo sample transfer. Dữ liệu ánh xạ không tồn tại.");
+        //[HttpPost("create-sample-transfer/{sampleId}")]
+        //public async Task<IActionResult> CreateSampleTransfer(int sampleId)
+        //{
+        //    var result = await _sampleTransferService.CreateSampleTransferAsync(sampleId);
+        //    if (!result)
+        //        return NotFound("Không thể tạo sample transfer. Dữ liệu ánh xạ không tồn tại.");
 
-            return Ok("Tạo sample transfer thành công.");
-        }
+        //    return Ok("Tạo sample transfer thành công.");
+        //}
 
 
     }

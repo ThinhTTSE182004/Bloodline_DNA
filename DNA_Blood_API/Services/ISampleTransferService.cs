@@ -1,7 +1,10 @@
-﻿namespace DNA_API1.Services
+﻿using DNA_API1.Models;
+
+namespace DNA_API1.Services
 {
     public interface ISampleTransferService
     {
-        Task<bool> CreateSampleTransferAsync(int sampleId);
+        Task<bool> CreateSampleTransferAsync(SampleTransfer transfer);
     }
+
 }

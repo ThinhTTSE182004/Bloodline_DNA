@@ -7,7 +7,7 @@ const Login = () => {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Ngăn trang reload lại
+    e.preventDefault();
 
     try {
       const response = await fetch('https://localhost:7113/api/Auth/login', {
@@ -22,25 +22,37 @@ const Login = () => {
       });
 
       if (response.ok) {
-        const token = await response.text(); // Thay đổi từ response.json() sang response.text()
+        const token = await response.text();
         
         // Lưu token vào localStorage
         localStorage.setItem('token', token);
-        // Lưu trạng thái đăng nhập
         localStorage.setItem('isLoggedIn', 'true');
         
         // Phân tích token để lấy thông tin người dùng
         const tokenParts = token.split('.');
         const payload = JSON.parse(atob(tokenParts[1]));
-        const userName = payload.name || email.split('@')[0]; // Sử dụng email nếu không có name
+        const userName = payload.name || email.split('@')[0];
+        const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
         
-        // Lưu tên người dùng
+        // Lưu thông tin người dùng
         localStorage.setItem('userName', userName);
+        localStorage.setItem('userRole', userRole);
+
+        // Dispatch custom event để thông báo đăng nhập thành công
+        const loginEvent = new CustomEvent('userLogin', {
+          detail: { userName, userRole }
+        });
+        window.dispatchEvent(loginEvent);
 
         alert('Đăng nhập thành công!');
-        navigate('/');
-      }
-      else {
+        
+        // Chuyển hướng dựa trên role
+        if (userRole === 'Staff') {
+          navigate('/staff');
+        } else {
+          navigate('/');
+        }
+      } else {
         const errorText = await response.text();
         try {
           const errorData = JSON.parse(errorText);

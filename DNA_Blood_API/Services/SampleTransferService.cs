@@ -1,4 +1,5 @@
-﻿using DNA_API1.Repository;
+﻿using DNA_API1.Models;
+using DNA_API1.Repository;
 
 namespace DNA_API1.Services
 {
@@ -11,9 +12,10 @@ namespace DNA_API1.Services
             _repository = repository;
         }
 
-        public async Task<bool> CreateSampleTransferAsync(int sampleId)
+        public async Task<bool> CreateSampleTransferAsync(SampleTransfer transfer)
         {
-            return await _repository.CreateSampleTransferAsync(sampleId);
+            await _repository.CreateSampleTransferAsync(transfer);
+            return true;
         }
     }
 

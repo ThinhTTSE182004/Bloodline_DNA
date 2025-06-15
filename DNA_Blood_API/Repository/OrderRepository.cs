@@ -126,12 +126,13 @@ namespace DNA_API1.Repository
         }
 
         public async Task<int> CreateOrderWithDetailsAsync(
-            Participant participant,
-            Order order,
-            List<OrderDetail> details,
-            List<Sample> samples,
-            Payment payment,
-            List<SampleKit> sampleKits)
+     Participant participant,
+     Order order,
+     List<OrderDetail> details,
+     List<Sample> samples,
+     Payment payment,
+     List<SampleKit> sampleKits,
+     List<(int StaffId, int MedicalStaffId)> sampleTransferInfos)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -154,6 +155,18 @@ namespace DNA_API1.Repository
                     sample.OrderDetailId = detail.OrderDetailId;
                     sample.ParticipantId = participant.ParticipantId;
                     _context.Samples.Add(sample);
+                    await _context.SaveChangesAsync(); // Lưu để có SampleId
+
+                    // Tạo SampleTransfer tương ứng
+                    var (staffId, medicalStaffId) = sampleTransferInfos[i];
+                    var transfer = new SampleTransfer
+                    {
+                        StaffId = staffId,
+                        MedicalStaffId = medicalStaffId,
+                        TransferDate = DateTime.Now,
+                        SampleTransferStatus = "Pending"
+                    };
+                    _context.SampleTransfers.Add(transfer);
                 }
 
                 payment.OrderId = order.OrderId;
@@ -182,12 +195,14 @@ namespace DNA_API1.Repository
             }
         }
 
+
         public async Task<List<User>> GetAvailableMedicalStaffAsync(string serviceName, int maxOrdersPerDay)
         {
             var today = DateTime.Today;
             var tomorrow = today.AddDays(1);
 
-            return await _context.Users
+            // Đầu tiên tìm nhân viên có chuyên môn phù hợp
+            var matchingStaff = await _context.Users
                 .Include(u => u.UserProfile)
                 .Where(u => u.RoleId == 4 &&
                             u.UserProfile.Specialization != null &&
@@ -206,6 +221,30 @@ namespace DNA_API1.Repository
                 .OrderBy(x => x.OrderCount)
                 .Select(x => x.User)
                 .ToListAsync();
+
+            // Nếu không tìm thấy nhân viên phù hợp, tìm bất kỳ nhân viên y tế nào đang rảnh
+            if (!matchingStaff.Any())
+            {
+                return await _context.Users
+                    .Include(u => u.UserProfile)
+                    .Where(u => u.RoleId == 4 &&
+                                u.UserProfile.YearsOfExperience >= 2)
+                    .Select(u => new
+                    {
+                        User = u,
+                        OrderCount = _context.OrderDetails
+                            .Where(od => od.MedicalStaffId == u.UserId &&
+                                         od.Order.CreateAt >= today &&
+                                         od.Order.CreateAt < tomorrow)
+                            .Count()
+                    })
+                    .Where(x => x.OrderCount < maxOrdersPerDay)
+                    .OrderBy(x => x.OrderCount)
+                    .Select(x => x.User)
+                    .ToListAsync();
+            }
+
+            return matchingStaff;
         }
 
         public async Task<List<User>> GetAvailableStaffAsync(int maxOrdersPerDay)
@@ -214,7 +253,7 @@ namespace DNA_API1.Repository
             var tomorrow = today.AddDays(1);
 
             return await _context.Users
-                .Where(u => u.RoleId == 3)
+                .Where(u => u.RoleId == 2)
                 .Select(u => new
                 {
                     User = u,

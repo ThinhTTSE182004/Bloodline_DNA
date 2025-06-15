@@ -9,13 +9,15 @@ namespace DNA_API1.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IStaffAssignmentService _staffAssignmentService;
-
+        private readonly ISampleTransferRepository _sampleTransferService;
         public OrderService(
             IOrderRepository orderRepository,
-            IStaffAssignmentService staffAssignmentService)
+            IStaffAssignmentService staffAssignmentService,
+            ISampleTransferRepository sampleTransferRepository)
         {
             _orderRepository = orderRepository;
             _staffAssignmentService = staffAssignmentService;
+            _sampleTransferService = sampleTransferRepository;
         }
 
         public async Task<OrderHistoryDTO?> ConfirmOrderAsync(int orderId)
@@ -71,23 +73,17 @@ namespace DNA_API1.Services
             // Validate test type by name
             var testType = await _orderRepository.GetTestTypeByNameAsync(dto.TestTypeName);
             if (testType == null)
-            {
                 throw new Exception($"Test type '{dto.TestTypeName}' not found");
-            }
 
             // Validate sample type by name
             var sampleType = await _orderRepository.GetSampleTypeByNameAsync(dto.SampleTypeName);
             if (sampleType == null)
-            {
                 throw new Exception($"Sample type '{dto.SampleTypeName}' not found");
-            }
 
             // Validate collection method by name
             var collectionMethod = await _orderRepository.GetCollectionMethodByNameAsync(dto.MethodTypeName);
             if (collectionMethod == null)
-            {
                 throw new Exception($"Collection method '{dto.MethodTypeName}' not found");
-            }
 
             try
             {
@@ -107,14 +103,16 @@ namespace DNA_API1.Services
                 {
                     CustomerId = dto.CustomerId,
                     CollectionMethodId = collectionMethod.CollectionMethodId,
-                    OrderStatus = "Pending",  // Set mặc định là Pending
+                    OrderStatus = "Pending",
                     CreateAt = DateTime.Now
                 };
 
-                // 3. Create order details and samples
+                // 3. Create order details, samples, transfer info, sample kits
                 var details = new List<OrderDetail>();
                 var samples = new List<Sample>();
                 var sampleKits = new List<SampleKit>();
+                var sampleTransferInfos = new List<(int StaffId, int MedicalStaffId)>();
+
                 foreach (var detailDto in dto.Details)
                 {
                     // Tự động phân công staff
@@ -137,14 +135,16 @@ namespace DNA_API1.Services
                     };
                     samples.Add(sample);
 
+                    sampleTransferInfos.Add((staffId, medicalStaffId));
+
                     if (collectionMethod.MethodName == "At Home")
                     {
                         var sampleKit = new SampleKit
                         {
                             OrderDetail = detail,
                             StaffId = staffId,
-                            Name = "",            
-                            KitCode = "",
+                            Name = "",
+                            KitCode = $"KIT{DateTime.Now:yyyyMMddHHmmss}{new Random().Next(100, 999)}",
                             IntructionUrl = "",
                             CreateAt = DateTime.Now,
                             UpdateAt = null,
@@ -152,33 +152,35 @@ namespace DNA_API1.Services
                             ReceivedDate = null
                         };
                         sampleKits.Add(sampleKit);
-                    } 
+                    }
                 }
 
-                    // 4. Create payment
-                    var payment = new Payment
-                    {
-                        PaymentMethod = dto.Payment.PaymentMethod,
-                        PaymentStatus = "Pending",
-                        PaymentDate = DateTime.Now,
-                        Total = (int)dto.Payment.Total
-                    };
+                // 4. Create payment
+                var payment = new Payment
+                {
+                    PaymentMethod = dto.Payment.PaymentMethod,
+                    PaymentStatus = "Pending",
+                    PaymentDate = DateTime.Now,
+                    Total = (int)dto.Payment.Total
+                };
 
-                    // 5. Save everything using repository
-                    return await _orderRepository.CreateOrderWithDetailsAsync(
-                        participant,
-                        order,
-                        details,
-                        samples,
-                        payment,
-                        sampleKits);
-                
+                // 5. Save everything using repository
+                return await _orderRepository.CreateOrderWithDetailsAsync(
+                    participant,
+                    order,
+                    details,
+                    samples,
+                    payment,
+                    sampleKits,
+                    sampleTransferInfos
+                );
             }
             catch (Exception)
             {
                 throw; // báo lỗi lên Controller
             }
         }
+
 
         public async Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId)
         {
