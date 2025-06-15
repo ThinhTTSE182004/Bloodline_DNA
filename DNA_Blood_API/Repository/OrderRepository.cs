@@ -161,6 +161,7 @@ namespace DNA_API1.Repository
                     var (staffId, medicalStaffId) = sampleTransferInfos[i];
                     var transfer = new SampleTransfer
                     {
+                        SampleId = sample.SampleId, // Bây giờ sample đã có SampleId
                         StaffId = staffId,
                         MedicalStaffId = medicalStaffId,
                         TransferDate = DateTime.Now,
