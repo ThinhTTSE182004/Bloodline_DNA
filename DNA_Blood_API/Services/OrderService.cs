@@ -165,7 +165,7 @@ namespace DNA_API1.Services
                 };
 
                 // 5. Save everything using repository
-                return await _orderRepository.CreateOrderWithDetailsAsync(
+                var orderId = await _orderRepository.CreateOrderWithDetailsAsync(
                     participant,
                     order,
                     details,
@@ -174,6 +174,23 @@ namespace DNA_API1.Services
                     sampleKits,
                     sampleTransferInfos
                 );
+
+                // 6. Create sample transfers after samples are saved
+                foreach (var (staffId, medicalStaffId) in sampleTransferInfos)
+                {
+                    var sample = samples[sampleTransferInfos.IndexOf((staffId, medicalStaffId))];
+                    var sampleTransfer = new SampleTransfer
+                    {
+                        SampleId = sample.SampleId,
+                        StaffId = staffId,
+                        MedicalStaffId = medicalStaffId,
+                        TransferDate = DateTime.Now,
+                        SampleTransferStatus = "Pending"
+                    };
+                    await _sampleTransferService.CreateSampleTransferAsync(sampleTransfer);
+                }
+
+                return orderId;
             }
             catch (Exception)
             {
