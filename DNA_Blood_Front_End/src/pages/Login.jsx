@@ -50,8 +50,8 @@ const Login = () => {
         if (userRole === 'Staff') {
           navigate('/staff');
         } else {
-          navigate('/');
-        }
+        navigate('/');
+      }
       } else {
         const errorText = await response.text();
         try {

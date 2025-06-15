@@ -1,4 +1,4 @@
-ALTER DATABASE Bloodline_DNA SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+﻿ALTER DATABASE Bloodline_DNA SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
 DROP DATABASE Bloodline_DNA;
 
 ALTER DATABASE Bloodline_DNA SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
@@ -52,7 +52,7 @@ participant_id INT IDENTITY(1,1) PRIMARY KEY,
 full_name NVARCHAR(100),
 sex NVARCHAR(10) CHECK (sex IN ('Male', 'Female', 'Other')),
 birth_date DATE NOT NULL,
-phone decimal(12,0),
+phone NVARCHAR(12),
 relationship NVARCHAR(30),
 name_relation NVARCHAR(30)
 )
@@ -226,10 +226,12 @@ create table Sample_transfer (
 transfer_id INT IDENTITY(1,1) PRIMARY KEY,
 staff_id int not null,
 medical_staff_id int not null,
+sample_id int not null,
 transfer_date DATETIME DEFAULT GETDATE(),
 sample_transfer_status nvarchar(50) not null,
 FOREIGN KEY (staff_id) REFERENCES USERS(user_id),
-FOREIGN KEY (medical_staff_id) REFERENCES USERS(user_id)
+FOREIGN KEY (medical_staff_id) REFERENCES USERS(user_id),
+FOREIGN KEY (sample_id) REFERENCES samples(sample_id)
 )
 
 

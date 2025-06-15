@@ -70,30 +70,30 @@ const App = () => {
   }, []);
 
   const HomeContent = () => (
-    <div className="min-h-screen bg-white">
-      <section id="home">
-        <Hero />
-      </section>
-      <section id="features" className="py-20" data-aos="fade-up" data-aos-duration="1000">
-        <Features />
-      </section>
-      <section id="services" className="py-20 bg-white" data-aos="fade-up" data-aos-duration="1000">
-        <Services />
-      </section>
-      <section id="testimonials" className="py-20 bg-gray-50" data-aos="fade-up" data-aos-duration="1000">
-        <Testimonials />
-      </section>
-      <div className="flex flex-col md:flex-row">
-        <section id="blog" className="py-20 bg-white md:w-3/4" data-aos="fade-up" data-aos-duration="1000">
-          <Blog />
-        </section>
-        <section id="faq" className="py-20 md:w-1/4" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
-          <FAQ />
-        </section>
-      </div>
-      <section id="contact" className="py-20 bg-white" data-aos="fade-up" data-aos-duration="1000">
-        <Contact />
-      </section>
+                <div className="min-h-screen bg-white">
+                    <section id="home">
+                      <Hero />
+                    </section>
+                    <section id="features" className="py-20" data-aos="fade-up" data-aos-duration="1000">
+                      <Features />
+                    </section>
+                    <section id="services" className="py-20 bg-white" data-aos="fade-up" data-aos-duration="1000">
+                      <Services />
+                    </section>
+                    <section id="testimonials" className="py-20 bg-gray-50" data-aos="fade-up" data-aos-duration="1000">
+                      <Testimonials />
+                    </section>
+                    <div className="flex flex-col md:flex-row">
+                      <section id="blog" className="py-20 bg-white md:w-3/4" data-aos="fade-up" data-aos-duration="1000">
+                        <Blog />
+                      </section>
+                      <section id="faq" className="py-20 md:w-1/4" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+                        <FAQ />
+                      </section>
+                    </div>
+                    <section id="contact" className="py-20 bg-white" data-aos="fade-up" data-aos-duration="1000">
+                      <Contact />
+                    </section>
     </div>
   );
 
@@ -125,9 +125,9 @@ const App = () => {
                     } 
                   />
                 </Routes>
-              </main>
-              <Footer />
-            </div>
+                  </main>
+                  <Footer />
+                </div>
           </Router>
         </CartProvider>
       </ServiceProvider>

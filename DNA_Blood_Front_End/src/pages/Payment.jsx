@@ -60,23 +60,47 @@ const Payment = () => {
         'other': 'Other'
       };
 
+      // Map relationship values
+      const relationshipMap = {
+        'self': 'Self',
+        'parent': 'Parent',
+        'child': 'Child',
+        'spouse': 'Spouse',
+        'sibling': 'Sibling',
+        'other': 'Other'
+      };
+
+      // Map payment methods
+      const paymentMethodMap = {
+        'bankTransfer': 'BankTransfer',
+        'cashOnDelivery': 'CashOnDelivery'
+      };
+
+      // Validate and format date
+      const formatDate = (dateString) => {
+        if (!dateString) return '';
+        const date = new Date(dateString);
+        if (isNaN(date.getTime())) return '';
+        return date.toISOString().split('T')[0];
+      };
+
       // Prepare order data according to API format
       const orderData = {
-        customerId: customerId,
+        customerId: parseInt(customerId) || 0,
         participant: {
           fullName: userDetails.fullName || '',
           sex: genderMap[userDetails.gender?.toLowerCase()] || 'Male',
-          birthDate: userDetails.dateOfBirth || '',
+          birthDate: formatDate(userDetails.dateOfBirth),
           phone: userDetails.phoneNumber?.replace(/\D/g, '') || '',
-          relationship: userDetails.relationshipToPatient?.toLowerCase() || 'self',
+          relationship: relationshipMap[userDetails.relationshipToPatient?.toLowerCase()] || 'Self',
           nameRelation: userDetails.relatedPersonName || ''
         },
         details: orderSummary.map(item => ({
-          servicePackageId: parseInt(item.servicePackageId || item.id)
+          servicePackageId: parseInt(item.servicePackageId || item.id) || 0
         })),
         payment: {
-          paymentMethod: paymentMethod === 'bankTransfer' ? 'Bank Transfer' : 'CUD',
-          total: parseInt(calculateTotalAmount().replace(/\D/g, ''))
+          paymentMethod: paymentMethodMap[paymentMethod] || 'BankTransfer',
+          total: parseInt(calculateTotalAmount().replace(/\D/g, '')) || 0
         },
         testTypeName: userDetails.testType || 'Civil',
         sampleTypeName: userDetails.sampleType || 'Blood',
@@ -85,6 +109,7 @@ const Payment = () => {
 
       // Debug log order data
       console.log('Order Data:', orderData);
+      console.log('Request Body:', JSON.stringify(orderData, null, 2));
 
       // Validate required fields
       if (!orderData.customerId) {
@@ -119,6 +144,7 @@ const Payment = () => {
       if (!response.ok) {
         const errorData = await response.json();
         console.error('API Error Response:', errorData);
+        console.error('Request Body:', JSON.stringify(orderData, null, 2));
         throw new Error(errorData.message || 'Failed to create order');
       }
 
