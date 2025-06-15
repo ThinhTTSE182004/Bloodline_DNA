@@ -23,6 +23,8 @@ import FillBookingForm from './pages/FillBookingForm';
 import Payment from './pages/Payment';
 import PaymentSuccess from './pages/PaymentSuccess';
 import Staff from './pages/Staff';
+import StaffDashboard from './pages/StaffDashboard';
+import StaffProfile from './pages/StaffProfile';
 
 const App = () => {
   const [userRole, setUserRole] = useState(null);
@@ -111,7 +113,9 @@ const App = () => {
                   <Route path="/payment" element={<Payment />} />
                   <Route path="/payment-success" element={<PaymentSuccess />} />
                   <Route path="/fill-booking-form" element={<FillBookingForm />} />
-                  <Route path="/staff" element={<Staff />} />
+                  <Route path="/staff" element={<StaffDashboard />} />
+                  <Route path="/staff/orders" element={<Staff />} />
+                  <Route path="/staff/profile" element={<StaffProfile />} />
                   <Route 
                     path="/" 
                     element={
