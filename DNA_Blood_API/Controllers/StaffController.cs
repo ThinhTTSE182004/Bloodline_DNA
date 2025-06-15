@@ -1,4 +1,5 @@
 ﻿using DNA_API1.Services;
+using DNA_API1.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,10 +11,11 @@ namespace DNA_API1.Controllers
     public class StaffController : ControllerBase
     {
         private readonly IOrderService _orderService;
-
-        public StaffController(IOrderService orderService)
+        private readonly ISampleService _sampleService;
+        public StaffController(IOrderService orderService, ISampleService sampleService)
         {
             _orderService = orderService;
+            _sampleService = sampleService;
         }
 
         [HttpPut("confirm-order/{id}")]
@@ -53,6 +55,16 @@ namespace DNA_API1.Controllers
                     error = ex.Message
                 });
             }
+        }
+
+        [HttpPut("update-sample/{sampleId}")]
+        public async Task<IActionResult> UpdateSample(int sampleId, [FromBody] SampleUpdateViewModel model)
+        {
+            var success = await _sampleService.UpdateSampleStatusAsync(sampleId, model);
+            if (!success)
+                return NotFound("Sample not found");
+
+            return Ok("Sample updated successfully");
         }
     }
 }
