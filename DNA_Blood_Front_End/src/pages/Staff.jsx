@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import StaffNavbar from '../components/StaffNavbar';
 import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaEdit, FaSpinner, FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa';
 
@@ -71,13 +70,11 @@ const Staff = () => {
         return;
       }
 
-      // Validate sampleId
       if (!sampleId) {
         setUpdateError('Invalid sample ID');
         return;
       }
 
-      // Validate required fields
       if (!sampleData.sampleStatus) {
         setUpdateError('Sample status is required');
         return;
@@ -93,7 +90,6 @@ const Staff = () => {
         return;
       }
 
-      // Format dates to ISO string
       const formattedData = {
         ...sampleData,
         collectedDate: new Date(sampleData.collectedDate).toISOString(),
@@ -116,13 +112,8 @@ const Staff = () => {
         throw new Error(errorData.message || 'Failed to update sample');
       }
 
-      // Close modal
       setShowUpdateModal(false);
-      
-      // Show loading state
       setLoading(true);
-      
-      // Fetch fresh data from server
       await fetchOrders();
       
     } catch (err) {
@@ -134,9 +125,7 @@ const Staff = () => {
   };
 
   const openUpdateModal = (order) => {
-    console.log('Opening modal for order:', order);
     if (!order) {
-      console.log('No order provided');
       setUpdateError('Invalid order');
       return;
     }
@@ -155,7 +144,7 @@ const Staff = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100">
-        <Navbar />
+        <StaffNavbar />
         <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-[1600px] mx-auto">
             <div className="flex justify-center items-center h-64">
@@ -163,18 +152,17 @@ const Staff = () => {
             </div>
           </div>
         </main>
-        <Footer />
       </div>
     );
   }
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Navbar />
+      <StaffNavbar />
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1600px] mx-auto">
           {error && (
-            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
+            <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4 transform transition-all duration-300 ease-in-out">
               <div className="flex">
                 <div className="flex-shrink-0">
                   <FaTimesCircle className="h-5 w-5 text-red-400" />
@@ -185,8 +173,8 @@ const Staff = () => {
               </div>
             </div>
           )}
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="px-6 py-5 sm:px-8 bg-blue-600">
+          <div className="bg-white shadow-lg rounded-lg overflow-hidden transform transition-all duration-300 hover:shadow-xl">
+            <div className="px-6 py-5 sm:px-8 bg-gradient-to-r from-blue-600 to-blue-700">
               <h1 className="text-2xl font-bold text-white flex items-center">
                 <FaClipboardList className="mr-2" />
                 Order Management
@@ -227,7 +215,7 @@ const Staff = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {orders.map((order) => (
-                    <tr key={order.orderId} className="hover:bg-gray-50">
+                    <tr key={order.orderId} className="hover:bg-gray-50 transition-colors duration-200">
                       <td className="px-8 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                         #{order.orderId}
                       </td>
@@ -238,7 +226,7 @@ const Staff = () => {
                         {new Date(order.orderDate).toLocaleDateString()}
                       </td>
                       <td className="px-8 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full transition-colors duration-200 ${
                           order.orderStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                           order.orderStatus === 'Confirmed' ? 'bg-green-100 text-green-800' :
                           'bg-gray-100 text-gray-800'
@@ -247,14 +235,23 @@ const Staff = () => {
                         </span>
                       </td>
                       <td className="px-8 py-4 whitespace-nowrap">
-                        <div className="flex flex-col">
-                          <span className="text-sm text-gray-500">{order.paymentMethod}</span>
-                          <span className={`text-xs px-3 py-1 mt-1 inline-flex leading-5 font-semibold rounded-full ${
-                            order.paymentStatus === 'PaymentCompleted' ? 'bg-green-100 text-green-800' :
-                            'bg-yellow-100 text-yellow-800'
-                          }`}>
-                            {order.paymentStatus}
+                        <div className="flex flex-col space-y-2">
+                          <span className="text-sm text-gray-700">
+                            {order.paymentMethod === 'BankTransfer' ? 'Bank Transfer' :
+                             order.paymentMethod === 'CashOnDelivery' ? 'Cash on Delivery' :
+                             order.paymentMethod}
                           </span>
+                          {order.paymentMethod !== 'BankTransfer' && (
+                            <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full transition-colors duration-200 ${
+                              order.paymentStatus === 'PaymentCompleted' ? 'bg-green-100 text-green-800' :
+                              order.paymentStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                              'bg-gray-100 text-gray-800'
+                            }`}>
+                              {order.paymentStatus === 'PaymentCompleted' ? 'Completed' :
+                               order.paymentStatus === 'Pending' ? 'Pending' :
+                               order.paymentStatus}
+                            </span>
+                          )}
                         </div>
                       </td>
                       <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -264,7 +261,7 @@ const Staff = () => {
                         {order.totalAmount.toLocaleString()} VND
                       </td>
                       <td className="px-8 py-4 whitespace-nowrap">
-                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full transition-colors duration-200 ${
                           order.sampleStatus === 'Collected' ? 'bg-green-100 text-green-800' :
                           order.sampleStatus === 'Processing' ? 'bg-blue-100 text-blue-800' :
                           'bg-gray-100 text-gray-800'
@@ -275,7 +272,7 @@ const Staff = () => {
                       <td className="px-8 py-4 whitespace-nowrap text-sm font-medium">
                         <button
                           onClick={() => openUpdateModal(order)}
-                          className="text-blue-600 hover:text-blue-900 bg-blue-50 px-4 py-2 rounded-full border border-blue-200 hover:bg-blue-100 transition-colors duration-200"
+                          className="text-blue-600 hover:text-blue-900 bg-blue-50 px-4 py-2 rounded-full border border-blue-200 hover:bg-blue-100 transition-all duration-200 transform hover:scale-105"
                         >
                           <FaEdit className="inline-block mr-1" />
                           Update Sample
@@ -293,7 +290,7 @@ const Staff = () => {
       {/* Update Sample Modal */}
       {showUpdateModal && selectedOrder && (
         <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-          <div className="relative top-20 mx-auto p-5 border w-[800px] shadow-lg rounded-md bg-white">
+          <div className="relative top-20 mx-auto p-5 border w-[800px] shadow-lg rounded-md bg-white transform transition-all duration-300 ease-in-out">
             <div className="mt-3">
               <h3 className="text-xl font-medium leading-6 text-gray-900 mb-6">
                 Update Sample Information
@@ -301,7 +298,7 @@ const Staff = () => {
               </h3>
               
               {updateError && (
-                <div className="mb-4 bg-red-50 border-l-4 border-red-400 p-4">
+                <div className="mb-4 bg-red-50 border-l-4 border-red-400 p-4 transform transition-all duration-300 ease-in-out">
                   <div className="flex">
                     <div className="flex-shrink-0">
                       <FaExclamationTriangle className="h-5 w-5 text-red-400" />
@@ -322,7 +319,7 @@ const Staff = () => {
                     <select
                       value={sampleData.sampleStatus}
                       onChange={(e) => setSampleData({...sampleData, sampleStatus: e.target.value})}
-                      className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 h-10 ${
+                      className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 h-10 transition-colors duration-200 ${
                         updateError && !sampleData.sampleStatus ? 'border-red-500' : ''
                       }`}
                     >
@@ -341,7 +338,7 @@ const Staff = () => {
                       type="datetime-local"
                       value={sampleData.collectedDate}
                       onChange={(e) => setSampleData({...sampleData, collectedDate: e.target.value})}
-                      className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 h-10 ${
+                      className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 h-10 transition-colors duration-200 ${
                         updateError && !sampleData.collectedDate ? 'border-red-500' : ''
                       }`}
                     />
@@ -354,7 +351,7 @@ const Staff = () => {
                       type="datetime-local"
                       value={sampleData.receivedDate}
                       onChange={(e) => setSampleData({...sampleData, receivedDate: e.target.value})}
-                      className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 h-10 ${
+                      className={`mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 h-10 transition-colors duration-200 ${
                         updateError && !sampleData.receivedDate ? 'border-red-500' : ''
                       }`}
                     />
@@ -365,7 +362,7 @@ const Staff = () => {
                   <textarea
                     value={sampleData.note}
                     onChange={(e) => setSampleData({...sampleData, note: e.target.value})}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 transition-colors duration-200"
                     rows="4"
                     placeholder="Enter any additional notes here..."
                   />
@@ -374,13 +371,13 @@ const Staff = () => {
               <div className="flex justify-end space-x-3 px-7 py-4 border-t mt-4">
                 <button
                   onClick={() => setShowUpdateModal(false)}
-                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors duration-200"
+                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-all duration-200 transform hover:scale-105"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => handleUpdateSample(selectedOrder.orderId)}
-                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-200"
+                  className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all duration-200 transform hover:scale-105"
                 >
                   Update
                 </button>
@@ -389,8 +386,6 @@ const Staff = () => {
           </div>
         </div>
       )}
-
-      <Footer />
     </div>
   );
 };
