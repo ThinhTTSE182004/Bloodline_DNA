@@ -6,5 +6,10 @@ namespace DNA_API1.Services
     {
         Task<int> CreateOrderWithPaymentAsync(CreateOrderWithPaymentDTO dto);
         Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId);
+
+        Task<OrderHistoryDTO?> ConfirmOrderAsync(int orderId);
+
+        Task<List<OrderHistoryDTO>> GetAllOrdersForStaffAsync();
+
     }
 }
