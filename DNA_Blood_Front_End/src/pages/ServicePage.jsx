@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
 import { FaSearch, FaCalendarAlt, FaFilter, FaDna, FaShoppingCart } from 'react-icons/fa';
 import ServiceDetail from '../components/ServiceDetail';
@@ -7,17 +7,30 @@ import { useServices } from '../context/ServiceContext';
 
 const ServicePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterDate, setFilterDate] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const { addToCart } = useCart();
   const { services, loading, error, setServices } = useServices();
+  const [allServices, setAllServices] = useState([]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    const filtered = services.filter(service => 
-      service.serviceName.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    let filtered = allServices;
+    if (searchTerm) {
+      filtered = filtered.filter(service => 
+        service.serviceName.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+    if (minPrice !== '' || maxPrice !== '') {
+      filtered = filtered.filter(service => {
+        const price = service.price;
+        if (minPrice !== '' && price < parseFloat(minPrice)) return false;
+        if (maxPrice !== '' && price > parseFloat(maxPrice)) return false;
+        return true;
+      });
+    }
     setServices(filtered);
   };
 
@@ -34,6 +47,12 @@ const ServicePage = () => {
   const handleAddToCart = (service) => {
     addToCart(service);
   };
+
+  useEffect(() => {
+    if (services.length > 0 && allServices.length === 0) {
+      setAllServices(services);
+    }
+  }, [services, allServices.length]);
 
   if (loading) {
     return (
@@ -83,14 +102,28 @@ const ServicePage = () => {
             </div>
             <div className="relative flex-grow">
               <input
-                type="text"
-                placeholder="dd/mm/yyyy"
+                type="number"
+                placeholder="Min price"
                 className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-                value={filterDate}
-                onChange={(e) => setFilterDate(e.target.value)}
+                value={minPrice}
+                onChange={(e) => setMinPrice(e.target.value)}
+                min="0"
               />
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <FaCalendarAlt className="w-5 h-5 text-gray-400" />
+                <span className="text-gray-400 font-bold">$</span>
+              </div>
+            </div>
+            <div className="relative flex-grow">
+              <input
+                type="number"
+                placeholder="Max price"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                value={maxPrice}
+                onChange={(e) => setMaxPrice(e.target.value)}
+                min="0"
+              />
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <span className="text-gray-400 font-bold">$</span>
               </div>
             </div>
             <button
