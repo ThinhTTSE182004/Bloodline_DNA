@@ -1,8 +1,10 @@
-﻿using DNA_API1.Models;
+using DNA_API1.Models;
 using DNA_API1.ViewModels;
 using LoginAPI.Services;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
@@ -12,15 +14,12 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authentication.Google;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace LoginAPI.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
-
     {
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
@@ -52,19 +51,20 @@ namespace LoginAPI.Controllers
             }
             return Ok(token);
         }
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpGet("admin-auth")]
         public IActionResult Authentication()
         {
             return Ok("You are Admin!");
         }
+
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
         [HttpGet("customer-auth")]
         public IActionResult AuthenticationAdmin()
         {
             return Ok("You are Customer!");
         }
-
 
         [HttpGet("google-login")]
         public IActionResult GoogleLogin()
@@ -81,8 +81,14 @@ namespace LoginAPI.Controllers
         {
             var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
 
+            if (result.Principal == null)
+                return Unauthorized();
+
             var email = result.Principal.FindFirst(ClaimTypes.Email)?.Value;
             var name = result.Principal.FindFirst(ClaimTypes.Name)?.Value;
+
+            if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(name))
+                return Unauthorized();
 
             var token = await _authService.HandleGoogleLoginAsync(email, name);
             var encodedToken = Uri.EscapeDataString(token);
@@ -93,7 +99,6 @@ namespace LoginAPI.Controllers
 
             Console.WriteLine("FrontendURL token: " + frontendUrl);
             return Redirect(frontendUrl);
-
         }
     }
 }
