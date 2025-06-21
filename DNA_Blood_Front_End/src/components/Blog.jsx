@@ -36,10 +36,10 @@ const Blog = () => {
     <section id="blog" className="py-16 bg-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <h4 className="text-primary font-semibold mb-4">From Our Blog</h4>
-          <h1 className="text-4xl font-bold text-gray-900 mb-6">Insights & News from Bloodline DNA</h1>
-          <p className="text-lg text-gray-600">
-            Explore expert articles, updates, and insights about DNA testing, health, ancestry, and how genetics can impact your life.
+          <h4 className="text-blue-600 font-semibold mb-4 hover:text-blue-700 transition-colors duration-200 cursor-default">Our Blog</h4>
+          <h1 className="text-3xl font-bold text-gray-900 hover:text-black transition-colors duration-200 cursor-default">Latest Articles</h1>
+          <p className="text-gray-700 mt-4 hover:text-gray-900 transition-colors duration-200 cursor-text">
+            Stay updated with our latest news and health tips.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -58,30 +58,26 @@ const Blog = () => {
               </div>
               <div className="p-6">
                 <div className="flex flex-wrap gap-2 text-sm text-gray-500 mb-4">
-                  <span className="group-hover:text-primary transition-colors duration-300">
+                  <span className="group-hover:text-gray-900 transition-colors duration-300 cursor-default">
                     <FaUser className="text-blue-600 mr-1 inline" />{post.author}
                   </span>
-                  <span className="group-hover:text-primary transition-colors duration-300">
+                  <span className="group-hover:text-gray-900 transition-colors duration-300 cursor-default">
                     <FaCalendarAlt className="text-blue-600 mr-1 inline" />{post.date}
                   </span>
-                  <span className="group-hover:text-primary transition-colors duration-300">
+                  <span className="group-hover:text-gray-900 transition-colors duration-300 cursor-default">
                     <FaComment className="text-blue-600 mr-1 inline" />{post.comments} Comments
                   </span>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary transition-colors duration-300">
-                  {post.title}
-                </h3>
+                <h3 className="text-xl font-semibold text-gray-900 mt-4 hover:text-gray-800 transition-colors duration-200 cursor-default">{post.title}</h3>
                 <div className="mb-3 flex justify-center">
-                  <span className="inline-block bg-primary text-black px-3 py-1 rounded-full text-sm transform group-hover:scale-105 transition-transform duration-300">
+                  <span className="inline-block bg-primary text-black px-3 py-1 rounded-full text-sm transform group-hover:scale-105 transition-transform duration-300 cursor-default">
                     {post.category}
                   </span>
                 </div>
-                <p className="text-gray-600 mb-4 group-hover:text-gray-800 transition-colors duration-300 line-clamp-2">
-                  {post.description}
-                </p>
+                <p className="text-gray-700 mt-2 hover:text-gray-900 transition-colors duration-200 cursor-text">{post.description}</p>
                 <a 
                   href="#" 
-                  className="text-primary hover:text-dark font-medium inline-flex items-center group-hover:translate-x-2 transition-all duration-300"
+                  className="text-primary hover:text-dark font-medium inline-flex items-center group-hover:translate-x-2 transition-all duration-300 cursor-pointer"
                 >
                   Read More <FaArrowRight className="ml-2" />
                 </a>
