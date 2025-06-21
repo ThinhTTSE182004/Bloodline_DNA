@@ -61,6 +61,7 @@ const Profile = () => {
         name: data.name,
         email: data.email,
         phone: data.phone,
+
         updatedAt: data.updatedAt
       };
 
@@ -76,6 +77,7 @@ const Profile = () => {
       if (!profileData.name || !profileData.email || !profileData.phone) {
         navigate('/settings', { replace: true });
       }
+
     } catch (err) {
       console.error('Error fetching profile:', err);
       if (err.message.includes('Failed to fetch')) {
