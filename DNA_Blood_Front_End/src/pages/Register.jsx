@@ -62,13 +62,14 @@ const Register = () => {
         }),
       });
 
-      if (response.ok) {
-        alert('Registration successful! Please login.');
-        navigate('/login');
-      } else {
-        const errorData = await response.json();
-        setError(errorData.message || 'Registration failed. Please try again.');
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(errorText);
       }
+      const token = await response.text();
+
+      alert('Registration successful! Please login.');
+      navigate('/login');
     } catch (error) {
       console.error('Error during registration:', error);
       setError('Registration failed. Please try again.');
