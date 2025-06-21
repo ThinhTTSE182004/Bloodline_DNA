@@ -56,6 +56,7 @@ const AccountSetting = () => {
         updatedAt: data.updatedAt
       };
 
+
       setFormData(profileData);
     } catch (err) {
       console.error('Error fetching profile:', err);
@@ -81,11 +82,13 @@ const AccountSetting = () => {
         setSuccessMessage('Profile updated successfully!');
         setTimeout(() => setSuccessMessage(''), 3000); // Ẩn sau 3s
         setIsEditing(false);
+
         if (updatedProfile) {
           setFormData(prevData => ({
             ...prevData,
             ...updatedProfile
           }));
+
         }
       });
     } catch (error) {
@@ -136,7 +139,6 @@ const AccountSetting = () => {
         navigate('/login');
         return;
       }
-
       // Không cần set success message ở đây vì sẽ được xử lý bởi SignalR
       setIsEditing(false);
     } catch (err) {
