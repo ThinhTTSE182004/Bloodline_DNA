@@ -76,7 +76,7 @@ const Navbar = () => {
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
               <FaDna className="h-8 w-8 text-blue-600" />
-              <span className="ml-2 text-xl font-semibold text-black">DNA Testing</span>
+              <span className="ml-2 text-xl font-semibold text-black hover:text-blue-600 transition-colors duration-200 cursor-pointer">DNA Testing</span>
             </Link>
           </div>
 
@@ -87,55 +87,55 @@ const Navbar = () => {
                 <a
                   href="#home"
                   onClick={(e) => handleNavClick(e, 'home')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Home
                 </a>
                 <a
                   href="#features"
                   onClick={(e) => handleNavClick(e, 'features')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Features
                 </a>
                 <a
                   href="#services"
                   onClick={(e) => handleNavClick(e, 'services')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Services
                 </a>
                 <a
                   href="#testimonials"
                   onClick={(e) => handleNavClick(e, 'testimonials')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Feedback
                 </a>
                 <a
                   href="#faq"
                   onClick={(e) => handleNavClick(e, 'faq')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   FAQ
                 </a>
                 <a
                   href="#blog"
                   onClick={(e) => handleNavClick(e, 'blog')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Blog
                 </a>
               </>
             ) : (
               <>
-                <Link to="/" className="text-black font-medium hover:text-blue-600 transition-colors duration-300">
+                <Link to="/" className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text">
                   Home
                 </Link>
-                <Link to="/services" className="text-black font-medium hover:text-blue-600 transition-colors duration-300">
+                <Link to="/services" className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text">
                   Services
                 </Link>
-                <Link to="/blog" className="text-black font-medium hover:text-blue-600 transition-colors duration-300">
+                <Link to="/blog" className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text">
                   Blog
                 </Link>
               </>
@@ -152,7 +152,7 @@ const Navbar = () => {
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-300 focus:outline-none"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer focus:outline-none"
                 >
                   Hi, {userName}!
                 </button>
@@ -160,21 +160,21 @@ const Navbar = () => {
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
                       onClick={() => setShowDropdown(false)}
                     >
                       User Profile
                     </Link>
                     <Link
                       to="/settings"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
                       onClick={() => setShowDropdown(false)}
                     >
                       Account Setting
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
                     >
                       Logout
                     </button>
@@ -185,13 +185,13 @@ const Navbar = () => {
               <>
                 <Link
                   to="/login"
-                  className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300"
+                  className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-colors duration-200"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-500 transition-colors duration-300"
+                  className="bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-500 hover:text-cyan-100 transition-colors duration-200"
                 >
                   Register
                 </Link>
@@ -224,42 +224,42 @@ const Navbar = () => {
                 <a
                   href="#home"
                   onClick={(e) => handleNavClick(e, 'home')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Home
                 </a>
                 <a
                   href="#features"
                   onClick={(e) => handleNavClick(e, 'features')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Features
                 </a>
                 <a
                   href="#services"
                   onClick={(e) => handleNavClick(e, 'services')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Services
                 </a>
                 <a
                   href="#testimonials"
                   onClick={(e) => handleNavClick(e, 'testimonials')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Feedback
                 </a>
                 <a
                   href="#faq"
                   onClick={(e) => handleNavClick(e, 'faq')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   FAQ
                 </a>
                 <a
                   href="#blog"
                   onClick={(e) => handleNavClick(e, 'blog')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Blog
                 </a>
@@ -268,19 +268,19 @@ const Navbar = () => {
               <>
                 <Link
                   to="/"
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Home
                 </Link>
                 <Link
                   to="/services"
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Services
                 </Link>
                 <Link
                   to="/blog"
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Blog
                 </Link>
@@ -288,7 +288,7 @@ const Navbar = () => {
             )}
             <Link
               to="/cart"
-              className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300 flex items-center"
+              className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text flex items-center"
             >
               <FaShoppingCart className="w-5 h-5 mr-2" />
               Cart
@@ -305,7 +305,7 @@ const Navbar = () => {
                     setShowDropdown(!showDropdown);
                     setIsOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300 focus:outline-none"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer focus:outline-none"
                 >
                   Hi, {userName}!
                 </button>
@@ -347,14 +347,14 @@ const Navbar = () => {
               <div className="mt-4">
                 <Link
                   to="/login"
-                  className="block w-full text-left bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-300 mb-2"
+                  className="block w-full text-left bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors duration-200 mb-2"
                   onClick={() => setIsOpen(false)}
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="block w-full text-left bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-500 transition-colors duration-300"
+                  className="block w-full text-left bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-500 transition-colors duration-200"
                   onClick={() => setIsOpen(false)}
                 >
                   Register

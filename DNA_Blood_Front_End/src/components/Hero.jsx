@@ -47,16 +47,16 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.8 }}
-              className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight"
+              className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 leading-tight hover:text-black cursor-default"
             >
               DNA Testing
-              <span className="block text-blue-600 mt-2">For Your Peace of Mind</span>
+              <span className="block text-blue-600 mt-2 hover:text-blue-700 cursor-default">For Your Peace of Mind</span>
             </motion.h1>
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4, duration: 0.8 }}
-              className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto lg:mx-0"
+              className="mt-6 text-lg md:text-xl text-gray-700 max-w-2xl mx-auto lg:mx-0 hover:text-gray-900 transition-all duration-300 transform hover:scale-105 cursor-text"
             >
               Professional DNA testing services for paternity, ancestry, and health insights. 
               Accurate, confidential, and reliable results you can trust.
@@ -69,13 +69,13 @@ const Hero = () => {
             >
               <Link
                 to="/services"
-                className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+                className="inline-flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl cursor-pointer"
               >
                 Our Services
               </Link>
               <Link
                 to="/contact"
-                className="inline-flex items-center justify-center px-8 py-3 border-2 border-blue-600 text-base font-medium rounded-full text-blue-600 bg-transparent hover:bg-blue-50 transition-all duration-300 transform hover:scale-105"
+                className="inline-flex items-center justify-center px-8 py-3 border-2 border-blue-600 text-base font-medium rounded-full text-blue-600 bg-transparent hover:bg-blue-50 transition-all duration-300 transform hover:scale-105 cursor-pointer"
               >
                 Contact Us
               </Link>
@@ -89,11 +89,11 @@ const Hero = () => {
             transition={{ delay: 0.4, duration: 0.8 }}
             className="relative"
           >
-            <div className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl">
+            <div className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-all duration-700">
               <img
                 src="/img/Hero.png"
                 alt="DNA Testing"
-                className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700 opacity-85"
+                className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700 opacity-85"
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
             </div>
@@ -103,20 +103,20 @@ const Hero = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.8 }}
-              className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl"
+              className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl transform hover:scale-110 transition-all duration-300 cursor-default"
             >
-              <div className="text-2xl font-bold text-blue-600">99.9%</div>
-              <div className="text-sm text-gray-600">Accuracy Rate</div>
+              <div className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-200 cursor-default">99.9%</div>
+              <div className="text-sm text-gray-600 hover:text-gray-700 transition-colors duration-200 cursor-default">Accuracy Rate</div>
             </motion.div>
             
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1, duration: 0.8 }}
-              className="absolute -top-6 -right-6 bg-white p-4 rounded-xl shadow-xl"
+              className="absolute -top-6 -right-6 bg-white p-4 rounded-xl shadow-xl transform hover:scale-110 transition-all duration-300 cursor-default"
             >
-              <div className="text-2xl font-bold text-blue-600">24/7</div>
-              <div className="text-sm text-gray-600">Support</div>
+              <div className="text-2xl font-bold text-blue-600 hover:text-blue-700 transition-colors duration-200 cursor-default">24/7</div>
+              <div className="text-sm text-gray-600 hover:text-gray-700 transition-colors duration-200 cursor-default">Support</div>
             </motion.div>
           </motion.div>
         </div>
