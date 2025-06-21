@@ -36,6 +36,9 @@ const AccountSetting = () => {
 
       if (response.status === 401) {
         localStorage.removeItem('token');
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRole');
         navigate('/login');
         return;
       }
@@ -47,18 +50,15 @@ const AccountSetting = () => {
 
       const data = await response.json();
       const tokenData = JSON.parse(atob(token.split('.')[1]));
-
       const profileData = {
         name: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || data.name,
         email: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || data.email,
         phone: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'] || data.phone,
         updatedAt: data.updatedAt
       };
-
       if (!profileData.name || !profileData.email || !profileData.phone) {
         throw new Error('Invalid profile data received');
       }
-
       setFormData(profileData);
     } catch (err) {
       console.error('Error fetching profile:', err);
@@ -70,6 +70,7 @@ const AccountSetting = () => {
 
   useEffect(() => {
     fetchProfileData();
+    signalRService.offUserProfileUpdate();
     setupSignalR();
   }, [fetchProfileData]);
 
@@ -131,6 +132,9 @@ const AccountSetting = () => {
 
       if (response.status === 401) {
         localStorage.removeItem('token');
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRole');
         navigate('/login');
         return;
       }

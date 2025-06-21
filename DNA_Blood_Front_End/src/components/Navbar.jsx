@@ -3,6 +3,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaShoppingCart, FaBars, FaTimes, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import { FaDna } from "react-icons/fa6";
 import { useCart } from '../context/CartContext';
+import signalRService from '../services/signalRService';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,12 +18,11 @@ const Navbar = () => {
   useEffect(() => {
     // Kiểm tra trạng thái đăng nhập ban đầu
     const checkLoginStatus = () => {
-    const token = localStorage.getItem('token');
-    const storedUserName = localStorage.getItem('userName');
+      const token = localStorage.getItem('token');
+      const storedUserName = localStorage.getItem('userName');
       const storedUserRole = localStorage.getItem('userRole');
-      
-    setIsLoggedIn(!!token);
-    setUserName(storedUserName || '');
+      setIsLoggedIn(!!token);
+      setUserName(storedUserName || '');
       setUserRole(storedUserRole || '');
     };
 
@@ -34,19 +34,28 @@ const Navbar = () => {
       setUserRole(userRole);
     };
 
+    // Lắng nghe sự kiện logout
+    const handleLogoutEvent = () => {
+      setIsLoggedIn(false);
+      setUserName('');
+      setUserRole('');
+    };
+
     // Kiểm tra trạng thái ban đầu
     checkLoginStatus();
 
     // Thêm event listener
     window.addEventListener('userLogin', handleLogin);
+    window.addEventListener('userLogout', handleLogoutEvent);
 
     // Cleanup
     return () => {
       window.removeEventListener('userLogin', handleLogin);
+      window.removeEventListener('userLogout', handleLogoutEvent);
     };
   }, []);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.removeItem('token');
     localStorage.removeItem('isLoggedIn');
     localStorage.removeItem('userName');
@@ -55,6 +64,14 @@ const Navbar = () => {
     setUserName('');
     setUserRole('');
     setShowDropdown(false);
+    // Ngắt kết nối SignalR
+    try {
+      await signalRService.stopConnection();
+    } catch (e) {
+      console.error('Error stopping SignalR:', e);
+    }
+    // Bắn event userLogout để các component khác biết
+    window.dispatchEvent(new CustomEvent('userLogout'));
     navigate('/login');
   };
 

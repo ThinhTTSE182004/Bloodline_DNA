@@ -83,5 +83,59 @@ namespace LoginAPI.Services
                 UpdatedAt = createdProfile.UpdatedAt
             };
         }
+
+        public async Task<string> HandleGoogleLoginAsync(string email, string name)
+        {
+            if (string.IsNullOrEmpty(email))
+                throw new ArgumentException("Email cannot be null");
+
+            if (string.IsNullOrEmpty(name))
+                name = "Google User";
+
+            var user = await _userRepository.GetByEmailAsync(email);
+            Console.WriteLine(user == null ? "User chưa có" : "User đã có");
+            if (user == null)
+            {
+                user = new User
+                {
+                    Email = email,
+                    Name = name,
+                    RoleId = 3,
+                    Password = BCrypt.Net.BCrypt.HashPassword(Guid.NewGuid().ToString()),
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                try
+                {
+                    user = await _userRepository.AddAsync(user);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Lỗi khi lưu user mới: " + ex.InnerException?.Message ?? ex.Message);
+                }
+
+                var profile = new UserProfile
+                {
+                    UserId = user.UserId,
+                    Name = name,
+                    Email = email,
+                    CreatedAt = DateTime.Now,
+                    UpdatedAt = DateTime.Now
+                };
+
+                try
+                {
+                    await _userProfileRepository.AddAsync(profile);
+                }
+                catch (Exception ex)
+                {
+                    throw new Exception("Lỗi khi lưu user profile: " + ex.InnerException?.Message ?? ex.Message);
+                }
+            }
+
+            var role = await _roleRepository.GetByIdAsync(user.RoleId);
+            return _tokenService.CreateToken(user, role);
+        }
     }
 }

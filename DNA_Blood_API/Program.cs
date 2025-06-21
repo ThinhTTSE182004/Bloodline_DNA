@@ -7,6 +7,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using DNA_API1.Services;
 using DNA_API1.Hubs;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
 
 namespace DNA_API1
 {
@@ -56,22 +58,33 @@ namespace DNA_API1
             builder.Services.AddDbContext<BloodlineDnaContext>(option =>
                 option.UseSqlServer(builder.Configuration.GetConnectionString("Default")));
 
-            // JWT Authentication
-            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+            // Đăng ký Authentication (JWT + Cookie + Google)
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddCookie()
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
                 {
-                    options.TokenValidationParameters = new TokenValidationParameters
-                    {
-                        ValidateIssuer = true,
-                        ValidIssuer = builder.Configuration["AppSettings:Issuer"],
-                        ValidateAudience = true,
-                        ValidAudience = builder.Configuration["AppSettings:Audience"],
-                        ValidateLifetime = true,
-                        IssuerSigningKey = new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
-                        ValidateIssuerSigningKey = true
-                    };
-                });
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["AppSettings:Audience"],
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
+                    ValidateIssuerSigningKey = true
+                };
+            })
+            .AddGoogle(options =>
+            {
+                options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                options.CallbackPath = "/signin-google";
+            });
 
             // Repository Registration
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -91,12 +104,8 @@ namespace DNA_API1
             builder.Services.AddScoped<IStaffAssignmentService, StaffAssignmentService>();
             builder.Services.AddScoped<ISampleService, SampleService>();
             builder.Services.AddScoped<ISampleRepository, SampleRepository>();
-
             builder.Services.AddScoped<ISampleTransferRepository, SampleTransferRepository>();
             builder.Services.AddScoped<ISampleTransferService, SampleTransferService>();
-
-            builder.Services.AddScoped<ISampleTransferRepository, SampleTransferRepository>();
-
 
             // Add SignalR
             builder.Services.AddSignalR();

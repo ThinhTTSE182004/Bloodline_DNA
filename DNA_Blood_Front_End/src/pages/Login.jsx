@@ -131,6 +131,9 @@ const Login = () => {
           <button
             type="button"
             className="mt-4 w-full flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-md hover:bg-gray-50 transition-colors duration-300"
+            onClick={() => {
+              window.location.href = 'https://localhost:7113/api/Auth/google-login';
+            }}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path
