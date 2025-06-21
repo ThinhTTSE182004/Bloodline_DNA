@@ -25,6 +25,7 @@ import PaymentSuccess from './pages/PaymentSuccess';
 import Staff from './pages/Staff';
 import StaffDashboard from './pages/StaffDashboard';
 import StaffProfile from './pages/StaffProfile';
+import OAuthSuccess from './pages/OAuthSuccess';
 
 const App = () => {
   const [userRole, setUserRole] = useState(null);
@@ -105,6 +106,7 @@ const App = () => {
               <main className="flex-grow">
                 <Routes>
                   <Route path="/login" element={<Login />} />
+                  <Route path="/oauth-success" element={<OAuthSuccess />} />
                   <Route path="/register" element={<Register />} />
                   <Route path="/profile" element={<Profile />} />
                   <Route path="/settings" element={<AccountSetting />} />

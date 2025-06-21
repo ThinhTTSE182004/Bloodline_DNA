@@ -1,6 +1,7 @@
 ﻿using System.Security.Claims;
 using DNA_API1.Services;
 using DNA_API1.ViewModels;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,7 +9,7 @@ namespace DNA_API1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Roles = "Customer")] // Chỉ khách hàng mới được tạo đơn hàng
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
@@ -53,7 +54,7 @@ namespace DNA_API1.Controllers
                 return StatusCode(500, new
                 {
                     message = "Đã xảy ra lỗi khi tạo đơn hàng",
-                    error = ex.Message
+                    error = ex.ToString() // Trả về cả stack trace
                 });
             }
         }

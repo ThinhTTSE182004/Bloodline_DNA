@@ -5,6 +5,7 @@ class SignalRService {
         this.connection = null;
         this.hubUrl = 'https://localhost:7113/userHub';
         this.isConnecting = false;
+        this.profileUpdateCallback = null;
     }
 
     async startConnection() {
@@ -36,6 +37,10 @@ class SignalRService {
             this.connection.onreconnected((connectionId) => {
                 console.log('Reconnected to SignalR with connectionId:', connectionId);
                 this.joinUserGroup();
+                if (this.profileUpdateCallback) {
+                    this.connection.off('UserProfileUpdated');
+                    this.connection.on('UserProfileUpdated', this.profileUpdateCallback);
+                }
             });
 
             this.connection.onclose((error) => {
@@ -46,6 +51,10 @@ class SignalRService {
             await this.connection.start();
             console.log('SignalR Connected!');
             await this.joinUserGroup();
+            if (this.profileUpdateCallback) {
+                this.connection.off('UserProfileUpdated');
+                this.connection.on('UserProfileUpdated', this.profileUpdateCallback);
+            }
         } catch (err) {
             console.error('SignalR Connection Error: ', err);
             this.isConnecting = false;
@@ -93,8 +102,10 @@ class SignalRService {
                     }
                 }
             }
-            await this.connection.stop();
-            console.log('SignalR Disconnected!');
+            if (this.connection.state !== signalR.HubConnectionState.Disconnected) {
+                await this.connection.stop();
+                console.log('SignalR Disconnected!');
+            }
         } catch (err) {
             console.error('SignalR Disconnection Error: ', err);
         } finally {
@@ -104,15 +115,15 @@ class SignalRService {
     }
 
     onUserProfileUpdate(callback) {
+        this.profileUpdateCallback = callback;
         if (this.connection) {
-            this.connection.on('UserProfileUpdated', (updatedProfile) => {
-                console.log('Received profile update:', updatedProfile);
-                callback(updatedProfile);
-            });
+            this.connection.off('UserProfileUpdated');
+            this.connection.on('UserProfileUpdated', callback);
         }
     }
 
     offUserProfileUpdate() {
+        this.profileUpdateCallback = null;
         if (this.connection) {
             this.connection.off('UserProfileUpdated');
         }
