@@ -18,8 +18,7 @@ namespace DNA_API1.Repository
     List<(int StaffId, int MedicalStaffId)> sampleTransferInfos);
         Task<ServicePackage> GetServicePackageByIdAsync(int servicePackageId);
         Task<List<OrderHistoryDTO>> GetOrderHistoryByUserIdAsync(int userId);
-        Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId);
-
+        Task<IEnumerable<OrderDetailHistoryDTO>> GetOrderDetailsByOrderIdAsync(int orderId, int userId);
         // Cập nhật trạng thái Payment Status.
         Task<Order?> GetOrderWithNavigationByIdAsync(int orderId);
         Task UpdateOrderAsync(Order order);

@@ -26,5 +26,8 @@ namespace DNA_API1.Repository
         // Các phương thức để tính toán thời gian xử lý
         int CalculateMedicalStaffProcessingTime(string serviceName);
         int CalculateStaffProcessingTime(string serviceName);
+        
+        // Phương thức để tính toán thời gian rảnh
+        Task<List<DateTime>> GetAvailableTimeSlotsAsync(List<(DateTime StartTime, int DurationMinutes)> busyTimes, int requiredDuration);
     }
 } 
