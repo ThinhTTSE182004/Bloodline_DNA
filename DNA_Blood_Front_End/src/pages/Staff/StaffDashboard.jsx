@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import StaffNavbar from '../components/StaffNavbar';
+import StaffNavbar from '../../components/StaffNavbar';
 import { FaClipboardList, FaMoneyBillWave, FaUserClock, FaSpinner } from 'react-icons/fa';
 
 const StaffDashboard = () => {

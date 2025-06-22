@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import StaffNavbar from '../components/StaffNavbar';
+import StaffNavbar from '../../components/StaffNavbar';
 import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaEdit, FaSpinner, FaTimesCircle, FaExclamationTriangle } from 'react-icons/fa';
 

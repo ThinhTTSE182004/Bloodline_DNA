@@ -49,9 +49,11 @@ const Login = () => {
         // Chuyển hướng dựa trên role
         if (userRole === 'Staff') {
           navigate('/staff');
+        } else if (userRole === 'Admin') {
+          navigate('/admin');
         } else {
-        navigate('/');
-      }
+          navigate('/');
+        }
       } else {
         const errorText = await response.text();
         try {
