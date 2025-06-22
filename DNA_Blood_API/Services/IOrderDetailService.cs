@@ -6,7 +6,10 @@ namespace DNA_API1.Services
 {
     public interface IOrderDetailService
     {
+        // Update OrderStatus khi tất cả samples hoàn thành
         Task<bool> UpdateOrderDetailStatusIfAllSamplesCompletedAsync(int orderDetailId);
+        
+        // Lấy OrderDetails theo MedicalStaffId với OrderStatus
         Task<IEnumerable<MedicalStaffOrderDetailDTO>> GetOrderDetailsByMedicalStaffIdAsync(int medicalStaffId);
 
         Task<List<OrderDetailAssignedDTO>> GetOrderDetailsByStaffIdAsync(int staffId);

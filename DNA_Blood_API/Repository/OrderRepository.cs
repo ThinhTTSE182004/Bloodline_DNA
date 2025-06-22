@@ -48,6 +48,7 @@ namespace DNA_API1.Repository
                 .Include(o => o.CollectionMethod).ThenInclude(cm => cm.TestType)
                 .Include(o => o.Delivery)
                 .Include(o => o.OrderDetails).ThenInclude(od => od.Result)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.DeliveryTasks).ThenInclude(dt => dt.Staff)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OrderId == orderId && o.CustomerId == userId);
 
@@ -63,6 +64,7 @@ namespace DNA_API1.Repository
                 var result = orderDetail.Result;
                 var servicePrice = orderDetail.ServicePackage?.ServicePrices.FirstOrDefault();
                 var testType = order.CollectionMethod?.TestType?.Name ?? "Chưa xác định";
+                var deliveryTask = orderDetail.DeliveryTasks.FirstOrDefault();
 
                 // Tạo DTO ban đầu
                 var dto = new OrderDetailHistoryDTO
@@ -91,6 +93,12 @@ namespace DNA_API1.Repository
                     DeliveryStatus = order.Delivery?.DeliveryStatus,
                     DeliveryDate = order.Delivery?.DeliveryDate,
                     DeliveryNote = order.Delivery?.Note,
+                    AssignedStaffId = deliveryTask?.StaffId,
+                    AssignedStaffName = deliveryTask?.Staff?.Name,
+                    TaskAssignedAt = deliveryTask?.AssignedAt,
+                    DeliveryTaskStatus = deliveryTask?.DeliveryTaskStatus,
+                    DeliveryTaskNote = deliveryTask?.Note,
+                    TaskCompleteAt = deliveryTask?.CompleteAt,
                     ResultStatus = result?.ResultStatus,
                     ResultFileUrl = result?.ReportUrl
                 };
@@ -110,6 +118,12 @@ namespace DNA_API1.Repository
                     dto.DeliveryStatus = null;
                     dto.DeliveryDate = null;
                     dto.DeliveryNote = null;
+                    dto.AssignedStaffId = null;
+                    dto.AssignedStaffName = null;
+                    dto.TaskAssignedAt = null;
+                    dto.DeliveryTaskStatus = null;
+                    dto.DeliveryTaskNote = null;
+                    dto.TaskCompleteAt = null;
                 }
 
                 return dto; // Trả về DTO đã được xử lý
@@ -143,7 +157,9 @@ namespace DNA_API1.Repository
      List<Sample> samples,
      Payment payment,
      List<SampleKit> sampleKits,
-     List<(int StaffId, int MedicalStaffId)> sampleTransferInfos)
+     List<(int StaffId, int MedicalStaffId)> sampleTransferInfos,
+     Delivery? delivery = null,
+     List<DeliveryTask>? deliveryTasks = null)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -196,6 +212,25 @@ namespace DNA_API1.Repository
                     _context.SampleKits.Add(kit);
                 }
 
+                // Tạo Delivery nếu có
+                if (delivery != null)
+                {
+                    delivery.OrderId = order.OrderId;
+                    _context.Deliveries.Add(delivery);
+                }
+
+                // Tạo DeliveryTask nếu có
+                if (deliveryTasks != null)
+                {
+                    for (int i = 0; i < deliveryTasks.Count && i < details.Count; i++)
+                    {
+                        var task = deliveryTasks[i];
+                        var orderDetail = details[i];
+                        task.OrderDetailId = orderDetail.OrderDetailId;
+                        _context.DeliveryTasks.Add(task);
+                    }
+                }
+
                 await _context.SaveChangesAsync();
                 await transaction.CommitAsync();
 
@@ -206,90 +241,6 @@ namespace DNA_API1.Repository
                 await transaction.RollbackAsync();
                 throw;
             }
-        }
-
-
-        public async Task<List<User>> GetAvailableMedicalStaffAsync(string serviceName, int maxOrdersPerDay)
-        {
-            var today = DateTime.Today;
-            var tomorrow = today.AddDays(1);
-
-            // Đầu tiên tìm nhân viên có chuyên môn phù hợp
-            var matchingStaff = await _context.Users
-                .Include(u => u.UserProfile)
-                .Where(u => u.RoleId == 4 &&
-                            u.UserProfile.Specialization != null &&
-                            u.UserProfile.YearsOfExperience >= 2 &&
-                            serviceName.Contains(u.UserProfile.Specialization))
-                .Select(u => new
-                {
-                    User = u,
-                    OrderCount = _context.OrderDetails
-                        .Where(od => od.MedicalStaffId == u.UserId &&
-                                     od.Order.CreateAt >= today &&
-                                     od.Order.CreateAt < tomorrow)
-                        .Count()
-                })
-                .Where(x => x.OrderCount < maxOrdersPerDay)
-                .OrderBy(x => x.OrderCount)
-                .Select(x => x.User)
-                .ToListAsync();
-
-            // Nếu không tìm thấy nhân viên phù hợp, tìm bất kỳ nhân viên y tế nào đang rảnh
-            if (!matchingStaff.Any())
-            {
-                return await _context.Users
-                    .Include(u => u.UserProfile)
-                    .Where(u => u.RoleId == 4 &&
-                                u.UserProfile.YearsOfExperience >= 2)
-                    .Select(u => new
-                    {
-                        User = u,
-                        OrderCount = _context.OrderDetails
-                            .Where(od => od.MedicalStaffId == u.UserId &&
-                                         od.Order.CreateAt >= today &&
-                                         od.Order.CreateAt < tomorrow)
-                            .Count()
-                    })
-                    .Where(x => x.OrderCount < maxOrdersPerDay)
-                    .OrderBy(x => x.OrderCount)
-                    .Select(x => x.User)
-                    .ToListAsync();
-            }
-
-            return matchingStaff;
-        }
-
-        public async Task<List<User>> GetAvailableStaffAsync(int maxOrdersPerDay)
-        {
-            var today = DateTime.Today;
-            var tomorrow = today.AddDays(1);
-
-            return await _context.Users
-                .Where(u => u.RoleId == 2)
-                .Select(u => new
-                {
-                    User = u,
-                    OrderCount = _context.Samples
-                        .Where(s => s.StaffId == u.UserId &&
-                                    s.OrderDetail.Order.CreateAt >= today &&
-                                    s.OrderDetail.Order.CreateAt < tomorrow)
-                        .Count()
-                })
-                .Where(x => x.OrderCount < maxOrdersPerDay)
-                .OrderBy(x => x.OrderCount)
-                .Select(x => x.User)
-                .ToListAsync();
-        }
-
-        public async Task<int> GetStaffOrderCountAsync(int staffId, DateTime date)
-        {
-            var nextDay = date.AddDays(1);
-            return await _context.Samples
-                .Where(s => s.StaffId == staffId &&
-                            s.OrderDetail.Order.CreateAt >= date &&
-                            s.OrderDetail.Order.CreateAt < nextDay)
-                .CountAsync();
         }
 
         public async Task<ServicePackage> GetServicePackageByIdAsync(int servicePackageId)

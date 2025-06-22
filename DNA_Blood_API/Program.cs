@@ -64,27 +64,27 @@ namespace DNA_API1
                 options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
                 options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
             })
- .AddCookie()
- .AddJwtBearer(options =>
- {
-     options.TokenValidationParameters = new TokenValidationParameters
-     {
-         ValidateIssuer = true,
-         ValidIssuer = builder.Configuration["AppSettings:Issuer"],
-         ValidateAudience = true,
-         ValidAudience = builder.Configuration["AppSettings:Audience"],
-         ValidateLifetime = true,
-         IssuerSigningKey = new SymmetricSecurityKey(
-             Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
-         ValidateIssuerSigningKey = true
-     };
- })
- .AddGoogle(options =>
- {
-     options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
-     options.CallbackPath = "/signin-google";
- });
+            .AddCookie()
+            .AddJwtBearer(options =>
+            {
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidIssuer = builder.Configuration["AppSettings:Issuer"],
+                    ValidateAudience = true,
+                    ValidAudience = builder.Configuration["AppSettings:Audience"],
+                    ValidateLifetime = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(builder.Configuration["AppSettings:Token"]!)),
+                    ValidateIssuerSigningKey = true
+                };
+            })
+            .AddGoogle(options =>
+            {
+                options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                options.CallbackPath = "/signin-google";
+            });
 
             // Repository Registration
             builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -93,6 +93,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IServicePackageRepository, ServicePackageRepository>();
             builder.Services.AddScoped<IServiceRepository, ServiceRepository>();
             builder.Services.AddScoped<IOrderRepository, OrderRepository>();
+            builder.Services.AddScoped<IStaffScheduleRepository, StaffScheduleRepository>();
             builder.Services.AddScoped<IResultRepository, ResultRepository>();
             builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
 
@@ -108,12 +109,8 @@ namespace DNA_API1
             builder.Services.AddScoped<ISampleRepository, SampleRepository>();
             builder.Services.AddScoped<ISampleTransferRepository, SampleTransferRepository>();
             builder.Services.AddScoped<ISampleTransferService, SampleTransferService>();
-            builder.Services.AddScoped<ISampleTransferRepository, SampleTransferRepository>();
-            builder.Services.AddScoped<IResultRepository, ResultRepository>();
             builder.Services.AddScoped<IResultService, ResultService>();
             builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
-
-
 
             // Add SignalR
             builder.Services.AddSignalR();
