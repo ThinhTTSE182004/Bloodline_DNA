@@ -37,74 +37,85 @@ namespace DNA_API1.Repository
                 .ToListAsync();
         }
 
-        public async Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId)
+        public async Task<IEnumerable<OrderDetailHistoryDTO>> GetOrderDetailsByOrderIdAsync(int orderId, int userId)
         {
+            // 1. Query để lấy toàn bộ đơn hàng (Code này của bạn đã đúng)
             var order = await _context.Orders
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.ServicePackage)
-                        .ThenInclude(sp => sp.ServicePrices)
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.Samples)
-                        .ThenInclude(s => s.Participant)
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.Samples)
-                        .ThenInclude(s => s.SampleType)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.ServicePackage).ThenInclude(sp => sp.ServicePrices)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.Samples).ThenInclude(s => s.Participant)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.Samples).ThenInclude(s => s.SampleType)
                 .Include(o => o.Payment)
-                .Include(o => o.CollectionMethod)
-                    .ThenInclude(cm => cm.TestType)
+                .Include(o => o.CollectionMethod).ThenInclude(cm => cm.TestType)
                 .Include(o => o.Delivery)
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.Result)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.Result)
+                .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OrderId == orderId && o.CustomerId == userId);
 
-            if (order == null) return null;
-
-            var orderDetail = order.OrderDetails.FirstOrDefault();
-            if (orderDetail == null) return null;
-
-            var sample = orderDetail.Samples.FirstOrDefault();
-            var result = orderDetail.Result;
-            var servicePrice = orderDetail.ServicePackage?.ServicePrices.FirstOrDefault();
-            var sampleTypeName = order.OrderDetails
-                .SelectMany(od => od.Samples)
-                .Select(s => s.SampleType.Name)
-                .FirstOrDefault();
-
-            return new OrderDetailHistoryDTO
+            if (order == null)
             {
-                OrderId = order.OrderId,
-                CreateAt = order.CreateAt,
-                OrderStatus = order.OrderStatus,
+                return new List<OrderDetailHistoryDTO>();
+            }
 
-                ServiceName = orderDetail.ServicePackage?.ServiceName ?? "Chưa xác định",
-                TestType = order.CollectionMethod?.TestType?.Name ?? "Chưa xác định",
-                SampleType = sampleTypeName,
-                Price = servicePrice?.Price ?? 0,
+            // 2. Dùng .Select() để biến đổi TỪNG `OrderDetail` thành một DTO
+            var resultDtos = order.OrderDetails.Select(orderDetail => {
+                // Lấy thông tin phụ cho mỗi chi tiết
+                var sample = orderDetail.Samples.FirstOrDefault();
+                var result = orderDetail.Result;
+                var servicePrice = orderDetail.ServicePackage?.ServicePrices.FirstOrDefault();
+                var testType = order.CollectionMethod?.TestType?.Name ?? "Chưa xác định";
 
-                ParticipantName = sample?.Participant?.FullName ?? "Chưa xác định",
-                Sex = sample?.Participant?.Sex ?? "Chưa xác định",
-                BirthYear = sample?.Participant?.BirthDate.Year ?? DateTime.Now.Year,
-                Relationship = sample?.Participant?.Relationship ?? "Chưa xác định",
-                NameRelation = sample?.Participant?.NameRelation ?? "Chưa xác định",
+                // Tạo DTO ban đầu
+                var dto = new OrderDetailHistoryDTO
+                {
+                    OrderId = order.OrderId,
+                    CreateAt = order.CreateAt,
+                    OrderStatus = order.OrderStatus,
+                    ServiceName = orderDetail.ServicePackage?.ServiceName ?? "Chưa xác định",
+                    TestType = testType,
+                    SampleType = sample?.SampleType?.Name,
+                    Price = servicePrice?.Price ?? 0,
+                    ParticipantName = sample?.Participant?.FullName,
+                    Sex = sample?.Participant?.Sex,
+                    BirthYear = sample?.Participant?.BirthDate.Year,
+                    Relationship = sample?.Participant?.Relationship,
+                    NameRelation = sample?.Participant?.NameRelation,
+                    CollectionMethod = order.CollectionMethod?.MethodName ?? "Chưa xác định",
+                    CollectedDate = sample?.CollectedDate,
+                    ReceivedDate = sample?.ReceivedDate,
+                    SampleStatus = sample?.SampleStatus,
+                    PaymentMethod = order.Payment?.PaymentMethod,
+                    PaymentStatus = order.Payment?.PaymentStatus,
+                    PaymentDate = order.Payment?.PaymentDate,
+                    Total = servicePrice?.Price ?? 0,
+                    DeliveryAddress = order.Delivery?.DeliveryAddress,
+                    DeliveryStatus = order.Delivery?.DeliveryStatus,
+                    DeliveryDate = order.Delivery?.DeliveryDate,
+                    DeliveryNote = order.Delivery?.Note,
+                    ResultStatus = result?.ResultStatus,
+                    ResultFileUrl = result?.ReportUrl
+                };
 
-                CollectionMethod = order.CollectionMethod?.MethodName ?? "Chưa xác định",
-                CollectedDate = sample?.CollectedDate,
-                ReceivedDate = sample?.ReceivedDate,
-                SampleStatus = sample?.SampleStatus ?? "Chưa lấy mẫu",
+                // --- ⭐ ÁP DỤNG BUSINESS LOGIC CỦA BẠN VÀO ĐÂY ⭐ ---
+                if (!testType.ToLower().Contains("civil"))
+                {
+                    if (string.IsNullOrEmpty(dto.ParticipantName) || string.IsNullOrEmpty(dto.NameRelation))
+                    {
+                        // Thay vì throw exception làm sập cả request, ta có thể thêm 1 trường báo lỗi
+                        // dto.ErrorMessage = "Thiếu thông tin người thân cho xét nghiệm pháp lý";
+                    }
+                }
+                if (!(dto.CollectionMethod ?? "").ToLower().Contains("at home"))
+                {
+                    dto.DeliveryAddress = null;
+                    dto.DeliveryStatus = null;
+                    dto.DeliveryDate = null;
+                    dto.DeliveryNote = null;
+                }
 
-                PaymentMethod = order.Payment?.PaymentMethod ?? "Chưa xác định",
-                PaymentStatus = order.Payment?.PaymentStatus ?? "Chưa xác định",
-                PaymentDate = order.Payment?.PaymentDate,
-                Total = servicePrice?.Price ?? 0,
+                return dto; // Trả về DTO đã được xử lý
+            }).ToList();
 
-                DeliveryAddress = order.Delivery?.DeliveryAddress,
-                DeliveryStatus = order.Delivery?.DeliveryStatus,
-                DeliveryDate = order.Delivery?.DeliveryDate,
-                DeliveryNote = order.Delivery?.Note,
-
-                ResultStatus = result?.ResultStatus,
-                ResultFileUrl = result?.ReportUrl
-            };
+            return resultDtos;
         }
 
         public async Task<TestType> GetTestTypeByNameAsync(string name)

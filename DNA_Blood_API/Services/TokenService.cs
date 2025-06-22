@@ -1,4 +1,4 @@
-using DNA_API1.Models;
+﻿using DNA_API1.Models;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -19,7 +19,7 @@ namespace LoginAPI.Services
         {
             var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.MobilePhone, user.Phone ?? "Not updated yet"),
+                new Claim(ClaimTypes.MobilePhone, user.Phone??"Not updated yet"),
                 new Claim(ClaimTypes.Email, user.Email),
                 new Claim(ClaimTypes.Name, user.Name),
                 new Claim(ClaimTypes.NameIdentifier, user.UserId.ToString()),
@@ -27,13 +27,13 @@ namespace LoginAPI.Services
             };
 
             var key = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(_configuration.GetValue<string>("AppSettings:Token")!));
+                Encoding.UTF8.GetBytes(_configuration.GetValue<string>("Appsettings:Token")!));
 
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var token = new JwtSecurityToken(
                 issuer: _configuration.GetValue<string>("AppSettings:Issuer"),
-                audience: _configuration.GetValue<string>("AppSettings:Audience"),
+                audience: _configuration.GetValue<string>("AppSettings:audience"),
                 claims: claims,
                 expires: DateTime.Now.AddDays(1),
                 signingCredentials: creds

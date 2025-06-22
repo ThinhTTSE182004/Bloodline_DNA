@@ -120,7 +120,7 @@ namespace DNA_API1.Repository
             return true;
         }
 
-        public async Task<List<DateTime>> GetStaffBusyTimeSlotsAsync(int staffId, DateTime date)
+     /*   public async Task<List<DateTime>> GetStaffBusyTimeSlotsAsync(int staffId, DateTime date)
         {
             var nextDay = date.AddDays(1);
             
@@ -175,7 +175,7 @@ namespace DNA_API1.Repository
             
             return busySlots;
         }
-
+     */
         public async Task<List<(DateTime StartTime, int DurationMinutes)>> GetStaffBusyTimeWithDurationAsync(int staffId, DateTime date)
         {
             var nextDay = date.AddDays(1);
@@ -421,6 +421,11 @@ namespace DNA_API1.Repository
         }
 
         // Method mới để lấy thời gian rảnh với thông tin chi tiết
+        public async Task<List<DateTime>> GetAvailableTimeSlotsAsync(List<(DateTime StartTime, int DurationMinutes)> busyTimes, int requiredDuration)
+        {
+            return GetAvailableTimeSlotsWithDetailedBusyTimes(busyTimes, requiredDuration);
+        }
+
         private List<DateTime> GetAvailableTimeSlotsWithDetailedBusyTimes(List<(DateTime StartTime, int DurationMinutes)> busyTimes, int requiredDuration)
         {
             var availableSlots = new List<DateTime>();

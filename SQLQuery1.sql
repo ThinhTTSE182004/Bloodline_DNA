@@ -117,6 +117,7 @@ order_detail_id INT IDENTITY(1,1) PRIMARY KEY,
 service_package_id int not null,
 medical_staff_id INT not null,
 order_id int not null,
+status nvarchar(50), 
 FOREIGN KEY (service_package_id) REFERENCES Service_package(service_package_id),
 FOREIGN KEY (order_id) REFERENCES Orders(order_id),
 FOREIGN KEY (medical_staff_id) REFERENCES USERS(user_id)
@@ -241,42 +242,6 @@ INSERT INTO [Bloodline_DNA].[dbo].[Roles] ([role_name]) VALUES
 ('Customer'),
 ('Medical Staff');
 
-
--- USERS: Staff
-INSERT INTO USERS (name, email, phone, password, role_id)
-VALUES
-(N'Nguyễn Văn An', 'an.staff@example.com', '0901000001', 'hashed_pw_1', 2),
-(N'Trần Thị Bình', 'binh.staff@example.com', '0901000002', 'hashed_pw_2', 2),
-(N'Lê Văn Cường', 'cuong.staff@example.com', '0901000003', 'hashed_pw_3', 2),
-(N'Phạm Thị Dung', 'dung.staff@example.com', '0901000004', 'hashed_pw_4', 2),
-(N'Hoàng Minh Đức', 'duc.staff@example.com', '0901000005', 'hashed_pw_5', 2);
-
--- USER_PROFILE: Staff
-INSERT INTO User_profile (user_id, name, email, phone)
-VALUES
-(1, N'Nguyễn Văn An', 'an.staff@example.com', '0901000001'),
-(2, N'Trần Thị Bình', 'binh.staff@example.com', '0901000002'),
-(3, N'Lê Văn Cường', 'cuong.staff@example.com', '0901000003'),
-(4, N'Phạm Thị Dung', 'dung.staff@example.com', '0901000004'),
-(5, N'Hoàng Minh Đức', 'duc.staff@example.com', '0901000005');
-
--- USERS: Medical Staff
-INSERT INTO USERS (name, email, phone, password, role_id)
-VALUES
-(N'TS. Nguyễn Thị Hồng', 'hong.med@example.com', '0912000001', 'hashed_pw_6', 4),
-(N'BS. Trần Văn Khánh', 'khanh.med@example.com', '0912000002', 'hashed_pw_7', 4),
-(N'ThS. Lê Thị Minh', 'minh.med@example.com', '0912000003', 'hashed_pw_8', 4),
-(N'BS. Phạm Anh Quân', 'quan.med@example.com', '0912000004', 'hashed_pw_9', 4),
-(N'ThS. Hoàng Thị Trang', 'trang.med@example.com', '0912000005', 'hashed_pw_10', 4);
-
--- USER_PROFILE: Medical Staff
-INSERT INTO User_profile (user_id, name, email, phone, Specialization, YearsOfExperience)
-VALUES
-(6, N'TS. Nguyễn Thị Hồng', 'hong.med@example.com', '0912000001', N'Maternal Ancestry', 6),
-(7, N'BS. Trần Văn Khánh', 'khanh.med@example.com', '0912000002', N'Paternal Ancestry', 8),
-(8, N'ThS. Lê Thị Minh', 'minh.med@example.com', '0912000003', N'Family Ancestry', 7),
-(9, N'BS. Phạm Anh Quân', 'quan.med@example.com', '0912000004', N'Sibling Relationship', 5),
-(10, N'ThS. Hoàng Thị Trang', 'trang.med@example.com', '0912000005', N'Parentage Testing', 9);
 
 INSERT INTO [Bloodline_DNA].[dbo].[TestType] ([TestTypeID], [Name]) VALUES
 (1, 'Civil'),
