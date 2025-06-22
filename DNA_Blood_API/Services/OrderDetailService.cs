@@ -24,9 +24,9 @@ namespace DNA_API1.Services
             if (orderDetail == null) return false;
 
             // Nếu tất cả mẫu con đã hoàn thành
-            if (orderDetail.Samples != null && orderDetail.Samples.All(s => s.SampleStatus == "Đã hoàn thành"))
+            if (orderDetail.Samples != null && orderDetail.Samples.All(s => s.SampleStatus == "Completed"))
             {
-                orderDetail.Status = "Đã hoàn thành";
+                orderDetail.Status = "Completed";
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -48,6 +48,18 @@ namespace DNA_API1.Services
             });
 
             return dtos;
+        }
+
+        public async Task<List<OrderDetailAssignedDTO>> GetOrderDetailsByStaffIdAsync(int staffId)
+        {
+            var orderDetails = await _orderDetailRepository.GetOrderDetailsByStaffIdAsync(staffId);
+            return orderDetails.Select(od => new OrderDetailAssignedDTO
+            {
+                OrderDetailId = od.OrderDetailId,
+                CustomerName = od.Order.Customer.Name,
+                ServiceName = od.ServicePackage.ServiceName,
+                OrderDate = od.Order.CreateAt
+            }).ToList();
         }
     }
 }
