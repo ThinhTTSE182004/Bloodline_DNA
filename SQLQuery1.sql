@@ -107,7 +107,7 @@ customer_id INT not null,
 collection_method_id INT  not null,
 order_status nvarchar(50) not null,
 create_at DATETIME DEFAULT GETDATE(),
-update_at DATETIME DEFAULT GETDATE(),
+booking_date Datetime,
 FOREIGN KEY (customer_id) REFERENCES USERS(user_id),
 FOREIGN KEY (collection_method_id) REFERENCES Collection_method(collection_method_id)
 )
