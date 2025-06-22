@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DNA_API1.Models;
 
-[Index("RoleName", Name = "UQ__Roles__783254B10224907A", IsUnique = true)]
+[Index("RoleName", Name = "UQ__Roles__783254B13C78007E", IsUnique = true)]
 public partial class Role
 {
     [Key]

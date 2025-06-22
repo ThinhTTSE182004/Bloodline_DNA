@@ -199,9 +199,9 @@ namespace DNA_API1.Services
         }
 
 
-        public async Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId)
+        public async Task<IEnumerable<OrderDetailHistoryDTO>> GetOrderDetailsAsync(int orderId, int userId)
         {
-            return await _orderRepository.GetOrderDetailByIdAsync(orderId, userId);
+            return await _orderRepository.GetOrderDetailsByOrderIdAsync(orderId, userId);
         }
     }
 }
