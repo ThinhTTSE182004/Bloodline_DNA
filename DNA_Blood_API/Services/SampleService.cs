@@ -17,8 +17,23 @@ namespace DNA_API1.Services
         {
             return await _sampleRepository.GetSampleByIdAsync(sampleId);
         }
+        // Update sample của medical staff
+        public async Task<bool> UpdateSampleStatusMedicalAsync(int sampleId, SampleUpdateMedical updateModel)
+        {
+            var sample = await _sampleRepository.GetSampleByIdAsync(sampleId);
+            if (sample == null) return false;
 
-        public async Task<bool> UpdateSampleStatusAsync(int sampleId, SampleUpdateViewModel updateModel)
+            // Cập nhật các trường nếu có dữ liệu
+            if (!string.IsNullOrEmpty(updateModel.SampleStatus))
+                sample.SampleStatus = updateModel.SampleStatus;
+
+            if (updateModel.ReceivedDate.HasValue)
+                sample.CollectedDate = DateOnly.FromDateTime(updateModel.ReceivedDate.Value);
+
+            return await _sampleRepository.UpdateSampleStatusAsync(sample);
+        }
+        // Update sample củastaff
+        public async Task<bool> UpdateSampleStatusStaffAsync(int sampleId, SampleUpdateStaff updateModel)
         {
             var sample = await _sampleRepository.GetSampleByIdAsync(sampleId);
             if (sample == null) return false;
@@ -30,13 +45,23 @@ namespace DNA_API1.Services
             if (updateModel.CollectedDate.HasValue)
                 sample.CollectedDate = DateOnly.FromDateTime(updateModel.CollectedDate.Value);
 
-            if (updateModel.ReceivedDate.HasValue)
-                sample.ReceivedDate = DateOnly.FromDateTime(updateModel.ReceivedDate.Value);
-
             if (!string.IsNullOrEmpty(updateModel.Note))
                 sample.Note = updateModel.Note;
 
             return await _sampleRepository.UpdateSampleStatusAsync(sample);
+        }
+
+        public async Task<List<SampleRecordDTO>> GetSamplesByMedicalStaffIdAsync(int medicalStaffId)
+        {
+            // Ví dụ: Lấy các mẫu mà medicalStaffId là người phụ trách nhận mẫu (tuỳ vào nghiệp vụ)
+            return await _sampleRepository.GetSamplesByMedicalStaffIdAsync(medicalStaffId);
+        }
+
+
+
+        public async Task<List<SampleRecordDTO>> GetSamplesByStaffIdAsync(int staffId)
+        {
+            return await _sampleRepository.GetSamplesByStaffIdAsync(staffId);
         }
     }
 

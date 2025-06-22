@@ -6,6 +6,11 @@ namespace DNA_API1.Services
     public interface ISampleService
     {
         Task<Sample?> GetSampleByIdAsync(int sampleId);
-        Task<bool> UpdateSampleStatusAsync(int sampleId, SampleUpdateViewModel updateModel);
+        Task<bool> UpdateSampleStatusStaffAsync(int sampleId, SampleUpdateStaff updateModel);
+
+        Task<bool> UpdateSampleStatusMedicalAsync(int sampleId, SampleUpdateMedical updateModel);
+
+        Task<List<SampleRecordDTO>> GetSamplesByMedicalStaffIdAsync(int medicalStaffId);
+        Task<List<SampleRecordDTO>> GetSamplesByStaffIdAsync(int staffId);
     }
 }

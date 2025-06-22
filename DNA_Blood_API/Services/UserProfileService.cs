@@ -78,36 +78,35 @@ namespace DNA_API1.Services
             return await _orderRepository.GetOrderHistoryByUserIdAsync(userId);
         }
 
-        public async Task<OrderDetailHistoryDTO?> GetOrderDetailAsync(int orderId, int userId)
+        public async Task<IEnumerable<OrderDetailHistoryDTO>> GetOrderDetailsAsync(int orderId, int userId)
         {
-            var orderDetail = await _orderRepository.GetOrderDetailByIdAsync(orderId, userId);
-            if (orderDetail == null) return null;
-
-            // Kiểm tra nếu là xét nghiệm dân sự (civil)
-            if (orderDetail.TestType.ToLower().Contains("civil"))
+            var orderDetails = await _orderRepository.GetOrderDetailsByOrderIdAsync(orderId, userId);
+            foreach (var orderDetail in orderDetails)
             {
-                // Không cần kiểm tra thông tin bắt buộc cho civil
-            }
-            else
-            {
-                // Kiểm tra thông tin bắt buộc cho legal
-                if (string.IsNullOrEmpty(orderDetail.ParticipantName) || string.IsNullOrEmpty(orderDetail.NameRelation))
+                // Kiểm tra nếu là xét nghiệm dân sự (civil)
+                if (orderDetail.TestType.ToLower().Contains("civil"))
                 {
-                    throw new Exception("Thông tin người tham gia và người thân là bắt buộc cho xét nghiệm pháp lý");
+                    // Không cần kiểm tra thông tin bắt buộc cho civil
+                }
+                else
+                {
+                    // Kiểm tra thông tin bắt buộc cho legal
+                    if (string.IsNullOrEmpty(orderDetail.ParticipantName) || string.IsNullOrEmpty(orderDetail.NameRelation))
+                    {
+                        throw new Exception("Thông tin người tham gia và người thân là bắt buộc cho xét nghiệm pháp lý");
+                    }
+                }
+
+                // Kiểm tra phương thức lấy mẫu
+                if (!orderDetail.CollectionMethod.ToLower().Contains("at home"))
+                {
+                    orderDetail.DeliveryAddress = null;
+                    orderDetail.DeliveryStatus = null;
+                    orderDetail.DeliveryDate = null;
+                    orderDetail.DeliveryNote = null;
                 }
             }
-
-            // Kiểm tra phương thức lấy mẫu
-            if (!orderDetail.CollectionMethod.ToLower().Contains("at home"))
-            {
-                // Xóa thông tin giao hàng nếu không phải lấy mẫu tại nhà
-                orderDetail.DeliveryAddress = null;
-                orderDetail.DeliveryStatus = null;
-                orderDetail.DeliveryDate = null;
-                orderDetail.DeliveryNote = null;
-            }
-
-            return orderDetail;
+            return orderDetails;
         }
     }
 }
