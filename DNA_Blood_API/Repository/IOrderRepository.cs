@@ -15,7 +15,9 @@ namespace DNA_API1.Repository
     List<Sample> samples,
     Payment payment,
     List<SampleKit> sampleKits,
-    List<(int StaffId, int MedicalStaffId)> sampleTransferInfos);
+    List<(int StaffId, int MedicalStaffId)> sampleTransferInfos,
+    Delivery? delivery = null,
+    List<DeliveryTask>? deliveryTasks = null);
         Task<ServicePackage> GetServicePackageByIdAsync(int servicePackageId);
         Task<List<OrderHistoryDTO>> GetOrderHistoryByUserIdAsync(int userId);
         Task<IEnumerable<OrderDetailHistoryDTO>> GetOrderDetailsByOrderIdAsync(int orderId, int userId);

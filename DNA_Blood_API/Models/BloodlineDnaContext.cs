@@ -143,7 +143,6 @@ public partial class BloodlineDnaContext : DbContext
             entity.HasKey(e => e.OrderId).HasName("PK__Orders__465962295517D119");
 
             entity.Property(e => e.CreateAt).HasDefaultValueSql("(getdate())");
-            entity.Property(e => e.UpdateAt).HasDefaultValueSql("(getdate())");
 
             entity.HasOne(d => d.CollectionMethod).WithMany(p => p.Orders)
                 .OnDelete(DeleteBehavior.ClientSetNull)

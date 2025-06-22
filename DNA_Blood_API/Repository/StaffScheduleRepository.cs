@@ -8,10 +8,55 @@ namespace DNA_API1.Repository
     {
         public StaffScheduleRepository(BloodlineDnaContext context) : base(context) { }
 
-        public async Task<List<User>> GetAvailableMedicalStaffWithScheduleAsync(string serviceName, int requiredDuration)
+        public async Task<bool> IsBookingTimeAvailableAsync(int medicalStaffId, DateTime bookingTime, int requiredDuration)
         {
-            var today = DateTime.Today;
-            var tomorrow = today.AddDays(1);
+            var targetDate = bookingTime.Date;
+            var busyTimes = await GetMedicalStaffBusyTimeWithDurationAsync(medicalStaffId, targetDate);
+            
+            var bookingEndTime = bookingTime.AddMinutes(requiredDuration);
+            
+            foreach (var (busyStart, busyDuration) in busyTimes)
+            {
+                var busyEndTime = busyStart.AddMinutes(busyDuration);
+                
+                // Kiểm tra xung đột thời gian
+                bool hasOverlap = (bookingTime < busyEndTime && bookingEndTime > busyStart);
+                
+                if (hasOverlap)
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        public async Task<bool> IsStaffBookingTimeAvailableAsync(int staffId, DateTime bookingTime, int requiredDuration)
+        {
+            var targetDate = bookingTime.Date;
+            var busyTimes = await GetStaffBusyTimeWithDurationAsync(staffId, targetDate);
+            
+            var bookingEndTime = bookingTime.AddMinutes(requiredDuration);
+            
+            foreach (var (busyStart, busyDuration) in busyTimes)
+            {
+                var busyEndTime = busyStart.AddMinutes(busyDuration);
+                
+                // Kiểm tra xung đột thời gian
+                bool hasOverlap = (bookingTime < busyEndTime && bookingEndTime > busyStart);
+                
+                if (hasOverlap)
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        public async Task<List<User>> GetAvailableMedicalStaffWithWorkloadBalancingAsync(string serviceName, int requiredDuration, DateTime date, int maxOrdersPerDay = 5)
+        {
+            var targetDate = date.Date;
 
             // Lấy tất cả medical staff có chuyên môn phù hợp
             var allMedicalStaff = await _context.Users
@@ -19,7 +64,7 @@ namespace DNA_API1.Repository
                 .Where(u => u.RoleId == 4 && u.UserProfile.YearsOfExperience >= 2)
                 .ToListAsync();
 
-            var availableStaff = new List<User>();
+            var availableStaff = new List<(User Staff, int CurrentOrders, int AvailableSlots)>();
 
             foreach (var staff in allMedicalStaff)
             {
@@ -30,152 +75,105 @@ namespace DNA_API1.Repository
 
                 if (hasMatchingSpecialization)
                 {
-                    // Kiểm tra xem staff có thời gian rảnh không
-                    var busyTimes = await GetMedicalStaffBusyTimeWithDurationAsync(staff.UserId, today);
-                    var availableSlots = GetAvailableTimeSlotsWithDetailedBusyTimes(busyTimes, requiredDuration);
+                    // Đếm số đơn hàng hiện tại trong ngày
+                    var currentOrders = await GetMedicalStaffDailyOrderCountAsync(staff.UserId, targetDate);
+                    
+                    // Kiểm tra giới hạn 5 đơn/ngày
+                    if (currentOrders >= maxOrdersPerDay)
+                    {
+                        continue;
+                    }
+
+                    // Kiểm tra thời gian rảnh
+                    var busyTimes = await GetMedicalStaffBusyTimeWithDurationAsync(staff.UserId, targetDate);
+                    var availableSlots = GetAvailableTimeSlotsWithDetailedBusyTimes(busyTimes, requiredDuration, targetDate);
                     
                     if (availableSlots.Any())
                     {
-                        availableStaff.Add(staff);
+                        availableStaff.Add((staff, currentOrders, availableSlots.Count));
                     }
                 }
             }
 
-            // Nếu không tìm thấy staff có chuyên môn phù hợp, tìm bất kỳ staff nào có thời gian rảnh
-            if (!availableStaff.Any())
-            {
-                foreach (var staff in allMedicalStaff)
-                {
-                    var busyTimes = await GetMedicalStaffBusyTimeWithDurationAsync(staff.UserId, today);
-                    var availableSlots = GetAvailableTimeSlotsWithDetailedBusyTimes(busyTimes, requiredDuration);
-                    
-                    if (availableSlots.Any())
-                    {
-                        availableStaff.Add(staff);
-                    }
-                }
-            }
+            // Sắp xếp theo ưu tiên: ít đơn hàng nhất trước
+            var sortedStaff = availableStaff
+                .OrderBy(x => x.CurrentOrders)  // Ưu tiên người ít đơn nhất
+                .ThenByDescending(x => x.AvailableSlots)  // Sau đó ưu tiên người có nhiều slot rảnh
+                .Select(x => x.Staff)
+                .ToList();
 
-            return availableStaff;
+            return sortedStaff;
         }
 
-        public async Task<List<User>> GetAvailableStaffWithScheduleAsync(int requiredDuration)
+        public async Task<List<User>> GetAvailableStaffWithWorkloadBalancingAsync(int requiredDuration, DateTime date, int maxOrdersPerDay = 5)
         {
-            var today = DateTime.Today;
+            var targetDate = date.Date;
             var allStaff = await _context.Users
                 .Where(u => u.RoleId == 2)
                 .ToListAsync();
 
-            var availableStaff = new List<User>();
+            var availableStaff = new List<(User Staff, int CurrentOrders, int AvailableSlots)>();
 
             foreach (var staff in allStaff)
             {
-                var busyTimes = await GetStaffBusyTimeWithDurationAsync(staff.UserId, today);
-                var availableSlots = GetAvailableTimeSlotsWithDetailedBusyTimes(busyTimes, requiredDuration);
+                // Đếm số đơn hàng hiện tại trong ngày
+                var currentOrders = await GetStaffDailyOrderCountAsync(staff.UserId, targetDate);
+                
+                // Kiểm tra giới hạn 5 đơn/ngày
+                if (currentOrders >= maxOrdersPerDay)
+                {
+                    continue;
+                }
+
+                // Kiểm tra thời gian rảnh
+                var busyTimes = await GetStaffBusyTimeWithDurationAsync(staff.UserId, targetDate);
+                var availableSlots = GetAvailableTimeSlotsWithDetailedBusyTimes(busyTimes, requiredDuration, targetDate);
                 
                 if (availableSlots.Any())
                 {
-                    availableStaff.Add(staff);
+                    availableStaff.Add((staff, currentOrders, availableSlots.Count));
                 }
             }
 
-            return availableStaff;
+            // Sắp xếp theo ưu tiên: ít đơn hàng nhất trước
+            var sortedStaff = availableStaff
+                .OrderBy(x => x.CurrentOrders)  // Ưu tiên người ít đơn nhất
+                .ThenByDescending(x => x.AvailableSlots)  // Sau đó ưu tiên người có nhiều slot rảnh
+                .Select(x => x.Staff)
+                .ToList();
+
+            return sortedStaff;
         }
 
-        public async Task<bool> IsStaffAvailableAtTimeAsync(int staffId, DateTime startTime, int durationMinutes)
-        {
-            var endTime = startTime.AddMinutes(durationMinutes);
-            var busyTimes = await GetStaffBusyTimeWithDurationAsync(staffId, startTime.Date);
-            
-            foreach (var (busyStart, busyDuration) in busyTimes)
-            {
-                var busyEndTime = busyStart.AddMinutes(busyDuration);
-                
-                // Kiểm tra xung đột thời gian
-                if (startTime < busyEndTime && endTime > busyStart)
-                {
-                    return false; // Có xung đột thời gian
-                }
-            }
-            
-            return true;
-        }
-
-        public async Task<bool> IsMedicalStaffAvailableAtTimeAsync(int medicalStaffId, DateTime startTime, int durationMinutes)
-        {
-            var endTime = startTime.AddMinutes(durationMinutes);
-            var busyTimes = await GetMedicalStaffBusyTimeWithDurationAsync(medicalStaffId, startTime.Date);
-            
-            foreach (var (busyStart, busyDuration) in busyTimes)
-            {
-                var busyEndTime = busyStart.AddMinutes(busyDuration);
-                
-                // Kiểm tra xung đột thời gian
-                if (startTime < busyEndTime && endTime > busyStart)
-                {
-                    return false; // Có xung đột thời gian
-                }
-            }
-            
-            return true;
-        }
-
-     /*   public async Task<List<DateTime>> GetStaffBusyTimeSlotsAsync(int staffId, DateTime date)
+        public async Task<int> GetMedicalStaffDailyOrderCountAsync(int medicalStaffId, DateTime date)
         {
             var nextDay = date.AddDays(1);
             
-            // Lấy tất cả các mẫu mà staff này phụ trách trong ngày
-            var samples = await _context.Samples
-                .Include(s => s.OrderDetail)
-                    .ThenInclude(od => od.ServicePackage)
+            var orderCount = await _context.OrderDetails
+                .Include(od => od.Order)
+                .Where(od => od.MedicalStaffId == medicalStaffId &&
+                           od.Order.BookingDate >= date &&
+                           od.Order.BookingDate < nextDay)
+                .CountAsync();
+
+            return orderCount;
+        }
+
+        public async Task<int> GetStaffDailyOrderCountAsync(int staffId, DateTime date)
+        {
+            var nextDay = date.AddDays(1);
+            
+            var orderCount = await _context.Samples
                 .Include(s => s.OrderDetail)
                     .ThenInclude(od => od.Order)
                 .Where(s => s.StaffId == staffId &&
-                           s.OrderDetail.Order.CreateAt >= date &&
-                           s.OrderDetail.Order.CreateAt < nextDay)
-                .ToListAsync();
+                           s.OrderDetail.Order.BookingDate >= date &&
+                           s.OrderDetail.Order.BookingDate < nextDay)
+                .CountAsync();
 
-            var busySlots = new List<DateTime>();
-            
-            foreach (var sample in samples)
-            {
-                var orderTime = sample.OrderDetail.Order.CreateAt ?? DateTime.Now;
-                
-                // Tạo slot bận với thời gian thực tế (không chia thành slot 30 phút)
-                // Chỉ tạo 1 slot bận từ thời điểm bắt đầu đến khi hoàn thành
-                busySlots.Add(orderTime);
-            }
-            
-            return busySlots;
+            return orderCount;
         }
 
-        public async Task<List<DateTime>> GetMedicalStaffBusyTimeSlotsAsync(int medicalStaffId, DateTime date)
-        {
-            var nextDay = date.AddDays(1);
-            
-            // Lấy tất cả các order detail mà medical staff này phụ trách trong ngày
-            var orderDetails = await _context.OrderDetails
-                .Include(od => od.ServicePackage)
-                .Include(od => od.Order)
-                .Where(od => od.MedicalStaffId == medicalStaffId &&
-                           od.Order.CreateAt >= date &&
-                           od.Order.CreateAt < nextDay)
-                .ToListAsync();
-
-            var busySlots = new List<DateTime>();
-            
-            foreach (var orderDetail in orderDetails)
-            {
-                var orderTime = orderDetail.Order.CreateAt ?? DateTime.Now;
-                
-                // Tạo slot bận với thời gian thực tế (không chia thành slot 30 phút)
-                // Chỉ tạo 1 slot bận từ thời điểm bắt đầu đến khi hoàn thành
-                busySlots.Add(orderTime);
-            }
-            
-            return busySlots;
-        }
-     */
         public async Task<List<(DateTime StartTime, int DurationMinutes)>> GetStaffBusyTimeWithDurationAsync(int staffId, DateTime date)
         {
             var nextDay = date.AddDays(1);
@@ -186,15 +184,15 @@ namespace DNA_API1.Repository
                 .Include(s => s.OrderDetail)
                     .ThenInclude(od => od.Order)
                 .Where(s => s.StaffId == staffId &&
-                           s.OrderDetail.Order.CreateAt >= date &&
-                           s.OrderDetail.Order.CreateAt < nextDay)
+                           s.OrderDetail.Order.BookingDate >= date &&
+                           s.OrderDetail.Order.BookingDate < nextDay)
                 .ToListAsync();
 
             var busyTimes = new List<(DateTime StartTime, int DurationMinutes)>();
             
             foreach (var sample in samples)
             {
-                var orderTime = sample.OrderDetail.Order.CreateAt ?? DateTime.Now;
+                var orderTime = sample.OrderDetail.Order.BookingDate ?? sample.OrderDetail.Order.CreateAt ?? DateTime.Now;
                 var serviceName = sample.OrderDetail.ServicePackage?.ServiceName ?? "";
                 var staffProcessingTime = CalculateStaffProcessingTime(serviceName);
                 
@@ -212,15 +210,15 @@ namespace DNA_API1.Repository
                 .Include(od => od.ServicePackage)
                 .Include(od => od.Order)
                 .Where(od => od.MedicalStaffId == medicalStaffId &&
-                           od.Order.CreateAt >= date &&
-                           od.Order.CreateAt < nextDay)
+                           od.Order.BookingDate >= date &&
+                           od.Order.BookingDate < nextDay)
                 .ToListAsync();
 
             var busyTimes = new List<(DateTime StartTime, int DurationMinutes)>();
             
             foreach (var orderDetail in orderDetails)
             {
-                var orderTime = orderDetail.Order.CreateAt ?? DateTime.Now;
+                var orderTime = orderDetail.Order.BookingDate ?? orderDetail.Order.CreateAt ?? DateTime.Now;
                 var serviceName = orderDetail.ServicePackage?.ServiceName ?? "";
                 var medicalStaffProcessingTime = CalculateMedicalStaffProcessingTime(serviceName);
                 
@@ -230,141 +228,6 @@ namespace DNA_API1.Repository
             return busyTimes;
         }
 
-        public async Task<StaffScheduleDTO?> GetStaffScheduleDetailAsync(int staffId, DateTime date)
-        {
-            var staff = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.UserId == staffId);
-
-            if (staff == null) return null;
-
-            var busySlots = await GetStaffBusyTimeSlotsWithDetailsAsync(staffId, date);
-            var busyTimes = await GetStaffBusyTimeWithDurationAsync(staffId, date);
-            var availableSlots = GetAvailableTimeSlotsWithDetailedBusyTimes(busyTimes, 30);
-
-            return new StaffScheduleDTO
-            {
-                StaffId = staffId,
-                StaffName = staff.Name ?? "Unknown",
-                Role = staff.Role?.RoleName ?? "Unknown",
-                Date = date,
-                AvailableSlots = availableSlots.Select(slot => new TimeSlotDTO
-                {
-                    StartTime = slot,
-                    EndTime = slot.AddMinutes(30),
-                    DurationMinutes = 30,
-                    Status = "Available"
-                }).ToList(),
-                BusySlots = busySlots,
-                TotalAvailableMinutes = availableSlots.Count * 30,
-                TotalBusyMinutes = busySlots.Sum(slot => slot.DurationMinutes)
-            };
-        }
-
-        public async Task<StaffScheduleDTO?> GetMedicalStaffScheduleDetailAsync(int medicalStaffId, DateTime date)
-        {
-            var staff = await _context.Users
-                .Include(u => u.Role)
-                .FirstOrDefaultAsync(u => u.UserId == medicalStaffId);
-
-            if (staff == null) return null;
-
-            var busySlots = await GetMedicalStaffBusyTimeSlotsWithDetailsAsync(medicalStaffId, date);
-            var busyTimes = await GetMedicalStaffBusyTimeWithDurationAsync(medicalStaffId, date);
-            var availableSlots = GetAvailableTimeSlotsWithDetailedBusyTimes(busyTimes, 30);
-
-            return new StaffScheduleDTO
-            {
-                StaffId = medicalStaffId,
-                StaffName = staff.Name ?? "Unknown",
-                Role = staff.Role?.RoleName ?? "Unknown",
-                Date = date,
-                AvailableSlots = availableSlots.Select(slot => new TimeSlotDTO
-                {
-                    StartTime = slot,
-                    EndTime = slot.AddMinutes(30),
-                    DurationMinutes = 30,
-                    Status = "Available"
-                }).ToList(),
-                BusySlots = busySlots,
-                TotalAvailableMinutes = availableSlots.Count * 30,
-                TotalBusyMinutes = busySlots.Sum(slot => slot.DurationMinutes)
-            };
-        }
-
-        public async Task<List<TimeSlotDTO>> GetStaffBusyTimeSlotsWithDetailsAsync(int staffId, DateTime date)
-        {
-            var nextDay = date.AddDays(1);
-            
-            var samples = await _context.Samples
-                .Include(s => s.OrderDetail)
-                    .ThenInclude(od => od.ServicePackage)
-                .Include(s => s.OrderDetail)
-                    .ThenInclude(od => od.Order)
-                .Where(s => s.StaffId == staffId &&
-                           s.OrderDetail.Order.CreateAt >= date &&
-                           s.OrderDetail.Order.CreateAt < nextDay)
-                .ToListAsync();
-
-            var busySlots = new List<TimeSlotDTO>();
-            
-            foreach (var sample in samples)
-            {
-                var orderTime = sample.OrderDetail.Order.CreateAt ?? DateTime.Now;
-                var serviceName = sample.OrderDetail.ServicePackage?.ServiceName ?? "";
-                var staffProcessingTime = CalculateStaffProcessingTime(serviceName);
-                
-                busySlots.Add(new TimeSlotDTO
-                {
-                    StartTime = orderTime,
-                    EndTime = orderTime.AddMinutes(staffProcessingTime),
-                    DurationMinutes = staffProcessingTime,
-                    Status = "Busy",
-                    OrderId = sample.OrderDetail.Order.OrderId.ToString(),
-                    ServiceName = sample.OrderDetail.ServicePackage?.ServiceName
-                });
-            }
-            
-            return busySlots;
-        }
-
-        public async Task<List<TimeSlotDTO>> GetMedicalStaffBusyTimeSlotsWithDetailsAsync(int medicalStaffId, DateTime date)
-        {
-            var nextDay = date.AddDays(1);
-            
-            var orderDetails = await _context.OrderDetails
-                .Include(od => od.ServicePackage)
-                .Include(od => od.Order)
-                .Where(od => od.MedicalStaffId == medicalStaffId &&
-                           od.Order.CreateAt >= date &&
-                           od.Order.CreateAt < nextDay)
-                .ToListAsync();
-
-            var busySlots = new List<TimeSlotDTO>();
-            
-            foreach (var orderDetail in orderDetails)
-            {
-                var orderTime = orderDetail.Order.CreateAt ?? DateTime.Now;
-                var serviceName = orderDetail.ServicePackage?.ServiceName ?? "";
-                var medicalStaffProcessingTime = CalculateMedicalStaffProcessingTime(serviceName);
-                
-                busySlots.Add(new TimeSlotDTO
-                {
-                    StartTime = orderTime,
-                    EndTime = orderTime.AddMinutes(medicalStaffProcessingTime),
-                    DurationMinutes = medicalStaffProcessingTime,
-                    Status = "Busy",
-                    OrderId = orderDetail.Order.OrderId.ToString(),
-                    ServiceName = orderDetail.ServicePackage?.ServiceName
-                });
-            }
-            
-            return busySlots;
-        }
-
-        /// <summary>
-        /// Tính toán thời gian làm việc thực tế của medical staff dựa trên loại dịch vụ
-        /// </summary>
         public int CalculateMedicalStaffProcessingTime(string serviceName)
         {
             var serviceNameLower = serviceName.ToLower();
@@ -391,9 +254,6 @@ namespace DNA_API1.Repository
             }
         }
 
-        /// <summary>
-        /// Tính toán thời gian làm việc thực tế của staff thông thường dựa trên loại dịch vụ
-        /// </summary>
         public int CalculateStaffProcessingTime(string serviceName)
         {
             var serviceNameLower = serviceName.ToLower();
@@ -420,25 +280,19 @@ namespace DNA_API1.Repository
             }
         }
 
-        // Method mới để lấy thời gian rảnh với thông tin chi tiết
-        public async Task<List<DateTime>> GetAvailableTimeSlotsAsync(List<(DateTime StartTime, int DurationMinutes)> busyTimes, int requiredDuration)
-        {
-            return GetAvailableTimeSlotsWithDetailedBusyTimes(busyTimes, requiredDuration);
-        }
-
-        private List<DateTime> GetAvailableTimeSlotsWithDetailedBusyTimes(List<(DateTime StartTime, int DurationMinutes)> busyTimes, int requiredDuration)
+        private List<DateTime> GetAvailableTimeSlotsWithDetailedBusyTimes(List<(DateTime StartTime, int DurationMinutes)> busyTimes, int requiredDuration, DateTime targetDate)
         {
             var availableSlots = new List<DateTime>();
             var workStartHour = 8; // Giờ làm việc bắt đầu
             var workEndHour = 17; // Giờ làm việc kết thúc
-            var today = DateTime.Today;
+            var date = targetDate.Date;
             
             // Tạo các slot thời gian trong ngày làm việc
             for (int hour = workStartHour; hour < workEndHour; hour++)
             {
                 for (int minute = 0; minute < 60; minute += 30) // Chia thành các slot 30 phút để kiểm tra
                 {
-                    var slotTime = today.AddHours(hour).AddMinutes(minute);
+                    var slotTime = date.AddHours(hour).AddMinutes(minute);
                     
                     // Kiểm tra xem có thể bắt đầu công việc tại thời điểm này không
                     bool canStart = true;
@@ -460,8 +314,12 @@ namespace DNA_API1.Repository
                         foreach (var (busyStart, busyDuration) in busyTimes)
                         {
                             var busyEndTime = busyStart.AddMinutes(busyDuration);
+                            var slotEndTime = slotTime.AddMinutes(requiredDuration);
                             
-                            if (slotTime < busyEndTime && slotTime.AddMinutes(requiredDuration) > busyStart)
+                            // Kiểm tra xung đột thời gian: có overlap không
+                            bool hasOverlap = (slotTime < busyEndTime && slotEndTime > busyStart);
+                            
+                            if (hasOverlap)
                             {
                                 canStart = false;
                                 break;

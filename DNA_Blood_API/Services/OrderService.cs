@@ -85,6 +85,15 @@ namespace DNA_API1.Services
             if (collectionMethod == null)
                 throw new Exception($"Collection method '{dto.MethodTypeName}' not found");
 
+            // Validate delivery address for At Home collection
+            if (collectionMethod.MethodName == "At Home" && string.IsNullOrWhiteSpace(dto.DeliveryAddress))
+                throw new Exception("Delivery address is required for At Home collection method");
+            else if (collectionMethod.MethodName != "At Home")
+            {
+                // Nếu không phải At Home, không cần DeliveryAddress
+                dto.DeliveryAddress = null;
+            }
+
             try
             {
                 // 1. Create participant
@@ -104,6 +113,7 @@ namespace DNA_API1.Services
                     CustomerId = dto.CustomerId,
                     CollectionMethodId = collectionMethod.CollectionMethodId,
                     OrderStatus = "Pending",
+                    BookingDate = dto.BookingDate,
                     CreateAt = DateTime.Now
                 };
 
@@ -112,11 +122,12 @@ namespace DNA_API1.Services
                 var samples = new List<Sample>();
                 var sampleKits = new List<SampleKit>();
                 var sampleTransferInfos = new List<(int StaffId, int MedicalStaffId)>();
+                var deliveryTasks = new List<DeliveryTask>();
 
                 foreach (var detailDto in dto.Details)
                 {
                     // Tự động phân công staff
-                    var (medicalStaffId, staffId) = await _staffAssignmentService.AssignStaffAsync(detailDto.ServicePackageId);
+                    var (medicalStaffId, staffId) = await _staffAssignmentService.AssignStaffAsync(detailDto.ServicePackageId, dto.BookingDate);
 
                     var detail = new OrderDetail
                     {
@@ -136,6 +147,20 @@ namespace DNA_API1.Services
                     samples.Add(sample);
 
                     sampleTransferInfos.Add((staffId, medicalStaffId));
+
+                    // Tạo DeliveryTask cho mỗi order detail chỉ khi là At Home
+                    if (collectionMethod.MethodName == "At Home")
+                    {
+                        var deliveryTask = new DeliveryTask
+                        {
+                            ManagerId = 1, // Admin mặc định
+                            StaffId = staffId,
+                            AssignedAt = DateTime.Now,
+                            DeliveryTaskStatus = "Assigned",
+                            Note = $"Tự động phân công cho dịch vụ {detailDto.ServicePackageId}"
+                        };
+                        deliveryTasks.Add(deliveryTask);
+                    }
 
                     if (collectionMethod.MethodName == "At Home")
                     {
@@ -164,7 +189,20 @@ namespace DNA_API1.Services
                     Total = (int)dto.Payment.Total
                 };
 
-                // 5. Save everything using repository
+                // 5. Tạo Delivery nếu là At Home collection
+                Delivery? delivery = null;
+                if (collectionMethod.MethodName == "At Home")
+                {
+                    delivery = new Delivery
+                    {
+                        DeliveryAddress = dto.DeliveryAddress ?? "",
+                        DeliveryStatus = "Pending",
+                        DeliveryDate = DateOnly.FromDateTime(dto.BookingDate ?? DateTime.Today),
+                        Note = $"Giao hàng tại nhà"
+                    };
+                }
+
+                // 6. Save everything using repository
                 var orderId = await _orderRepository.CreateOrderWithDetailsAsync(
                     participant,
                     order,
@@ -172,10 +210,12 @@ namespace DNA_API1.Services
                     samples,
                     payment,
                     sampleKits,
-                    sampleTransferInfos
+                    sampleTransferInfos,
+                    delivery,
+                    collectionMethod.MethodName == "At Home" ? deliveryTasks : null
                 );
 
-                // 6. Create sample transfers after samples are saved
+                // 7. Create sample transfers after samples are saved
                 foreach (var (staffId, medicalStaffId) in sampleTransferInfos)
                 {
                     var sample = samples[sampleTransferInfos.IndexOf((staffId, medicalStaffId))];

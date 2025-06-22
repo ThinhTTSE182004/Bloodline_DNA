@@ -48,6 +48,7 @@ namespace DNA_API1.Repository
                 .Include(o => o.CollectionMethod).ThenInclude(cm => cm.TestType)
                 .Include(o => o.Delivery)
                 .Include(o => o.OrderDetails).ThenInclude(od => od.Result)
+                .Include(o => o.OrderDetails).ThenInclude(od => od.DeliveryTasks).ThenInclude(dt => dt.Staff)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OrderId == orderId && o.CustomerId == userId);
 
@@ -63,6 +64,7 @@ namespace DNA_API1.Repository
                 var result = orderDetail.Result;
                 var servicePrice = orderDetail.ServicePackage?.ServicePrices.FirstOrDefault();
                 var testType = order.CollectionMethod?.TestType?.Name ?? "Chưa xác định";
+                var deliveryTask = orderDetail.DeliveryTasks.FirstOrDefault();
 
                 // Tạo DTO ban đầu
                 var dto = new OrderDetailHistoryDTO
@@ -91,6 +93,12 @@ namespace DNA_API1.Repository
                     DeliveryStatus = order.Delivery?.DeliveryStatus,
                     DeliveryDate = order.Delivery?.DeliveryDate,
                     DeliveryNote = order.Delivery?.Note,
+                    AssignedStaffId = deliveryTask?.StaffId,
+                    AssignedStaffName = deliveryTask?.Staff?.Name,
+                    TaskAssignedAt = deliveryTask?.AssignedAt,
+                    DeliveryTaskStatus = deliveryTask?.DeliveryTaskStatus,
+                    DeliveryTaskNote = deliveryTask?.Note,
+                    TaskCompleteAt = deliveryTask?.CompleteAt,
                     ResultStatus = result?.ResultStatus,
                     ResultFileUrl = result?.ReportUrl
                 };
@@ -110,6 +118,12 @@ namespace DNA_API1.Repository
                     dto.DeliveryStatus = null;
                     dto.DeliveryDate = null;
                     dto.DeliveryNote = null;
+                    dto.AssignedStaffId = null;
+                    dto.AssignedStaffName = null;
+                    dto.TaskAssignedAt = null;
+                    dto.DeliveryTaskStatus = null;
+                    dto.DeliveryTaskNote = null;
+                    dto.TaskCompleteAt = null;
                 }
 
                 return dto; // Trả về DTO đã được xử lý
@@ -143,7 +157,9 @@ namespace DNA_API1.Repository
      List<Sample> samples,
      Payment payment,
      List<SampleKit> sampleKits,
-     List<(int StaffId, int MedicalStaffId)> sampleTransferInfos)
+     List<(int StaffId, int MedicalStaffId)> sampleTransferInfos,
+     Delivery? delivery = null,
+     List<DeliveryTask>? deliveryTasks = null)
         {
             using var transaction = await _context.Database.BeginTransactionAsync();
 
@@ -194,6 +210,25 @@ namespace DNA_API1.Repository
                     }
 
                     _context.SampleKits.Add(kit);
+                }
+
+                // Tạo Delivery nếu có
+                if (delivery != null)
+                {
+                    delivery.OrderId = order.OrderId;
+                    _context.Deliveries.Add(delivery);
+                }
+
+                // Tạo DeliveryTask nếu có
+                if (deliveryTasks != null)
+                {
+                    for (int i = 0; i < deliveryTasks.Count && i < details.Count; i++)
+                    {
+                        var task = deliveryTasks[i];
+                        var orderDetail = details[i];
+                        task.OrderDetailId = orderDetail.OrderDetailId;
+                        _context.DeliveryTasks.Add(task);
+                    }
                 }
 
                 await _context.SaveChangesAsync();
