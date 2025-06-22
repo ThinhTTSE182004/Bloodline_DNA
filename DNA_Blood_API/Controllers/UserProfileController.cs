@@ -15,11 +15,15 @@ namespace DNA_API1.Controllers
     public class UserProfileController : ControllerBase
     {
         private readonly IUserProfileService _userProfileService;
+        private readonly IOrderService _orderService;
 
-        public UserProfileController(IUserProfileService userProfileService)
+        public UserProfileController(IUserProfileService userProfileService, IOrderService orderService)
         {
             _userProfileService = userProfileService;
+            _orderService = orderService;
         }
+
+
 
         [HttpGet("GetUserProfile")]
         public async Task<ActionResult<UserProfileDTO>> GetUserProfile()
@@ -32,6 +36,8 @@ namespace DNA_API1.Controllers
             }
             return Ok(profile);
         }
+
+
 
         [HttpPut("UpdateUserProfile")]
         public async Task<ActionResult<UserProfileDTO>> UpdateUserProfile(UpdateUserProfile profile)
@@ -57,8 +63,8 @@ namespace DNA_API1.Controllers
         public async Task<IActionResult> GetOrderDetail(int orderId)
         {
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
-            var orderDetail = await _userProfileService.GetOrderDetailAsync(orderId, userId);
-            return orderDetail == null ? NotFound() : Ok(orderDetail);
+            var orderDetails = await _orderService.GetOrderDetailsAsync(orderId, userId);
+            return orderDetails == null ? NotFound() : Ok(orderDetails);
         }
     }
 }

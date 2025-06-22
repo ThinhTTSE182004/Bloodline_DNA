@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Navbar from '../components/Navbar';
+import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
-import signalRService from '../services/signalRService.js';
+import signalRService from '../../services/signalRService.js';
 
 const AccountSetting = () => {
   const navigate = useNavigate();
@@ -49,16 +49,14 @@ const AccountSetting = () => {
       }
 
       const data = await response.json();
-      const tokenData = JSON.parse(atob(token.split('.')[1]));
       const profileData = {
-        name: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || data.name,
-        email: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || data.email,
-        phone: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'] || data.phone,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
         updatedAt: data.updatedAt
       };
-      if (!profileData.name || !profileData.email || !profileData.phone) {
-        throw new Error('Invalid profile data received');
-      }
+
+
       setFormData(profileData);
     } catch (err) {
       console.error('Error fetching profile:', err);
@@ -81,13 +79,16 @@ const AccountSetting = () => {
       // Lắng nghe sự kiện cập nhật profile
       signalRService.onUserProfileUpdate((updatedProfile) => {
         console.log('Profile updated via SignalR:', updatedProfile);
+        setSuccessMessage('Profile updated successfully!');
+        setTimeout(() => setSuccessMessage(''), 3000); // Ẩn sau 3s
+        setIsEditing(false);
+
         if (updatedProfile) {
           setFormData(prevData => ({
             ...prevData,
             ...updatedProfile
           }));
-          setSuccessMessage('Profile updated successfully!');
-          setIsEditing(false);
+
         }
       });
     } catch (error) {
@@ -138,12 +139,6 @@ const AccountSetting = () => {
         navigate('/login');
         return;
       }
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`Failed to update profile: ${response.status} - ${errorText}`);
-      }
-
       // Không cần set success message ở đây vì sẽ được xử lý bởi SignalR
       setIsEditing(false);
     } catch (err) {

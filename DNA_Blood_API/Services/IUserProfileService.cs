@@ -9,6 +9,5 @@ namespace DNA_API1.Services
         Task<UserProfileDTO> GetUserProfileByIdAsync(int userId);
         Task<UserProfileDTO> UpdateUserProfileAsync(int userId, UpdateUserProfile profile);
         Task<List<OrderHistoryDTO>> GetOrderHistoryAsync(int userId);
-        Task<OrderDetailHistoryDTO?> GetOrderDetailAsync(int orderId, int userId);
     }
 }

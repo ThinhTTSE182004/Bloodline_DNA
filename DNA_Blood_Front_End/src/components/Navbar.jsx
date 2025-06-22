@@ -9,7 +9,7 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState('');
-  const [userRole, setUserRole] = useState('');
+  const [userRole, setUserRole] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
   const { cartCount } = useCart();
@@ -23,7 +23,7 @@ const Navbar = () => {
       const storedUserRole = localStorage.getItem('userRole');
       setIsLoggedIn(!!token);
       setUserName(storedUserName || '');
-      setUserRole(storedUserRole || '');
+      setUserRole(storedUserRole || null);
     };
 
     // Lắng nghe sự kiện đăng nhập
@@ -38,7 +38,7 @@ const Navbar = () => {
     const handleLogoutEvent = () => {
       setIsLoggedIn(false);
       setUserName('');
-      setUserRole('');
+      setUserRole(null);
     };
 
     // Kiểm tra trạng thái ban đầu
@@ -62,7 +62,7 @@ const Navbar = () => {
     localStorage.removeItem('userRole');
     setIsLoggedIn(false);
     setUserName('');
-    setUserRole('');
+    setUserRole(null);
     setShowDropdown(false);
     // Ngắt kết nối SignalR
     try {
@@ -195,6 +195,14 @@ const Navbar = () => {
                     >
                       Logout
                     </button>
+                    {userRole === 'Admin' && (
+                      <a
+                        href="/admin"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        Admin Page
+                      </a>
+                    )}
                   </div>
                 )}
               </div>
@@ -357,6 +365,14 @@ const Navbar = () => {
                     >
                       Logout
                     </button>
+                    {userRole === 'Admin' && (
+                      <a
+                        href="/admin"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
+                      >
+                        Admin Page
+                      </a>
+                    )}
                   </div>
                 )}
               </div>

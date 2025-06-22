@@ -23,7 +23,7 @@ namespace DNA_API1.Repository
         Task<List<OrderHistoryDTO>> GetOrderHistoryByUserIdAsync(int userId);
 
 
-        Task<OrderDetailHistoryDTO?> GetOrderDetailByIdAsync(int orderId, int userId);
+        Task<IEnumerable<OrderDetailHistoryDTO>> GetOrderDetailsByOrderIdAsync(int orderId, int userId);
 
 
         // Cập nhật trạng thái Payment Status.
