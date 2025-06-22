@@ -3,6 +3,7 @@ using DNA_API1.Repository;
 using DNA_API1.ViewModels;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 public class SampleTransferRepository : ISampleTransferRepository
 {
@@ -19,16 +20,52 @@ public class SampleTransferRepository : ISampleTransferRepository
         await _context.SaveChangesAsync();
     }
 
-    public async Task<bool> UpdateSampleTransferStatusAsync(int transferId, string newStatus)
+    public async Task<StatusChangeResult> UpdateSampleTransferStatusAsync(int transferId, string newStatus)
     {
         var transfer = await _context.SampleTransfers.FindAsync(transferId);
-        if (transfer == null) return false;
+        if (transfer == null) return new StatusChangeResult { Success = false, Message = "Sample transfer not found." };
+
+        // Định nghĩa flow chuyển đổi trạng thái hợp lệ
+        var nextStatus = new Dictionary<string, string>
+        {
+            { "Pending", "Delivering Kit" },
+            { "Delivering Kit", "Collecting Sample" },
+            { "Collecting Sample", "Delivering to Lab" },
+            { "Delivering to Lab", "Received" },
+            { "Received", "Complete" }
+        };
+
+        // Kiểm tra chuyển đổi hợp lệ
+        if (!nextStatus.TryGetValue(transfer.SampleTransferStatus, out var allowedNext) || allowedNext != newStatus)
+            return new StatusChangeResult {
+                Success = false,
+                Message = $"Cannot change status from '{transfer.SampleTransferStatus}' to '{newStatus}'. Allowed next status: '{allowedNext}'."
+            };
 
         transfer.SampleTransferStatus = newStatus;
-        // Nếu muốn lưu thời gian bắt đầu chuyển:
-        // transfer.StartTransferTime = DateTime.Now;
 
-        return await _context.SaveChangesAsync() > 0;
+        // Mapping trạng thái SampleTransfer sang Sample
+        var sampleStatusMapping = new Dictionary<string, string>
+        {
+            { "Pending", "Pending" },
+            { "Delivering Kit", "WaitingForCollection" },
+            { "Collecting Sample", "Collected" },
+            { "Delivering to Lab", "InLab" },
+            { "Received", "InLab" }
+            // "Complete" thì giữ nguyên
+        };
+
+        if (sampleStatusMapping.TryGetValue(newStatus, out var sampleStatus))
+        {
+            var sample = await _context.Samples.FindAsync(transfer.SampleId);
+            if (sample != null)
+            {
+                sample.SampleStatus = sampleStatus;
+            }
+        }
+
+        await _context.SaveChangesAsync();
+        return new StatusChangeResult { Success = true, Message = $"Status changed to '{newStatus}' successfully." };
     }
 
     public async Task<List<SampleTransferDTO>> GetSampleTransfersByStaffIdAsync(int staffId)

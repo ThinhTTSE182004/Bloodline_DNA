@@ -30,5 +30,16 @@ namespace DNA_API1.Repository
                 .Include(od => od.ServicePackage) // Lấy thông tin gói dịch vụ
                 .ToListAsync();
         }
+
+        public async Task<List<OrderDetail>> GetOrderDetailsByStaffIdAsync(int staffId)
+        {
+            return await _context.OrderDetails
+                .Where(od => od.Samples.Any(s => s.StaffId == staffId))
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.Customer)
+                .Include(od => od.ServicePackage)
+                .Include(od => od.Samples)
+                .ToListAsync();
+        }
     }
 }

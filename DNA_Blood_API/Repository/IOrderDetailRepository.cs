@@ -7,5 +7,7 @@ namespace DNA_API1.Repository
         Task<bool> UpdateStatusAsync(int orderDetailId, string status);
 
         Task<IEnumerable<OrderDetail>> GetOrderDetailsByMedicalStaffIdAsync(int medicalStaffId);
+
+        Task<List<OrderDetail>> GetOrderDetailsByStaffIdAsync(int staffId);
     }
 }
