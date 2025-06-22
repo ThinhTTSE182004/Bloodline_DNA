@@ -14,18 +14,19 @@ import Blog from './components/Blog';
 import Footer from './components/Footer';
 import Login from './pages/Login';
 import Register from './pages/Register';
-import Profile from './pages/Profile';
-import AccountSetting from './pages/AccountSetting';
-import ServicePage from './pages/ServicePage';
-import Cart from './pages/Cart';
+import Profile from './pages/Customer/Profile';
+import AccountSetting from './pages/Customer/AccountSetting';
+import ServicePage from './pages/Customer/ServicePage';
+import Cart from './pages/Customer/Cart';
 import Testimonials from './components/Testimonials';
-import FillBookingForm from './pages/FillBookingForm';
-import Payment from './pages/Payment';
-import PaymentSuccess from './pages/PaymentSuccess';
-import Staff from './pages/Staff';
-import StaffDashboard from './pages/StaffDashboard';
-import StaffProfile from './pages/StaffProfile';
+import FillBookingForm from './pages/Customer/FillBookingForm';
+import Payment from './pages/Customer/Payment';
+import PaymentSuccess from './pages/Customer/PaymentSuccess';
+import Staff from './pages/Staff/Staff';
+import StaffDashboard from './pages/Staff/StaffDashboard';
+import StaffProfile from './pages/Staff/StaffProfile';
 import OAuthSuccess from './pages/OAuthSuccess';
+import AdminPage from './pages/Admin/AdminPage';
 
 const App = () => {
   const [userRole, setUserRole] = useState(null);
@@ -72,27 +73,38 @@ const App = () => {
   }, []);
 
   const HomeContent = () => (
-                <div className="min-h-screen bg-white">
-                    <section id="home">
-                      <Hero />
-                    </section>
-                    <section id="features" className="py-20" data-aos="fade-up" data-aos-duration="1000">
-                      <Features />
-                    </section>
-                    <section id="services" className="py-20 bg-white" data-aos="fade-up" data-aos-duration="1000">
-                      <Services />
-                    </section>
-                    <section id="testimonials" className="py-20 bg-gray-50" data-aos="fade-up" data-aos-duration="1000">
-                      <Testimonials />
-                    </section>
-                    <div className="flex flex-col md:flex-row">
-                      <section id="blog" className="py-20 bg-white md:w-3/4" data-aos="fade-up" data-aos-duration="1000">
-                        <Blog />
-                      </section>
-                      <section id="faq" className="py-20 md:w-1/4" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
-                        <FAQ />
-                      </section>
-                    </div>
+    <div className="min-h-screen bg-white">
+      {/* Nếu là Admin, hiển thị nút vào Admin */}
+      {userRole === 'Admin' && (
+        <div className="fixed top-24 right-8 z-50">
+          <a
+            href="/admin"
+            className="bg-blue-700 text-white px-5 py-2 rounded-lg shadow-lg font-semibold hover:bg-blue-900 transition-all duration-200 animate-bounce"
+          >
+            Vào trang Admin
+          </a>
+        </div>
+      )}
+      <section id="home">
+        <Hero />
+      </section>
+      <section id="features" className="py-20" data-aos="fade-up" data-aos-duration="1000">
+        <Features />
+      </section>
+      <section id="services" className="py-20 bg-white" data-aos="fade-up" data-aos-duration="1000">
+        <Services />
+      </section>
+      <section id="testimonials" className="py-20 bg-gray-50" data-aos="fade-up" data-aos-duration="1000">
+        <Testimonials />
+      </section>
+      <div className="flex flex-col md:flex-row">
+        <section id="blog" className="py-20 bg-white md:w-3/4" data-aos="fade-up" data-aos-duration="1000">
+          <Blog />
+        </section>
+        <section id="faq" className="py-20 md:w-1/4" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
+          <FAQ />
+        </section>
+      </div>
     </div>
   );
 
@@ -118,11 +130,12 @@ const App = () => {
                   <Route path="/staff" element={<StaffDashboard />} />
                   <Route path="/staff/orders" element={<Staff />} />
                   <Route path="/staff/profile" element={<StaffProfile />} />
+                  <Route path="/admin" element={<AdminPage />} />
                   <Route 
                     path="/" 
                     element={
                       userRole === 'Staff' ? 
-                      <Navigate to="/staff" replace /> : 
+                        <Navigate to="/staff" replace /> : 
                       <HomeContent />
                     } 
                   />
