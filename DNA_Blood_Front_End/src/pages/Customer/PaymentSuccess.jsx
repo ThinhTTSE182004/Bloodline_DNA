@@ -8,7 +8,6 @@ const PaymentSuccess = () => {
   const [userDetails, setUserDetails] = useState(null);
   const [services, setServices] = useState([]);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [orderId] = useState(() => `ORD${Date.now().toString().slice(-6)}`);
 
   useEffect(() => {
     // Ưu tiên lấy từ sessionStorage trước
@@ -68,7 +67,7 @@ const PaymentSuccess = () => {
                 <div className="flex items-center space-x-4">
                   <FaReceipt className="text-blue-600 text-2xl" />
                   <div className="text-left">
-                    <div className="font-bold text-blue-600">Order #{orderId}</div>
+                    <div className="font-bold text-blue-600">Order #{userDetails.orderId}</div>
                     <div className="text-sm text-gray-600">
                       {services.length} {services.length === 1 ? 'service' : 'services'} • Total: {calculateTotal().toLocaleString()} VND
                     </div>
@@ -104,43 +103,43 @@ const PaymentSuccess = () => {
                         <FaPhone className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Phone</div>
-                          <div className="font-medium text-gray-900">{userDetails.phoneNumber}</div>
+                          <div className="font-medium text-gray-900">{userDetails.phone}</div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
                         <FaMapMarkerAlt className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Address</div>
-                          <div className="font-medium text-gray-900">{userDetails.address}</div>
+                          <div className="font-medium text-gray-900">{userDetails.deliveryAddress || 'At Medical Center'}</div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
                         <FaCalendarAlt className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Date of Birth</div>
-                          <div className="font-medium text-gray-900">{userDetails.dateOfBirth}</div>
+                          <div className="font-medium text-gray-900">{userDetails.birthDate}</div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
                         <FaTransgender className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Gender</div>
-                          <div className="font-medium text-gray-900">{userDetails.gender}</div>
+                          <div className="font-medium text-gray-900">{userDetails.sex}</div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3">
                         <FaUsers className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Relationship</div>
-                          <div className="font-medium text-gray-900">{userDetails.relationshipToPatient}</div>
+                          <div className="font-medium text-gray-900">{userDetails.relationship}</div>
                         </div>
                       </div>
-                      {userDetails.relationshipToPatient !== 'self' && userDetails.relationshipToPatient !== '' && (
+                      {userDetails.relationship !== 'self' && userDetails.relationship !== '' && (
                         <div className="flex items-start space-x-3">
                           <FaUserFriends className="mt-1 text-blue-500 w-5 h-5" />
                           <div>
                             <div className="text-sm text-gray-500">Related Person</div>
-                            <div className="font-medium text-gray-900">{userDetails.relatedPersonName}</div>
+                            <div className="font-medium text-gray-900">{userDetails.nameRelation}</div>
                           </div>
                         </div>
                       )}

@@ -105,7 +105,14 @@ const Profile = () => {
         throw new Error('Failed to fetch order history');
       }
 
-      const data = await response.json();
+      let data = await response.json();
+      // Đảm bảo mỗi order có orderId
+      data = data.map((order) => {
+        if (!order.orderId && order.id) {
+          return { ...order, orderId: order.id };
+        }
+        return order;
+      });
       setOrderHistory(data);
     } catch (err) {
       console.error('Error fetching order history:', err);
@@ -116,6 +123,8 @@ const Profile = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
+
+      console.log('Fetching detail for orderId:', orderId);
 
       const response = await fetch(`https://localhost:7113/api/UserProfile/GetOrderDetail?orderId=${orderId}`, {
         headers: {
@@ -129,7 +138,8 @@ const Profile = () => {
       }
 
       const data = await response.json();
-      setSelectedOrder(data);
+      console.log('Order detail data:', data);
+      setSelectedOrder(Array.isArray(data) ? data[0] : data);
     } catch (err) {
       console.error('Error fetching order detail:', err);
     }
@@ -307,18 +317,25 @@ const Profile = () => {
               {orderHistory.map((order) => (
                 <div 
                   key={order.orderId}
-                  className="w-full h-[100px] bg-gray-50 rounded-lg p-4 cursor-pointer transform transition-all duration-300 hover:bg-gray-100 hover:shadow-md"
+                  className="w-full h-auto bg-gray-50 rounded-lg p-4 cursor-pointer transform transition-all duration-300 hover:bg-gray-100 hover:shadow-md"
                   onClick={() => fetchOrderDetail(order.orderId)}
                 >
-                  <div className="flex justify-between items-center h-full">
-                    <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900">{order.serviceName}</h3>
-                      <p className="text-sm text-gray-600">Order ID: {order.orderId}</p>
-                      <p className="text-sm text-gray-600">
-                        {new Date(order.orderDate).toLocaleDateString()}
-                      </p>
+                  <div className="flex flex-col md:flex-row md:justify-between md:items-center h-full gap-2 md:gap-0">
+                    <div className="flex-1 flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
+                      <div>
+                        <h3 className="text-lg font-semibold text-gray-900">{order.serviceName}</h3>
+                        <div className="flex flex-wrap gap-2 text-sm text-gray-600 mt-1 items-center">
+                          <span>Order ID: {order.orderId}</span>
+                          <span>|</span>
+                          <span>{order.orderDate ? new Date(order.orderDate).toLocaleDateString() : ''}</span>
+                          <span>|</span>
+                          <span>Payment: {order.paymentMethod}</span>
+                          <span>|</span>
+                          <span>Collection: {order.collectionMethod || order.sampleCollectionMethod}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right mt-2 md:mt-0">
                       <span className={`px-3 py-1 rounded-full text-sm font-medium ${
                         order.orderStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
                         order.orderStatus === 'Completed' ? 'bg-green-100 text-green-800' :
@@ -326,8 +343,15 @@ const Profile = () => {
                       }`}>
                         {order.orderStatus}
                       </span>
+                      <span className={`ml-2 px-3 py-1 rounded-full text-xs font-medium ${
+                        order.paymentStatus === 'PaymentCompleted' ? 'bg-green-100 text-green-800' :
+                        order.paymentStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                        'bg-gray-100 text-gray-800'
+                      }`}>
+                        {order.paymentStatus}
+                      </span>
                       <p className="mt-2 text-lg font-semibold text-blue-600">
-                        {order.totalAmount.toLocaleString()} VND
+                        {order.totalAmount != null ? order.totalAmount.toLocaleString() : 'N/A'} VND
                       </p>
                     </div>
                   </div>
@@ -363,35 +387,39 @@ const Profile = () => {
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Test Type</p>
-                      <p className="font-medium">{selectedOrder.testType}</p>
+                      <p className="font-medium">{selectedOrder.testType || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Sample Type</p>
-                      <p className="font-medium">{selectedOrder.sampleType}</p>
+                      <p className="font-medium">{selectedOrder.sampleType || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Participant</p>
-                      <p className="font-medium">{selectedOrder.participantName}</p>
+                      <p className="font-medium">{selectedOrder.participantName || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Relationship</p>
-                      <p className="font-medium">{selectedOrder.relationship}</p>
+                      <p className="font-medium">{selectedOrder.relationship || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Collection Method</p>
-                      <p className="font-medium">{selectedOrder.collectionMethod}</p>
+                      <p className="font-medium">{selectedOrder.collectionMethod || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Payment Method</p>
-                      <p className="font-medium">{selectedOrder.paymentMethod}</p>
+                      <p className="font-medium">{selectedOrder.paymentMethod || 'N/A'}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Total Amount</p>
-                      <p className="font-medium">{selectedOrder.total.toLocaleString()} VND</p>
+                      <p className="font-medium">{selectedOrder.total != null ? selectedOrder.total.toLocaleString() : 'N/A'} VND</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-500">Status</p>
-                      <p className="font-medium">{selectedOrder.orderStatus}</p>
+                      <p className="font-medium">{selectedOrder.orderStatus || 'N/A'}</p>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-500">Created At</p>
+                      <p className="font-medium">{selectedOrder.createAt ? new Date(selectedOrder.createAt).toLocaleString() : 'N/A'}</p>
                     </div>
                   </div>
                 </div>

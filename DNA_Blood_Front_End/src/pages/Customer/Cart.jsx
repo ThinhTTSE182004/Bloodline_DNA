@@ -52,7 +52,7 @@ const Cart = () => {
     }
     // Save selected items to localStorage
     localStorage.setItem('selectedServices', JSON.stringify(itemsToOrder));
-    navigate('/fill-booking-form');
+    navigate('/fill-booking');
   };
 
   return (
