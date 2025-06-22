@@ -293,12 +293,12 @@ INSERT INTO [Bloodline_DNA].[dbo].[Sample_type] (
 
 
 INSERT INTO USERS (name, email, phone, password, role_id)
-VALUES (N'Admin', 'thinhttse182004@fpt.edu.vn', 0944404161, N'AQAAAAIAAYagAAAAEAaft1D4glAiGYpAVCgj1Ut6lXdGe2mMxD+63GzUDnP8y26zeorQYnj7sGC1MqE7Pg==', 1);
+VALUES (N'Admin', 'thinhttse182004@fpt.edu.vn', N'0944404161', N'AQAAAAIAAYagAAAAEAaft1D4glAiGYpAVCgj1Ut6lXdGe2mMxD+63GzUDnP8y26zeorQYnj7sGC1MqE7Pg==', 1);
 
 INSERT INTO USERS (name, email, phone, password, role_id)
-VALUES (N'Staff', 'thinhttse182004@gmail.com', 0944404161, N'AQAAAAIAAYagAAAAEAaft1D4glAiGYpAVCgj1Ut6lXdGe2mMxD+63GzUDnP8y26zeorQYnj7sGC1MqE7Pg==', 2);
+VALUES (N'Staff', 'thinhttse182004@gmail.com', N'0944404161', N'AQAAAAIAAYagAAAAEAaft1D4glAiGYpAVCgj1Ut6lXdGe2mMxD+63GzUDnP8y26zeorQYnj7sGC1MqE7Pg==', 2);
 
 INSERT INTO USERS (name, email, phone, password, role_id)
-VALUES (N'Customer', 'thaithinh9595@gmail.com', 0944404161, N'AQAAAAIAAYagAAAAEAaft1D4glAiGYpAVCgj1Ut6lXdGe2mMxD+63GzUDnP8y26zeorQYnj7sGC1MqE7Pg==', 3);
+VALUES (N'Customer', 'thaithinh9595@gmail.com', N'0944404161', N'AQAAAAIAAYagAAAAEAaft1D4glAiGYpAVCgj1Ut6lXdGe2mMxD+63GzUDnP8y26zeorQYnj7sGC1MqE7Pg==', 3);
 
 
