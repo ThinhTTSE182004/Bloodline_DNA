@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace DNA_API1.Controllers
 {
@@ -15,64 +16,15 @@ namespace DNA_API1.Controllers
         private readonly IOrderService _orderService;
         private readonly ISampleService _sampleService;
         private readonly ISampleTransferService _sampleTransferService;
-        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService)
+        private readonly IOrderDetailService _orderDetailService;
+        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService)
         {
             _orderService = orderService;
             _sampleService = sampleService;
             _sampleTransferService = sampleTransferService;
+            _orderDetailService = orderDetailService;
         }
-        // Xác nhận thanh toán thành công
-        [HttpPut("confirm-order/{id}")]
-        public async Task<IActionResult> ConfirmOrder(int id)
-        {
-            try
-            {
-                var result = await _orderService.ConfirmOrderAsync(id);
-                if (result == null)
-                    return NotFound(new { message = "Không tìm thấy đơn hàng." });
-
-                return Ok(result);
-            }
-            catch (InvalidOperationException ex)
-            {
-                return BadRequest(new { message = ex.Message });
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Lỗi máy chủ", error = ex.Message });
-            }
-        }
-        //Danh sách đơn hàng 
-        [HttpGet("get-all-orders")]
-        public async Task<IActionResult> GetAllOrders()
-        {
-            try
-            {
-                var orders = await _orderService.GetAllOrdersForStaffAsync();
-                return Ok(orders);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new
-                {
-                    message = "Đã xảy ra lỗi khi lấy danh sách đơn hàng.",
-                    error = ex.Message
-                });
-            }
-        }
-
-        // Cái này là chỉ update sample-status và ngày lấy mẫu thôi, còn ngày nhận mẫu thì là medical
-        [HttpPut("update-sample-status/{sampleId}")]
-        public async Task<IActionResult> UpdateSample(int sampleId, [FromBody] SampleUpdateStaff model)
-        {
-            var success = await _sampleService.UpdateSampleStatusStaffAsync(sampleId, model);
-            if (!success)
-                return NotFound("Sample not found");
-
-            return Ok("Sample updated successfully");
-        }
-
-
+       
         // Danh sách mẫu xét nghiệm cần ghi nhận theo nhân viên phụ trách (loại, kit, trạng thái)
         [HttpGet("get-sample-by-staffId")]
         public async Task<IActionResult> GetSamplesToRecord()
@@ -89,16 +41,6 @@ namespace DNA_API1.Controllers
             }
         }
 
-        // Update sample_transfer_status thành đang được đưa cho medical
-        [HttpPut("confirm-sample-transfer-status/{transferId}")]
-        public async Task<IActionResult> ConfirmSampleTransfer(int transferId)
-        {
-            var success = await _sampleTransferService.ConfirmSampleTransferAsync(transferId);
-            if (!success) return NotFound("Sample transfer not found");
-            return Ok("Sample transfer status updated to 'Đang được đưa'");
-        }
-
-
         // Cái sample_transfer được phụ trách bởi staffId
         [HttpGet("get-sample-transfers-by-staffId")]
         public async Task<IActionResult> GetSampleTransfers()
@@ -108,5 +50,39 @@ namespace DNA_API1.Controllers
             return Ok(transfers);
         }
 
+        // Giao kit: chuyển sang trạng thái Delivering Kit
+        [HttpPut("deliver-kit/{transferId}")]
+        public async Task<IActionResult> DeliverKit(int transferId)
+        {
+            var result = await _sampleTransferService.UpdateSampleTransferStatusAsync(transferId, "Delivering Kit");
+            if (!result.Success) return BadRequest(result.Message);
+            return Ok(result.Message);
+        }
+
+        // Thu mẫu: chuyển sang trạng thái Collecting Sample
+        [HttpPut("collect-sample/{transferId}")]
+        public async Task<IActionResult> CollectSample(int transferId)
+        {
+            var result = await _sampleTransferService.UpdateSampleTransferStatusAsync(transferId, "Collecting Sample");
+            if (!result.Success) return BadRequest(result.Message);
+            return Ok(result.Message);
+        }
+
+        // Giao mẫu đến lab: chuyển sang trạng thái Delivering to Lab
+        [HttpPut("deliver-to-lab/{transferId}")]
+        public async Task<IActionResult> DeliverToLab(int transferId)
+        {
+            var result = await _sampleTransferService.UpdateSampleTransferStatusAsync(transferId, "Delivering to Lab");
+            if (!result.Success) return BadRequest(result.Message);
+            return Ok(result.Message);
+        }
+
+        [HttpGet("assigned-order-details")]
+        public async Task<IActionResult> GetAssignedOrderDetails()
+        {
+            var staffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var orderDetails = await _orderDetailService.GetOrderDetailsByStaffIdAsync(staffId);
+            return Ok(orderDetails);
+        }
     }
 }

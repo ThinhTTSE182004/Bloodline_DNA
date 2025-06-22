@@ -11,5 +11,7 @@ namespace DNA_API1.Services
         
         // Lấy OrderDetails theo MedicalStaffId với OrderStatus
         Task<IEnumerable<MedicalStaffOrderDetailDTO>> GetOrderDetailsByMedicalStaffIdAsync(int medicalStaffId);
+
+        Task<List<OrderDetailAssignedDTO>> GetOrderDetailsByStaffIdAsync(int staffId);
     }
 }

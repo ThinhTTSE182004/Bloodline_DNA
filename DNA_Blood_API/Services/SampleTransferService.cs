@@ -20,14 +20,14 @@ namespace DNA_API1.Services
             return true;
         }
 
-        public async Task<bool> ConfirmSampleTransferAsync(int transferId)
+        public async Task<StatusChangeResult> ConfirmSampleTransferAsync(int transferId)
         {
-            return await _repository.UpdateSampleTransferStatusAsync(transferId, "Đang được đưa");
+            return await _repository.UpdateSampleTransferStatusAsync(transferId, "Delivering Kit");
         }
 
-        public async Task<bool> ConfirmSampleTransferReceivedAsync(int transferId)
+        public async Task<StatusChangeResult> ConfirmSampleTransferReceivedAsync(int transferId)
         {
-            return await _repository.UpdateSampleTransferStatusAsync(transferId, "Đã nhận");
+            return await _repository.UpdateSampleTransferStatusAsync(transferId, "Received");
         }
 
         public async Task<List<SampleTransferDTO>> GetSampleTransfersByStaffIdAsync(int staffId)
@@ -38,6 +38,11 @@ namespace DNA_API1.Services
         public async Task<List<SampleTransferDTO>> GetSampleTransfersByMedicalStaffIdAsync(int medicalStaffId)
         {
             return await _repository.GetSampleTransfersByMedicalStaffIdAsync(medicalStaffId);
+        }
+
+        public async Task<StatusChangeResult> UpdateSampleTransferStatusAsync(int transferId, string newStatus)
+        {
+            return await _repository.UpdateSampleTransferStatusAsync(transferId, newStatus);
         }
     }
 }

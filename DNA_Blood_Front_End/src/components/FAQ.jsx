@@ -28,8 +28,8 @@ const FAQ = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto">
           <div className="mb-12">
-            <h4 className="text-blue-600 font-semibold mb-4">Some Important FAQ's</h4>
-            <h1 className="text-3xl font-bold text-gray-900">Common Questions</h1>
+            <h4 className="text-blue-600 font-semibold mb-4 hover:text-blue-700 transition-colors duration-200 cursor-default">Some Important FAQ's</h4>
+            <h1 className="text-3xl font-bold text-gray-900 hover:text-black transition-colors duration-200 cursor-default">Common Questions</h1>
           </div>
           <div className="space-y-4 bg-gray-50 p-6 rounded-xl shadow-md">
             {faqs.map((faq, index) => (
@@ -43,17 +43,17 @@ const FAQ = () => {
               >
                 <button
                   onClick={() => toggleAccordion(index)}
-                  className={`w-full p-6 text-left flex justify-between items-center transition-colors duration-200 ${
+                  className={`group w-full p-6 text-left flex justify-between items-center transition-colors duration-200 ${
                     openIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <FaQuestionCircle className={`text-xl flex-shrink-0 ${
-                      openIndex === index ? 'text-blue-600' : 'text-gray-400'
+                    <FaQuestionCircle className={`text-xl flex-shrink-0 transition-colors duration-200 ${
+                      openIndex === index ? 'text-blue-600' : 'text-gray-400 group-hover:text-blue-500'
                     }`} />
                     <h3 className={`text-xl font-semibold ${
                       openIndex === index ? 'text-blue-600' : 'text-gray-900'
-                    }`}>{faq.question}</h3>
+                    } hover:text-blue-700 transition-colors duration-200 cursor-pointer`}>{faq.question}</h3>
                   </div>
                   {openIndex === index ? (
                     <FaChevronUp className="text-blue-600 flex-shrink-0" />
@@ -66,7 +66,7 @@ const FAQ = () => {
                     openIndex === index ? 'max-h-40' : 'max-h-0'
                   }`}
                 >
-                  <div className="p-6 pt-0 text-gray-600">
+                  <div className="p-6 pt-0 text-gray-700 hover:text-gray-900 transition-colors duration-200 cursor-text">
                     {faq.answer}
                   </div>
                 </div>

@@ -25,18 +25,25 @@ namespace DNA_API1.Controllers
             _resultService = resultService;
             _orderDetailService = orderDetailService;
         }
-
-        // Phải update trạng thái sample_status là "Đã hoàn thành" thì mới qua được result
-        [HttpPut("update-sample/{sampleId}")]
-        public async Task<IActionResult> UpdateSample(int sampleId, [FromBody] SampleUpdateMedical model)
+        // Nhận mẫu: cập nhật trạng thái Sample.Status = "Processing"
+        [HttpPut("receive-sample/{sampleId}")]
+        public async Task<IActionResult> ReceiveSample(int sampleId)
         {
-            var success = await _sampleService.UpdateSampleStatusMedicalAsync(sampleId, model);
+            var success = await _sampleService.UpdateSampleStatusMedicalAsync(sampleId, new ViewModels.SampleUpdateMedical { SampleStatus = "Processing" });
             if (!success)
                 return NotFound("Sample not found");
-
-            return Ok("Sample updated successfully");
+            return Ok("Sample status updated to Processing");
         }
 
+        // Hoàn thành xét nghiệm: cập nhật trạng thái Sample.Status = "Completed"
+        [HttpPut("complete-sample/{sampleId}")]
+        public async Task<IActionResult> CompleteSample(int sampleId)
+        {
+            var success = await _sampleService.UpdateSampleStatusMedicalAsync(sampleId, new ViewModels.SampleUpdateMedical { SampleStatus = "Completed" });
+            if (!success)
+                return NotFound("Sample not found");
+            return Ok("Sample status updated to Completed");
+        }
         // Lấy cái sample theo Medical
         [HttpGet("get-sample-by-medicalStaffId")]
         public async Task<IActionResult> GetSamplesByMedicalStaffId()
@@ -50,9 +57,9 @@ namespace DNA_API1.Controllers
         [HttpPut("confirm-sample-transfer-received/{transferId}")]
         public async Task<IActionResult> ConfirmSampleTransferReceived(int transferId)
         {
-            var success = await _sampleTransferService.ConfirmSampleTransferReceivedAsync(transferId);
-            if (!success) return NotFound("Sample transfer not found");
-            return Ok("Sample transfer status updated to 'Đã nhận'");
+            var result = await _sampleTransferService.ConfirmSampleTransferReceivedAsync(transferId);
+            if (!result.Success) return BadRequest(result.Message);
+            return Ok(result.Message);
         }
 
         // Lấy các sample_transfer theo medical
@@ -114,6 +121,8 @@ namespace DNA_API1.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }                
+        }
+
+        
     }
 }
