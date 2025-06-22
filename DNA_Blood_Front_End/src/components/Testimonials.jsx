@@ -24,13 +24,13 @@ const Testimonials = () => {
   ];
 
   return (
-    <div id="testimonials" className="py-20 bg-primary-200">
+    <div id="testimonials" className="py-20 bg-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-primary-800 sm:text-4xl">
+          <h2 className="text-3xl font-bold text-gray-800 sm:text-4xl hover:text-black transition-colors duration-200 cursor-default">
             What Our Customers Say
           </h2>
-          <p className="mt-4 text-lg text-primary-700">
+          <p className="mt-4 text-lg text-gray-700 hover:text-gray-800 transition-colors duration-200 cursor-default">
             Trusted by thousands of customers worldwide
           </p>
         </div>
@@ -49,7 +49,7 @@ const Testimonials = () => {
               </div>
 
               <div className="mt-4">
-                <p className="text-primary-700 italic">
+                <p className="text-gray-800 italic hover:text-black transition-colors duration-200 cursor-text">
                   "{testimonial.content}"
                 </p>
                 <div className="mt-6 flex items-center">
@@ -59,10 +59,10 @@ const Testimonials = () => {
                     alt={testimonial.author}
                   />
                   <div className="ml-4">
-                    <h4 className="text-lg font-semibold text-primary-800">
+                    <h4 className="text-lg font-semibold text-gray-800 hover:text-black transition-colors duration-200 cursor-default">
                       {testimonial.author}
                     </h4>
-                    <p className="text-primary-600">
+                    <p className="text-primary-600 hover:text-primary-700 transition-colors duration-200 cursor-default">
                       {testimonial.role}
                     </p>
                   </div>
@@ -75,21 +75,21 @@ const Testimonials = () => {
         {/* Trust Indicators */}
         <div className="mt-20">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600">98%</div>
-              <p className="mt-2 text-primary-700">Customer Satisfaction</p>
+            <div className="text-center transition-all duration-300 hover:scale-105">
+              <div className="text-4xl font-bold text-primary-600 hover:text-primary-700 transition-colors duration-200 cursor-default">98%</div>
+              <p className="mt-2 text-primary-700 hover:text-primary-800 transition-colors duration-200 cursor-default">Customer Satisfaction</p>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600">50K+</div>
-              <p className="mt-2 text-primary-700">Tests Completed</p>
+            <div className="text-center transition-all duration-300 hover:scale-105">
+              <div className="text-4xl font-bold text-primary-600 hover:text-primary-700 transition-colors duration-200 cursor-default">50K+</div>
+              <p className="mt-2 text-primary-700 hover:text-primary-800 transition-colors duration-200 cursor-default">Tests Completed</p>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600">24/7</div>
-              <p className="mt-2 text-primary-700">Support Available</p>
+            <div className="text-center transition-all duration-300 hover:scale-105">
+              <div className="text-4xl font-bold text-primary-600 hover:text-primary-700 transition-colors duration-200 cursor-default">24/7</div>
+              <p className="mt-2 text-primary-700 hover:text-primary-800 transition-colors duration-200 cursor-default">Support Available</p>
             </div>
-            <div className="text-center">
-              <div className="text-4xl font-bold text-primary-600">99.9%</div>
-              <p className="mt-2 text-primary-700">Accuracy Rate</p>
+            <div className="text-center transition-all duration-300 hover:scale-105">
+              <div className="text-4xl font-bold text-primary-600 hover:text-primary-700 transition-colors duration-200 cursor-default">99.9%</div>
+              <p className="mt-2 text-primary-700 hover:text-primary-800 transition-colors duration-200 cursor-default">Accuracy Rate</p>
             </div>
           </div>
         </div>

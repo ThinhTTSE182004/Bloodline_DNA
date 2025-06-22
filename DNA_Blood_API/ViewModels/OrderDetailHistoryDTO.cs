@@ -40,7 +40,15 @@ namespace DNA_API1.ViewModels
         public DateOnly? DeliveryDate { get; set; }
         public string? DeliveryNote { get; set; }
 
-        // 7. Kết quả xét nghiệm
+        // 7. Thông tin phân công giao hàng
+        public int? AssignedStaffId { get; set; }
+        public string? AssignedStaffName { get; set; }
+        public DateTime? TaskAssignedAt { get; set; }
+        public string? DeliveryTaskStatus { get; set; }
+        public string? DeliveryTaskNote { get; set; }
+        public DateOnly? TaskCompleteAt { get; set; }
+
+        // 8. Kết quả xét nghiệm
         public string? ResultStatus { get; set; }
         public string? ResultFileUrl { get; set; }
     }

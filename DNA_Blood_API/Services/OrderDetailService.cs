@@ -15,6 +15,7 @@ namespace DNA_API1.Services
             _context = context;
             _orderDetailRepository = orderDetailRepository; 
         }
+        
         public async Task<bool> UpdateOrderDetailStatusIfAllSamplesCompletedAsync(int orderDetailId)
         {
             var orderDetail = await _context.OrderDetails
