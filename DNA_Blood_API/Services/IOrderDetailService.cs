@@ -8,5 +8,7 @@ namespace DNA_API1.Services
     {
         Task<bool> UpdateOrderDetailStatusIfAllSamplesCompletedAsync(int orderDetailId);
         Task<IEnumerable<MedicalStaffOrderDetailDTO>> GetOrderDetailsByMedicalStaffIdAsync(int medicalStaffId);
+
+        Task<List<OrderDetailAssignedDTO>> GetOrderDetailsByStaffIdAsync(int staffId);
     }
 }
