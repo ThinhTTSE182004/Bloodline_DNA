@@ -51,6 +51,8 @@ const Login = () => {
           navigate('/staff');
         } else if (userRole === 'Admin') {
           navigate('/admin');
+        } else if (userRole === 'Medical Staff') {
+          navigate('/medical-staff');
         } else {
           navigate('/');
         }
