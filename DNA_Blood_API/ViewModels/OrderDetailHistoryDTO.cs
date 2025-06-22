@@ -18,7 +18,7 @@ namespace DNA_API1.ViewModels
         // 3. Thông tin người tham gia
         public string ParticipantName { get; set; } = null!;
         public string Sex { get; set; } = null!;
-        public int BirthYear { get; set; }
+        public int? BirthYear { get; set; }
         public string Relationship { get; set; } = null!;
         public string? NameRelation { get; set; }
 

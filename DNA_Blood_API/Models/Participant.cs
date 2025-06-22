@@ -25,6 +25,7 @@ public partial class Participant
     public DateOnly BirthDate { get; set; }
 
     [Column("phone")]
+    [StringLength(12)]
     public string? Phone { get; set; }
 
     [Column("relationship")]

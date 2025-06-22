@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Navbar from '../components/Navbar';
+import Navbar from '../../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaShoppingBag, FaShieldAlt, FaTruck, FaHeadphones } from 'react-icons/fa';
-import { useCart } from '../context/CartContext';
-import ServiceDetail from '../components/ServiceDetail';
+import { useCart } from '../../context/CartContext';
+import ServiceDetail from '../../components/ServiceDetail';
 
 const Cart = () => {
   const [selectedItems, setSelectedItems] = useState({});

@@ -22,6 +22,10 @@ public partial class OrderDetail
     [Column("order_id")]
     public int OrderId { get; set; }
 
+    [Column("status")]
+    [StringLength(50)]
+    public string? Status { get; set; }
+
     [InverseProperty("OrderDetail")]
     public virtual ICollection<DeliveryTask> DeliveryTasks { get; set; } = new List<DeliveryTask>();
 

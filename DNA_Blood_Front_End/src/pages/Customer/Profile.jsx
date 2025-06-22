@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Navbar from '../components/Navbar';
+import Navbar from '../../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
-import signalRService from '../services/signalRService.js';
+import signalRService from '../../services/signalRService.js';
 
 const Profile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -58,9 +58,10 @@ const Profile = () => {
 
       // Kết hợp dữ liệu từ API và token
       const profileData = {
-        name: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'] || data.name,
-        email: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/emailaddress'] || data.email,
-        phone: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/mobilephone'] || data.phone,
+        name: data.name,
+        email: data.email,
+        phone: data.phone,
+
         updatedAt: data.updatedAt
       };
 
@@ -72,6 +73,11 @@ const Profile = () => {
 
       setUserProfile(profileData);
       setLoading(false);
+      // Nếu thiếu thông tin, chuyển hướng sang Account Setting
+      if (!profileData.name || !profileData.email || !profileData.phone) {
+        navigate('/settings', { replace: true });
+      }
+
     } catch (err) {
       console.error('Error fetching profile:', err);
       if (err.message.includes('Failed to fetch')) {

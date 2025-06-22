@@ -1,5 +1,5 @@
 import React from 'react';
-import StaffNavbar from '../components/StaffNavbar';
+import StaffNavbar from '../../components/StaffNavbar';
 
 const StaffProfile = () => {
   return (

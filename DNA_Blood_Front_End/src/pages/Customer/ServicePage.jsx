@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../components/Navbar';
+import Navbar from '../../components/Navbar';
 import { FaSearch, FaCalendarAlt, FaFilter, FaDna, FaShoppingCart } from 'react-icons/fa';
-import ServiceDetail from '../components/ServiceDetail';
-import { useCart } from '../context/CartContext';
-import { useServices } from '../context/ServiceContext';
+import ServiceDetail from '../../components/ServiceDetail';
+import { useCart } from '../../context/CartContext';
+import { useServices } from '../../context/ServiceContext';
 
 const ServicePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
