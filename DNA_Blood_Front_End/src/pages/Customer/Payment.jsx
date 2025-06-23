@@ -188,48 +188,48 @@ const Payment = () => {
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* User Information Card */}
           <div className="bg-white shadow-xl rounded-2xl p-8 flex flex-col items-center mb-8 transition-transform duration-300 hover:scale-105 hover:shadow-2xl group">
-            <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300">CONFIRM USER INFORMATION</h2>
-            <div className="w-full max-w-md space-y-4 text-gray-700">
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaUser className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Full Name:</span>
-                <span className="ml-2 flex-1 truncate">{userDetails.fullName}</span>
+            <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300 cursor-default">CONFIRM USER INFORMATION</h2>
+            <div className="w-full max-w-md space-y-4 text-gray-700 group-hover:text-gray-900">
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaUser className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Full Name:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.fullName}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaEnvelope className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Email:</span>
-                <span className="ml-2 flex-1 truncate">{userDetails.email}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaEnvelope className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Email:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.email}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaPhone className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Phone Number:</span>
-                <span className="ml-2 flex-1 truncate">{userDetails.phoneNumber}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaPhone className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Phone Number:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.phoneNumber}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaMapMarkerAlt className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Address:</span>
-                <span className="ml-2 flex-1 truncate">{userDetails.address}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaMapMarkerAlt className="mr-3 text-blue-500 text-xl cursor-defaul group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Address:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.address}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaCalendarAlt className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Date of Birth:</span>
-                <span className="ml-2 flex-1 truncate">{userDetails.dateOfBirth}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaCalendarAlt className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Date of Birth:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.dateOfBirth}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaTransgender className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Gender:</span>
-                <span className="ml-2 flex-1 capitalize">{userDetails.gender}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaTransgender className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Gender:</span>
+                <span className="ml-2 flex-1 capitalize cursor-default">{userDetails.gender}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaUsers className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Relationship:</span>
-                <span className="ml-2 flex-1 capitalize">{userDetails.relationshipToPatient}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaUsers className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Relationship:</span>
+                <span className="ml-2 flex-1 capitalize cursor-default">{userDetails.relationshipToPatient}</span>
               </div>
               {userDetails.relationshipToPatient !== 'self' && userDetails.relationshipToPatient !== '' && (
-                <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                  <FaUserFriends className="mr-3 text-blue-500 text-xl" />
-                  <span className="font-semibold w-36">Related Person:</span>
-                  <span className="ml-2 flex-1 truncate">{userDetails.relatedPersonName}</span>
+                <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                  <FaUserFriends className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                  <span className="font-semibold w-36 cursor-default">Related Person:</span>
+                  <span className="ml-2 flex-1 truncate cursor-default">{userDetails.relatedPersonName}</span>
                 </div>
               )}
             </div>
@@ -237,28 +237,28 @@ const Payment = () => {
 
           {/* Payment Card */}
           <div className="bg-white shadow-xl rounded-2xl p-8 flex flex-col mb-8 transition-transform duration-300 hover:scale-105 hover:shadow-2xl group">
-            <h1 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300">PAYMENT INFORMATION</h1>
+            <h1 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300 cursor-default">PAYMENT INFORMATION</h1>
             {/* Order Summary */}
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Order Summary</h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-4 cursor-default group-hover:text-black">Order Summary</h2>
               <div className="overflow-x-auto rounded-lg border border-gray-200">
                 <table className="min-w-full divide-y divide-gray-200 rounded-lg">
                   <thead className="bg-blue-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-bold text-blue-600 uppercase tracking-wider">Service</th>
-                      <th className="px-6 py-3 text-right text-xs font-bold text-blue-600 uppercase tracking-wider">Price</th>
+                      <th className="px-6 py-3 text-left text-xs font-bold text-blue-600 uppercase tracking-wider cursor-default group-hover:text-blue-700">Service</th>
+                      <th className="px-6 py-3 text-right text-xs font-bold text-blue-600 uppercase tracking-wider cursor-default group-hover:text-blue-700">Price</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orderSummary.map((item) => (
                       <tr key={item.servicePackageId || item.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.serviceName || item.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">{(item.price || 0).toLocaleString()} VND</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-default group-hover:text-black">{item.serviceName || item.name}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right cursor-default group-hover:text-gray-800">{(item.price || 0).toLocaleString()} VND</td>
                       </tr>
                     ))}
                     <tr className="border-t border-gray-300 bg-blue-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900">Total</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-base font-bold text-blue-600 text-right">{calculateTotalAmount()} VND</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-base font-bold text-gray-900 cursor-default group-hover:text-black">Total</td>
+                      <td className="px-6 py-4 whitespace-nowrap text-base font-bold text-blue-600 text-right cursor-default group-hover:text-blue-700">{calculateTotalAmount()} VND</td>
                     </tr>
                   </tbody>
                 </table>
@@ -267,7 +267,7 @@ const Payment = () => {
 
             {/* Select Payment Method */}
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Select Payment Method</h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-4 cursor-default">Select Payment Method</h2>
               <div className="space-y-4">
                 <label className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer ${paymentMethod === 'bankTransfer' ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white hover:border-blue-300'}`}>
                   <input

@@ -92,7 +92,7 @@ const ServicePage = () => {
               <input
                 type="text"
                 placeholder="Search services..."
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 hover:border-black"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
@@ -104,7 +104,7 @@ const ServicePage = () => {
               <input
                 type="number"
                 placeholder="Min price"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 hover:border-black"
                 value={minPrice}
                 onChange={(e) => setMinPrice(e.target.value)}
                 min="0"
@@ -117,7 +117,7 @@ const ServicePage = () => {
               <input
                 type="number"
                 placeholder="Max price"
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 hover:border-black"
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
                 min="0"
@@ -137,7 +137,7 @@ const ServicePage = () => {
 
           {/* Our Services Section */}
           <div>
-            <h2 className="text-2xl font-bold text-blue-600 text-center mb-8 flex items-center justify-center">
+            <h2 className="text-2xl font-bold text-blue-600 text-center mb-8 flex items-center justify-center cursor-default">
               <FaDna className="w-7 h-7 mr-3" />
               Our Services
             </h2>
@@ -154,7 +154,7 @@ const ServicePage = () => {
                   </div>
                   <div className="p-6">
                     <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.serviceName}</h3>
-                    <p className="text-lg font-bold text-blue-600 mb-4">${service.price.toLocaleString()}</p>
+                    <p className="text-lg font-bold text-blue-600 mb-4 cursor-default">${service.price.toLocaleString()}</p>
                     <div className="flex gap-3">
                       <button
                         onClick={() => handleOpenDetailModal(service)}
