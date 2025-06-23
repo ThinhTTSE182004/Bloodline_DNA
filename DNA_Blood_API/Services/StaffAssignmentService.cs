@@ -6,14 +6,15 @@ namespace DNA_API1.Services
     public class StaffAssignmentService : IStaffAssignmentService
     {
         private readonly IOrderRepository _orderRepository;
-        private const int MAX_ORDERS_PER_DAY = 5; // Số đơn hàng tối đa một staff có thể xử lý trong ngày
+        private readonly IStaffScheduleRepository _staffScheduleRepository;
 
-        public StaffAssignmentService(IOrderRepository orderRepository)
+        public StaffAssignmentService(IOrderRepository orderRepository, IStaffScheduleRepository staffScheduleRepository)
         {
             _orderRepository = orderRepository;
+            _staffScheduleRepository = staffScheduleRepository;
         }
 
-        public async Task<(int medicalStaffId, int staffId)> AssignStaffAsync(int servicePackageId)
+        public async Task<(int medicalStaffId, int staffId)> AssignStaffAsync(int servicePackageId, DateTime? bookingDate = null)
         {
             // Lấy thông tin service package để biết chuyên môn cần thiết
             var servicePackage = await _orderRepository.GetServicePackageByIdAsync(servicePackageId);
@@ -22,38 +23,107 @@ namespace DNA_API1.Services
                 throw new Exception($"Service package with ID {servicePackageId} not found");
             }
 
-            // Lấy danh sách medical staff phù hợp
-            var availableMedicalStaff = await _orderRepository.GetAvailableMedicalStaffAsync(
-                servicePackage.ServiceName,  // Sử dụng ServiceName thay vì Specialization
-                MAX_ORDERS_PER_DAY
-            );
+            // Sử dụng booking_date nếu có, nếu không thì dùng ngày hôm nay
+            var targetDate = bookingDate?.Date ?? DateTime.Today;
 
-            if (!availableMedicalStaff.Any())
+            // Kiểm tra giờ làm việc nếu có bookingDate
+            if (bookingDate.HasValue)
             {
-                // Nếu không tìm thấy medical staff phù hợp, tìm bất kỳ medical staff nào có kinh nghiệm
-                availableMedicalStaff = await _orderRepository.GetAvailableMedicalStaffAsync(
-                    "",  // Bỏ qua điều kiện specialization
-                    MAX_ORDERS_PER_DAY
-                );
-
-                if (!availableMedicalStaff.Any())
+                var bookingHour = bookingDate.Value.Hour;
+                if (bookingHour < 8 || bookingHour >= 17)
                 {
-                    throw new Exception("Không tìm thấy nhân viên y tế nào khả dụng. Vui lòng thử lại sau.");
+                    throw new Exception($"Giờ làm việc từ 8:00 AM đến 5:00 PM. Thời gian đặt lịch hẹn ({bookingDate.Value:HH:mm}) nằm ngoài giờ làm việc. Vui lòng chọn thời gian khác.");
                 }
             }
 
-            // Chọn medical staff có ít đơn hàng nhất
-            var selectedMedicalStaff = availableMedicalStaff.First();
+            // Tính toán thời gian làm việc thực tế dựa trên loại dịch vụ
+            var medicalStaffProcessingTime = _staffScheduleRepository.CalculateMedicalStaffProcessingTime(servicePackage.ServiceName);
+            var staffProcessingTime = _staffScheduleRepository.CalculateStaffProcessingTime(servicePackage.ServiceName);
 
-            // Lấy danh sách staff thông thường
-            var availableStaff = await _orderRepository.GetAvailableStaffAsync(MAX_ORDERS_PER_DAY);
-            if (!availableStaff.Any())
+            // Lấy tất cả medical staff với cân bằng tải (giới hạn 5 đơn/ngày)
+            var allMedicalStaff = await _staffScheduleRepository.GetAvailableMedicalStaffWithWorkloadBalancingAsync(
+                servicePackage.ServiceName,
+                medicalStaffProcessingTime,
+                targetDate,
+                5  // Giới hạn 5 đơn/ngày
+            );
+
+            // Kiểm tra từng medical staff có thời gian rảnh cho booking time cụ thể
+            User? selectedMedicalStaff = null;
+            foreach (var staff in allMedicalStaff)
             {
-                throw new Exception("Không tìm thấy nhân viên nào khả dụng. Vui lòng thử lại sau.");
+                if (bookingDate.HasValue)
+                {
+                    // Kiểm tra thời gian đặt lịch cụ thể
+                    var isAvailable = await _staffScheduleRepository.IsBookingTimeAvailableAsync(
+                        staff.UserId, 
+                        bookingDate.Value, 
+                        medicalStaffProcessingTime
+                    );
+                    
+                    if (isAvailable)
+                    {
+                        selectedMedicalStaff = staff;
+                        break;
+                    }
+                }
+                else
+                {
+                    // Nếu không có booking time cụ thể, chọn staff đầu tiên có slot rảnh
+                    selectedMedicalStaff = staff;
+                    break;
+                }
             }
 
-            // Chọn staff có ít đơn hàng nhất
-            var selectedStaff = availableStaff.First();
+            if (selectedMedicalStaff == null)
+            {
+                throw new Exception($"Không tìm thấy nhân viên y tế nào khả dụng cho dịch vụ '{servicePackage.ServiceName}' " +
+                                  $"(thời gian làm việc: {medicalStaffProcessingTime} phút) vào ngày {targetDate:dd/MM/yyyy} " +
+                                  $"tại thời gian {bookingDate?.ToString("HH:mm") ?? "bất kỳ"}. Vui lòng thử lại sau.");
+            }
+
+            // Lấy danh sách staff thông thường với cân bằng tải
+            var availableStaff = await _staffScheduleRepository.GetAvailableStaffWithWorkloadBalancingAsync(staffProcessingTime, targetDate, 5);
+
+            if (!availableStaff.Any())
+            {
+                throw new Exception($"Không tìm thấy nhân viên nào khả dụng cho dịch vụ '{servicePackage.ServiceName}' " +
+                                  $"(thời gian lấy mẫu: {staffProcessingTime} phút) vào ngày {targetDate:dd/MM/yyyy}. Vui lòng thử lại sau.");
+            }
+
+            // Kiểm tra từng staff có thời gian rảnh cho booking time cụ thể
+            User? selectedStaff = null;
+            foreach (var staff in availableStaff)
+            {
+                if (bookingDate.HasValue)
+                {
+                    // Kiểm tra thời gian đặt lịch cụ thể
+                    var isAvailable = await _staffScheduleRepository.IsStaffBookingTimeAvailableAsync(
+                        staff.UserId, 
+                        bookingDate.Value, 
+                        staffProcessingTime
+                    );
+                    
+                    if (isAvailable)
+                    {
+                        selectedStaff = staff;
+                        break;
+                    }
+                }
+                else
+                {
+                    // Nếu không có booking time cụ thể, chọn staff đầu tiên có slot rảnh
+                    selectedStaff = staff;
+                    break;
+                }
+            }
+
+            if (selectedStaff == null)
+            {
+                throw new Exception($"Không tìm thấy nhân viên nào khả dụng cho dịch vụ '{servicePackage.ServiceName}' " +
+                                  $"(thời gian lấy mẫu: {staffProcessingTime} phút) vào ngày {targetDate:dd/MM/yyyy} " +
+                                  $"tại thời gian {bookingDate?.ToString("HH:mm") ?? "bất kỳ"}. Vui lòng thử lại sau.");
+            }
 
             return (selectedMedicalStaff.UserId, selectedStaff.UserId);
         }
