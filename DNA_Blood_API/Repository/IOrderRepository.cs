@@ -15,23 +15,15 @@ namespace DNA_API1.Repository
     List<Sample> samples,
     Payment payment,
     List<SampleKit> sampleKits,
-    List<(int StaffId, int MedicalStaffId)> sampleTransferInfos);
-        Task<List<User>> GetAvailableMedicalStaffAsync(string specialization, int maxOrdersPerDay);
-        Task<List<User>> GetAvailableStaffAsync(int maxOrdersPerDay);
-        Task<int> GetStaffOrderCountAsync(int staffId, DateTime date);
+    List<(int StaffId, int MedicalStaffId)> sampleTransferInfos,
+    Delivery? delivery = null,
+    List<DeliveryTask>? deliveryTasks = null);
         Task<ServicePackage> GetServicePackageByIdAsync(int servicePackageId);
         Task<List<OrderHistoryDTO>> GetOrderHistoryByUserIdAsync(int userId);
-
-
         Task<IEnumerable<OrderDetailHistoryDTO>> GetOrderDetailsByOrderIdAsync(int orderId, int userId);
-
-
         // Cập nhật trạng thái Payment Status.
         Task<Order?> GetOrderWithNavigationByIdAsync(int orderId);
         Task UpdateOrderAsync(Order order);
-
         Task<List<Order>> GetOrdersWithNavigationAsync();
-
-
     }
 } 

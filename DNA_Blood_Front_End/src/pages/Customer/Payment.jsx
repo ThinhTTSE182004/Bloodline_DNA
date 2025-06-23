@@ -1,185 +1,124 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../../components/Navbar';
-import { Link, useNavigate } from 'react-router-dom';
-import { FaClipboardList, FaMoneyBillWave, FaUniversity, FaCreditCard, FaCheckCircle, FaUser, FaTransgender, FaCalendarAlt, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUsers, FaUserFriends } from 'react-icons/fa';
+import { useNavigate } from 'react-router-dom';
+import { FaClipboardList, FaMoneyBillWave, FaUniversity, FaCheckCircle, FaUser, FaTransgender, FaCalendarAlt, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUsers, FaUserFriends } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
+import { useServices } from '../../context/ServiceContext';
 
 const Payment = () => {
   const [paymentMethod, setPaymentMethod] = useState('bankTransfer');
   const [orderSummary, setOrderSummary] = useState([]);
-  const [userDetails, setUserDetails] = useState({});
+  const [bookingData, setBookingData] = useState(null);
   const navigate = useNavigate();
   const { refreshCart } = useCart();
+  const { services } = useServices();
 
   useEffect(() => {
-    // Load user details from localStorage (from FillBookingForm)
-    const storedUserDetails = JSON.parse(localStorage.getItem('bookingFormData')) || {};
-    setUserDetails(storedUserDetails);
+    const storedBookingData = JSON.parse(localStorage.getItem('bookingFormData'));
 
-    // Ưu tiên lấy selectedServices từ bookingFormData, fallback sang cartItems nếu không có
-    let selected = [];
-    if (storedUserDetails.selectedServices && Array.isArray(storedUserDetails.selectedServices)) {
-      selected = storedUserDetails.selectedServices;
-    } else {
-      selected = JSON.parse(localStorage.getItem('cart')) || [];
+    if (!storedBookingData || !storedBookingData.details || storedBookingData.details.length === 0) {
+      alert('No booking information found. Redirecting...');
+      navigate('/services');
+      return;
     }
-    setOrderSummary(selected);
+    
+    setBookingData(storedBookingData);
 
-    if (!selected || selected.length === 0) {
-      alert('No services selected for payment. Redirecting to cart.');
-      navigate('/cart');
+    if (services.length > 0) {
+        const summary = storedBookingData.details.map(detail => 
+            services.find(s => String(s.servicePackageId) === String(detail.servicePackageId))
+        ).filter(Boolean);
+        setOrderSummary(summary);
     }
-  }, [navigate]);
+  }, [navigate, services]);
 
   const calculateTotalAmount = () => {
-    return orderSummary.reduce((total, item) => total + item.price, 0).toFixed(0); // VND usually no decimals
+    if (!bookingData) return '0';
+    return bookingData.payment.total.toLocaleString();
   };
 
   const handleConfirmPayment = async () => {
     try {
-      // Get token from localStorage
       const token = localStorage.getItem('token');
       if (!token) {
         alert('Please login to continue');
         navigate('/login');
         return;
       }
+      
+      if (!bookingData) {
+        alert('Booking information is missing.');
+        return;
+      }
 
-      // Get user ID from token
       const tokenData = JSON.parse(atob(token.split('.')[1]));
       const customerId = parseInt(tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier']);
 
-      // Debug log user details
-      console.log('User Details:', userDetails);
-
-      // Map gender to sex
-      const genderMap = {
-        'male': 'Male',
-        'female': 'Female',
-        'other': 'Other'
-      };
-
-      // Map relationship values
-      const relationshipMap = {
-        'self': 'Self',
-        'parent': 'Parent',
-        'child': 'Child',
-        'spouse': 'Spouse',
-        'sibling': 'Sibling',
-        'other': 'Other'
-      };
-
-      // Map payment methods
       const paymentMethodMap = {
         'bankTransfer': 'BankTransfer',
         'cashOnDelivery': 'CashOnDelivery'
       };
 
-      // Validate and format date
-      const formatDate = (dateString) => {
-        if (!dateString) return '';
-        const date = new Date(dateString);
-        if (isNaN(date.getTime())) return '';
-        return date.toISOString().split('T')[0];
-      };
-
-      // Prepare order data according to API format
-      const orderData = {
-        customerId: parseInt(customerId) || 0,
-        participant: {
-          fullName: userDetails.fullName || '',
-          sex: genderMap[userDetails.gender?.toLowerCase()] || 'Male',
-          birthDate: formatDate(userDetails.dateOfBirth),
-          phone: userDetails.phoneNumber?.replace(/\D/g, '') || '',
-          relationship: relationshipMap[userDetails.relationshipToPatient?.toLowerCase()] || 'Self',
-          nameRelation: userDetails.relatedPersonName || ''
-        },
-        details: orderSummary.map(item => ({
-          servicePackageId: parseInt(item.servicePackageId || item.id) || 0
-        })),
+      const finalOrderData = {
+        ...bookingData,
+        customerId: customerId,
         payment: {
-          paymentMethod: paymentMethodMap[paymentMethod] || 'BankTransfer',
-          total: parseInt(calculateTotalAmount().replace(/\D/g, '')) || 0
+          ...bookingData.payment,
+          paymentMethod: paymentMethodMap[paymentMethod]
         },
-        testTypeName: userDetails.testType || 'Civil',
-        sampleTypeName: userDetails.sampleType || 'Blood',
-        methodTypeName: userDetails.sampleCollectionMethod || 'At Home'
       };
 
-      // Debug log order data
-      console.log('Order Data:', orderData);
-      console.log('Request Body:', JSON.stringify(orderData, null, 2));
+      console.log('Final Order Data to be sent:', JSON.stringify(finalOrderData, null, 2));
 
-      // Validate required fields
-      if (!orderData.customerId) {
-        throw new Error('Customer ID is required');
-      }
-      if (!orderData.participant.fullName) {
-        throw new Error('Full name is required');
-      }
-      if (!orderData.participant.birthDate) {
-        throw new Error('Date of birth is required');
-      }
-      if (!orderData.participant.phone) {
-        throw new Error('Phone number is required');
-      }
-      if (!orderData.details || orderData.details.length === 0) {
-        throw new Error('At least one service is required');
-      }
-      if (!orderData.payment.total) {
-        throw new Error('Total amount is required');
-      }
-
-      // Call API to create order with authentication token
       const response = await fetch('https://localhost:7113/api/Order/CreateOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify(orderData)
+        body: JSON.stringify(finalOrderData)
       });
 
       if (!response.ok) {
         const errorData = await response.json();
         console.error('API Error Response:', errorData);
-        console.error('Request Body:', JSON.stringify(orderData, null, 2));
         throw new Error(errorData.message || 'Failed to create order');
       }
 
       const responseData = await response.json();
       console.log('API Success Response:', responseData);
 
-      // Lấy danh sách các service đã thanh toán (orderSummary)
-      const paidIds = orderSummary.map(item => item.servicePackageId || item.id);
-
-      // Lấy lại cartItems gốc
+      const paidIds = orderSummary.map(item => item.servicePackageId);
       const allCart = JSON.parse(localStorage.getItem('cart')) || [];
-      // Giữ lại các service chưa thanh toán
-      const newCart = allCart.filter(item => !paidIds.includes(item.servicePackageId || item.id));
+      const newCart = allCart.filter(item => !paidIds.includes(item.servicePackageId));
       localStorage.setItem('cart', JSON.stringify(newCart));
       refreshCart();
-
-      // Lưu thông tin thanh toán vào sessionStorage trước khi xóa bookingFormData
-      const paymentInfo = {
-        ...userDetails,
+      
+      sessionStorage.setItem('lastPaidBooking', JSON.stringify({
+        ...bookingData,
+        ...bookingData.participant,
         selectedServices: orderSummary,
         paymentMethod,
         paymentDate: new Date().toISOString(),
-        orderId: `ORD${Date.now().toString().slice(-6)}`
-      };
-      sessionStorage.setItem('lastPaidBooking', JSON.stringify(paymentInfo));
+        orderId: responseData.orderId || `ORD${Date.now().toString().slice(-6)}`
+      }));
 
-      // Xóa thông tin bookingFormData
       localStorage.removeItem('bookingFormData');
       
-      // Chuyển hướng sang trang PaymentSuccess
       navigate('/payment-success');
     } catch (error) {
       console.error('Error creating order:', error);
       alert(error.message || 'Failed to create order. Please try again.');
     }
   };
+
+  if (!bookingData) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <p>Loading booking details...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-gray-100 to-blue-100 flex flex-col">
@@ -188,48 +127,54 @@ const Payment = () => {
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* User Information Card */}
           <div className="bg-white shadow-xl rounded-2xl p-8 flex flex-col items-center mb-8 transition-transform duration-300 hover:scale-105 hover:shadow-2xl group">
-            <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300 cursor-default">CONFIRM USER INFORMATION</h2>
-            <div className="w-full max-w-md space-y-4 text-gray-700 group-hover:text-gray-900">
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
-                <FaUser className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
-                <span className="font-semibold w-36 cursor-default">Full Name:</span>
-                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.fullName}</span>
+            <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300">CONFIRM USER INFORMATION</h2>
+            <div className="w-full max-w-md space-y-4 text-gray-700">
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
+                <FaUser className="mr-3 text-blue-500 text-xl" />
+                <span className="font-semibold w-36">Full Name:</span>
+                <span className="ml-2 flex-1 truncate">{bookingData.participant.fullName}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
-                <FaEnvelope className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
-                <span className="font-semibold w-36 cursor-default">Email:</span>
-                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.email}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
+                <FaEnvelope className="mr-3 text-blue-500 text-xl" />
+                <span className="font-semibold w-36">Email:</span>
+                <span className="ml-2 flex-1 truncate">{bookingData.email || 'N/A'}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
-                <FaPhone className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
-                <span className="font-semibold w-36 cursor-default">Phone Number:</span>
-                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.phoneNumber}</span>
+              {/* Booking Date */}
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
+                <FaCalendarAlt className="mr-3 text-blue-500 text-xl" />
+                <span className="font-semibold w-36">Booking Date:</span>
+                <span className="ml-2 flex-1 truncate">{bookingData.bookingDate ? new Date(bookingData.bookingDate).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
-                <FaMapMarkerAlt className="mr-3 text-blue-500 text-xl cursor-defaul group-hover:text-blue-600" />
-                <span className="font-semibold w-36 cursor-default">Address:</span>
-                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.address}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
+                <FaPhone className="mr-3 text-blue-500 text-xl" />
+                <span className="font-semibold w-36">Phone Number:</span>
+                <span className="ml-2 flex-1 truncate">{bookingData.participant.phone}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
-                <FaCalendarAlt className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
-                <span className="font-semibold w-36 cursor-default">Date of Birth:</span>
-                <span className="ml-2 flex-1 truncate cursor-default">{userDetails.dateOfBirth}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
+                <FaMapMarkerAlt className="mr-3 text-blue-500 text-xl" />
+                <span className="font-semibold w-36">Address:</span>
+                <span className="ml-2 flex-1 truncate">{bookingData.deliveryAddress || 'N/A'}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
-                <FaTransgender className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
-                <span className="font-semibold w-36 cursor-default">Gender:</span>
-                <span className="ml-2 flex-1 capitalize cursor-default">{userDetails.gender}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
+                <FaCalendarAlt className="mr-3 text-blue-500 text-xl" />
+                <span className="font-semibold w-36">Date of Birth:</span>
+                <span className="ml-2 flex-1 truncate">{bookingData.participant.birthDate}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
-                <FaUsers className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
-                <span className="font-semibold w-36 cursor-default">Relationship:</span>
-                <span className="ml-2 flex-1 capitalize cursor-default">{userDetails.relationshipToPatient}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
+                <FaTransgender className="mr-3 text-blue-500 text-xl" />
+                <span className="font-semibold w-36">Gender:</span>
+                <span className="ml-2 flex-1 capitalize">{bookingData.participant.sex}</span>
               </div>
-              {userDetails.relationshipToPatient !== 'self' && userDetails.relationshipToPatient !== '' && (
-                <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
-                  <FaUserFriends className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
-                  <span className="font-semibold w-36 cursor-default">Related Person:</span>
-                  <span className="ml-2 flex-1 truncate cursor-default">{userDetails.relatedPersonName}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
+                <FaUsers className="mr-3 text-blue-500 text-xl" />
+                <span className="font-semibold w-36">Relationship:</span>
+                <span className="ml-2 flex-1 capitalize">{bookingData.participant.relationship}</span>
+              </div>
+              {bookingData.participant.relationship !== 'self' && bookingData.participant.relationship !== '' && (
+                <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
+                  <FaUserFriends className="mr-3 text-blue-500 text-xl" />
+                  <span className="font-semibold w-36">Related Person:</span>
+                  <span className="ml-2 flex-1 truncate">{bookingData.participant.nameRelation}</span>
                 </div>
               )}
             </div>
@@ -251,9 +196,9 @@ const Payment = () => {
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orderSummary.map((item) => (
-                      <tr key={item.servicePackageId || item.id}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-default group-hover:text-black">{item.serviceName || item.name}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right cursor-default group-hover:text-gray-800">{(item.price || 0).toLocaleString()} VND</td>
+                      <tr key={item.servicePackageId}>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.serviceName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">{item.price.toLocaleString()} VND</td>
                       </tr>
                     ))}
                     <tr className="border-t border-gray-300 bg-blue-50">

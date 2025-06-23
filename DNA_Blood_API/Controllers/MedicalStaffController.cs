@@ -78,7 +78,7 @@ namespace DNA_API1.Controllers
         {
             var result = await _orderDetailService.UpdateOrderDetailStatusIfAllSamplesCompletedAsync(orderDetailId);
             if (!result) return NotFound("OrderDetail không tồn tại hoặc chưa đủ điều kiện.");
-            return Ok("Đã đủ điều kiện để cập nhật result.");
+            return Ok("Ok");
         }
 
 

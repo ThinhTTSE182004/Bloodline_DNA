@@ -11,6 +11,7 @@ namespace DNA_API1.Repository
         {
             _context = context;
         }
+        
         public async Task<bool> UpdateStatusAsync(int orderDetailId, string status)
         {
             var orderDetail = await _context.OrderDetails.FindAsync(orderDetailId);
@@ -19,7 +20,7 @@ namespace DNA_API1.Repository
             await _context.SaveChangesAsync();
             return true;
         }
-
+        
         public async Task<IEnumerable<OrderDetail>> GetOrderDetailsByMedicalStaffIdAsync(int medicalStaffId)
         {
             return await _context.OrderDetails

@@ -18,6 +18,7 @@ const FillBookingForm = () => {
     address: '',
     relationshipToPatient: '',
     relatedPersonName: '',
+    bookingDate: new Date().toISOString().slice(0, 16),
   });
   const navigate = useNavigate();
   const location = useLocation();
@@ -68,10 +69,32 @@ const FillBookingForm = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    localStorage.setItem('bookingFormData', JSON.stringify({
-      ...formData,
-      selectedServices
-    }));
+
+    const total = selectedServices.reduce((total, service) => total + (service.price || 0), 0);
+
+    const bookingData = {
+      bookingDate: formData.bookingDate + ':00',
+      email: formData.email,
+      participant: {
+        fullName: formData.fullName,
+        sex: formData.gender,
+        birthDate: formData.dateOfBirth,
+        phone: formData.phoneNumber,
+        relationship: formData.relationshipToPatient,
+        nameRelation: formData.relatedPersonName
+      },
+      details: selectedServices.map(s => ({ servicePackageId: s.servicePackageId })),
+      payment: {
+        // paymentMethod will be added on payment screen
+        total: total
+      },
+      testTypeName: formData.testType,
+      sampleTypeName: formData.sampleType,
+      methodTypeName: formData.sampleCollectionMethod,
+      deliveryAddress: formData.sampleCollectionMethod === 'At Home' ? formData.address : ''
+    };
+
+    localStorage.setItem('bookingFormData', JSON.stringify(bookingData));
     navigate('/payment');
   };
 
@@ -283,22 +306,40 @@ const FillBookingForm = () => {
                   />
                 </div>
 
-                {/* Address */}
+                {/* Booking Date */}
                 <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="address" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
-                    <FaMapMarkerAlt className="w-6 h-6 mr-3 text-blue-600" />
-                    Address
+                  <label htmlFor="bookingDate" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <FaCalendarAlt className="w-6 h-6 mr-3 text-blue-600" />
+                    Booking Date
                   </label>
                   <input
-                    type="text"
-                    name="address"
-                    id="address"
+                    type="datetime-local"
+                    name="bookingDate"
+                    id="bookingDate"
                     className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    placeholder="Enter your address"
-                    value={formData.address}
+                    value={formData.bookingDate}
                     onChange={handleChange}
                   />
                 </div>
+
+                {/* Address - chỉ hiện khi chọn At Home */}
+                {formData.sampleCollectionMethod === 'At Home' && (
+                  <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <label htmlFor="address" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <FaMapMarkerAlt className="w-6 h-6 mr-3 text-blue-600" />
+                      Address
+                    </label>
+                    <input
+                      type="text"
+                      name="address"
+                      id="address"
+                      className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter your address"
+                      value={formData.address}
+                      onChange={handleChange}
+                    />
+                  </div>
+                )}
 
                 {/* Relationship to Patient */}
                 <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">

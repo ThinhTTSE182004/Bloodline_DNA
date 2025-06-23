@@ -34,7 +34,7 @@ namespace DNA_API1.Services
             if (orderDetail.Samples == null || orderDetail.Samples.Count == 0)
                 throw new Exception("OrderDetail chưa có mẫu.");
 
-            if (orderDetail.Samples.Any(s => s.SampleStatus != "Đã hoàn thành"))
+            if (orderDetail.Samples.Any(s => s.SampleStatus != "Completed"))
                 throw new Exception("Chưa thể nhập kết quả vì còn mẫu chưa hoàn thành.");
 
             // Lưu kết quả

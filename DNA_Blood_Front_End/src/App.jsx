@@ -23,131 +23,73 @@ import FillBookingForm from './pages/Customer/FillBookingForm';
 import Payment from './pages/Customer/Payment';
 import PaymentSuccess from './pages/Customer/PaymentSuccess';
 import Staff from './pages/Staff/Staff';
-import StaffDashboard from './pages/Staff/StaffDashboard';
+import StaffOrder from './pages/Staff/StaffOrder';
 import StaffProfile from './pages/Staff/StaffProfile';
 import OAuthSuccess from './pages/OAuthSuccess';
 import AdminPage from './pages/Admin/AdminPage';
+import MedicalStaff from './pages/MedicalStaff/MedicalStaff';
+import MedicalStaffOrder from './pages/MedicalStaff/MedicalStaffOrder';
+import ServiceDetail from './components/ServiceDetail';
+import Notification from './components/Notification';
+import Contact from './components/Contact';
+
+const HomePage = () => (
+    <>
+        <Hero />
+        <Features />
+        <Services />
+        <Testimonials />
+        <Blog />
+        <FAQ />
+        <Contact />
+    </>
+);
 
 const App = () => {
-  const [userRole, setUserRole] = useState(null);
+    return (
+        <Router>
+            <NotificationProvider>
+                <ServiceProvider>
+                    <CartProvider>
+                        <Navbar />
+                        <main className="flex-grow">
+                            <Routes>
+                                {/* Customer Routes */}
+                                <Route path="/" element={<HomePage />} />
+                                <Route path="/services" element={<ServicePage />} />
+                                <Route path="/service/:id" element={<ServiceDetail />} />
+                                <Route path="/cart" element={<Cart />} />
+                                <Route path="/fill-booking" element={<FillBookingForm />} />
+                                <Route path="/payment" element={<Payment />} />
+                                <Route path="/payment-success" element={<PaymentSuccess />} />
+                                <Route path="/profile" element={<Profile />} />
+                                <Route path="/account-setting" element={<AccountSetting />} />
+                                <Route path="/login" element={<Login />} />
+                                <Route path="/register" element={<Register />} />
 
-  // Initialize AOS
-  useEffect(() => {
-    AOS.init({
-      duration: 1000,
-      once: false,
-      offset: 150,
-      easing: 'ease-in-out-cubic',
-      mirror: true
-    });
-  }, []);
+                                {/* Staff Routes */}
+                                <Route path="/staff" element={<Staff />} />
+                                <Route path="/staff/orders" element={<StaffOrder />} />
+                                <Route path="/staff/profile" element={<StaffProfile />} />
 
-  // Enable smooth scrolling for anchor links
-  useEffect(() => {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const target = document.querySelector(this.getAttribute('href'));
-        if (target) {
-          target.scrollIntoView({
-            behavior: 'smooth',
-            block: 'start'
-          });
-        }
-      });
-    });
-  }, []);
+                                {/* Medical Staff Routes */}
+                                <Route path="/medical-staff" element={<MedicalStaff />} />
+                                <Route path="/medical-staff/orders" element={<MedicalStaffOrder />} />
 
-  useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      try {
-        const tokenData = JSON.parse(atob(token.split('.')[1]));
-        const role = tokenData['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
-        setUserRole(role);
-      } catch (error) {
-        console.error('Error parsing token:', error);
-        localStorage.removeItem('token');
-      }
-    }
-  }, []);
+                                {/* Admin Routes */}
+                                <Route path="/admin" element={<AdminPage />} />
 
-  const HomeContent = () => (
-    <div className="min-h-screen bg-white">
-      {/* Nếu là Admin, hiển thị nút vào Admin */}
-      {userRole === 'Admin' && (
-        <div className="fixed top-24 right-8 z-50">
-          <a
-            href="/admin"
-            className="bg-blue-700 text-white px-5 py-2 rounded-lg shadow-lg font-semibold hover:bg-blue-900 transition-all duration-200 animate-bounce"
-          >
-            Vào trang Admin
-          </a>
-        </div>
-      )}
-      <section id="home">
-        <Hero />
-      </section>
-      <section id="features" className="py-20" data-aos="fade-up" data-aos-duration="1000">
-        <Features />
-      </section>
-      <section id="services" className="py-20 bg-white" data-aos="fade-up" data-aos-duration="1000">
-        <Services />
-      </section>
-      <section id="testimonials" className="py-20 bg-gray-50" data-aos="fade-up" data-aos-duration="1000">
-        <Testimonials />
-      </section>
-      <div className="flex flex-col md:flex-row">
-        <section id="blog" className="py-20 bg-white md:w-3/4" data-aos="fade-up" data-aos-duration="1000">
-          <Blog />
-        </section>
-        <section id="faq" className="py-20 md:w-1/4" data-aos="fade-up" data-aos-duration="1000" data-aos-delay="200">
-          <FAQ />
-        </section>
-      </div>
-    </div>
-  );
-
-  return (
-    <NotificationProvider>
-      <ServiceProvider>
-        <CartProvider>
-          <Router>
-            <div className="flex flex-col min-h-screen">
-              <Navbar />
-              <main className="flex-grow">
-                <Routes>
-                  <Route path="/login" element={<Login />} />
-                  <Route path="/oauth-success" element={<OAuthSuccess />} />
-                  <Route path="/register" element={<Register />} />
-                  <Route path="/profile" element={<Profile />} />
-                  <Route path="/settings" element={<AccountSetting />} />
-                  <Route path="/services" element={<ServicePage />} />
-                  <Route path="/cart" element={<Cart />} />
-                  <Route path="/payment" element={<Payment />} />
-                  <Route path="/payment-success" element={<PaymentSuccess />} />
-                  <Route path="/fill-booking-form" element={<FillBookingForm />} />
-                  <Route path="/staff" element={<StaffDashboard />} />
-                  <Route path="/staff/orders" element={<Staff />} />
-                  <Route path="/staff/profile" element={<StaffProfile />} />
-                  <Route path="/admin" element={<AdminPage />} />
-                  <Route 
-                    path="/" 
-                    element={
-                      userRole === 'Staff' ? 
-                        <Navigate to="/staff" replace /> : 
-                      <HomeContent />
-                    } 
-                  />
-                </Routes>
-                  </main>
-                  <Footer />
-                </div>
-          </Router>
-        </CartProvider>
-      </ServiceProvider>
-    </NotificationProvider>
-  );
-};
+                                {/* Other Routes */}
+                                <Route path="/oauth-success" element={<OAuthSuccess />} />
+                                <Route path="*" element={<Navigate to="/" />} />
+                            </Routes>
+                        </main>
+                        <Footer />
+                    </CartProvider>
+                </ServiceProvider>
+            </NotificationProvider>
+        </Router>
+    );
+}
 
 export default App;
