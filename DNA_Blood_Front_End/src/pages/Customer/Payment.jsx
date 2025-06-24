@@ -127,54 +127,54 @@ const Payment = () => {
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* User Information Card */}
           <div className="bg-white shadow-xl rounded-2xl p-8 flex flex-col items-center mb-8 transition-transform duration-300 hover:scale-105 hover:shadow-2xl group">
-            <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300">CONFIRM USER INFORMATION</h2>
-            <div className="w-full max-w-md space-y-4 text-gray-700">
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaUser className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Full Name:</span>
-                <span className="ml-2 flex-1 truncate">{bookingData.participant.fullName}</span>
+            <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300 cursor-default">CONFIRM USER INFORMATION</h2>
+            <div className="w-full max-w-md space-y-4 text-gray-700 group-hover:text-gray-900">
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaUser className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Full Name:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{bookingData.participant.fullName}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaEnvelope className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Email:</span>
-                <span className="ml-2 flex-1 truncate">{bookingData.email || 'N/A'}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaEnvelope className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Email:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{bookingData.email || 'N/A'}</span>
               </div>
               {/* Booking Date */}
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaCalendarAlt className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Booking Date:</span>
-                <span className="ml-2 flex-1 truncate">{bookingData.bookingDate ? new Date(bookingData.bookingDate).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaCalendarAlt className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Booking Date:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{bookingData.bookingDate ? new Date(bookingData.bookingDate).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaPhone className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Phone Number:</span>
-                <span className="ml-2 flex-1 truncate">{bookingData.participant.phone}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaPhone className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Phone Number:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{bookingData.participant.phone}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaMapMarkerAlt className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Address:</span>
-                <span className="ml-2 flex-1 truncate">{bookingData.deliveryAddress || 'N/A'}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaMapMarkerAlt className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Address:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{bookingData.deliveryAddress || 'N/A'}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaCalendarAlt className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Date of Birth:</span>
-                <span className="ml-2 flex-1 truncate">{bookingData.participant.birthDate}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaCalendarAlt className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Date of Birth:</span>
+                <span className="ml-2 flex-1 truncate cursor-default">{bookingData.participant.birthDate}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaTransgender className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Gender:</span>
-                <span className="ml-2 flex-1 capitalize">{bookingData.participant.sex}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaTransgender className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Gender:</span>
+                <span className="ml-2 flex-1 capitalize cursor-default">{bookingData.participant.sex}</span>
               </div>
-              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                <FaUsers className="mr-3 text-blue-500 text-xl" />
-                <span className="font-semibold w-36">Relationship:</span>
-                <span className="ml-2 flex-1 capitalize">{bookingData.participant.relationship}</span>
+              <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                <FaUsers className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                <span className="font-semibold w-36 cursor-default">Relationship:</span>
+                <span className="ml-2 flex-1 capitalize cursor-default">{bookingData.participant.relationship}</span>
               </div>
               {bookingData.participant.relationship !== 'self' && bookingData.participant.relationship !== '' && (
-                <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300">
-                  <FaUserFriends className="mr-3 text-blue-500 text-xl" />
-                  <span className="font-semibold w-36">Related Person:</span>
-                  <span className="ml-2 flex-1 truncate">{bookingData.participant.nameRelation}</span>
+                <div className="flex items-center bg-gray-50 rounded-lg px-4 py-3 group-hover:bg-blue-50 transition-colors duration-300 cursor-default">
+                  <FaUserFriends className="mr-3 text-blue-500 text-xl cursor-default group-hover:text-blue-600" />
+                  <span className="font-semibold w-36 cursor-default">Related Person:</span>
+                  <span className="ml-2 flex-1 truncate cursor-default">{bookingData.participant.nameRelation}</span>
                 </div>
               )}
             </div>
@@ -197,8 +197,8 @@ const Payment = () => {
                   <tbody className="bg-white divide-y divide-gray-200">
                     {orderSummary.map((item) => (
                       <tr key={item.servicePackageId}>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{item.serviceName}</td>
-                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right">{item.price.toLocaleString()} VND</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 cursor-default group-hover:text-black">{item.serviceName}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-700 text-right cursor-default group-hover:text-gray-800">{item.price.toLocaleString()} VND</td>
                       </tr>
                     ))}
                     <tr className="border-t border-gray-300 bg-blue-50">

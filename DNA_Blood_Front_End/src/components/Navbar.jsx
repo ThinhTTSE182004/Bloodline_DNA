@@ -168,6 +168,7 @@ const Navbar = () => {
               )}
             </Link>
             {isLoggedIn ? (
+<<<<<<< HEAD
               <>
                 <div className="relative">
                   <button
@@ -182,6 +183,41 @@ const Navbar = () => {
                         to="/profile"
                         className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
                         onClick={() => setShowDropdown(false)}
+=======
+              <div className="relative">
+                <button
+                  onClick={() => setShowDropdown(!showDropdown)}
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer focus:outline-none"
+                >
+                  Hi, {userName}!
+                </button>
+                {showDropdown && (
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                    <Link
+                      to="/profile"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      User Profile
+                    </Link>
+                    <Link
+                      to="/account-setting"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
+                      onClick={() => setShowDropdown(false)}
+                    >
+                      Account Setting
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
+                    >
+                      Logout
+                    </button>
+                    {userRole === 'Admin' && (
+                      <a
+                        href="/admin"
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+>>>>>>> 0a37537a5a75f04bea537d8e269a7507ef82045b
                       >
                         User Profile
                       </Link>
@@ -408,7 +444,7 @@ const Navbar = () => {
                       User Profile
                     </Link>
                     <Link
-                      to="/settings"
+                      to="/account-setting"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
                       onClick={() => {
                         setShowDropdown(false);
