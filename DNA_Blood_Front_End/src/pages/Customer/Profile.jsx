@@ -75,7 +75,7 @@ const Profile = () => {
       setLoading(false);
       // Nếu thiếu thông tin, chuyển hướng sang Account Setting
       if (!profileData.name || !profileData.email || !profileData.phone) {
-        navigate('/settings', { replace: true });
+        navigate('/account-setting', { replace: true });
       }
 
     } catch (err) {
@@ -260,7 +260,7 @@ const Profile = () => {
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-3">
                   <Link 
-                    to="/settings"
+                    to="/account-setting"
                     className="flex items-center px-6 py-3 bg-white border-2 border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2">
