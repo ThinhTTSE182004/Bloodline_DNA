@@ -169,11 +169,11 @@ const Staff = () => {
   const chartData = getChartData();
 
   const StatCard = ({ icon, title, value, color }) => (
-    <div className={`bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4 transform transition-all duration-300 hover:scale-105 ${color}`}>
+    <div className={`bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4 transform transition-all duration-300 hover:scale-105 ${color} hover:bg-blue-50 group`}>
         {icon}
         <div>
-            <p className="text-sm font-medium text-gray-500">{title}</p>
-            <p className="text-2xl font-bold text-gray-900">{value}</p>
+            <p className="text-sm font-medium text-gray-500 cursor-default group-hover:text-gray-800">{title}</p>
+            <p className="text-2xl font-bold text-gray-900 cursor-default">{value}</p>
         </div>
     </div>
   );
@@ -183,7 +183,7 @@ const Staff = () => {
       <StaffNavbar />
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1600px] mx-auto">
-          <h1 className="text-3xl font-bold text-gray-800 mb-8">Staff Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-800 mb- cursor-default">Staff Dashboard</h1>
           {error && (
             <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
               <p className="text-sm text-red-700">{error}</p>
@@ -200,8 +200,8 @@ const Staff = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Chart */}
-            <div className="lg:col-span-1 bg-white shadow-lg rounded-lg p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center"><FaChartPie className="mr-2 text-gray-600"/>Sample Status Distribution</h2>
+            <div className="lg:col-span-1 bg-white shadow-lg rounded-lg p-6 cursor-default group">
+              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center group-hover:text-black"><FaChartPie className="mr-2 text-gray-600 group-hover:text-gray-800"/>Sample Status Distribution</h2>
               <div className="h-80 flex items-center justify-center">
                  <Pie data={chartData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Sample Status' } } }} />
               </div>
