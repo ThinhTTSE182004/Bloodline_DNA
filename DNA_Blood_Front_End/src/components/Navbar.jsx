@@ -11,7 +11,6 @@ const Navbar = () => {
   const [userName, setUserName] = useState('');
   const [userRole, setUserRole] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const location = useLocation();
@@ -65,7 +64,6 @@ const Navbar = () => {
     setUserName('');
     setUserRole(null);
     setShowDropdown(false);
-    setShowCustomerDropdown(false);
     // Ngắt kết nối SignalR
     try {
       await signalRService.stopConnection();
@@ -148,13 +146,13 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <Link to="/" className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer">
+                <Link to="/" className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text">
                   Home
                 </Link>
-                <Link to="/services" className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer">
+                <Link to="/services" className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text">
                   Services
                 </Link>
-                <Link to="/blog" className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer">
+                <Link to="/blog" className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text">
                   Blog
                 </Link>
               </>
@@ -168,22 +166,6 @@ const Navbar = () => {
               )}
             </Link>
             {isLoggedIn ? (
-<<<<<<< HEAD
-              <>
-                <div className="relative">
-                  <button
-                    onClick={() => setShowDropdown(!showDropdown)}
-                    className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer focus:outline-none"
-                  >
-                    Hi, {userName}!
-                  </button>
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
-                        onClick={() => setShowDropdown(false)}
-=======
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
@@ -217,92 +199,13 @@ const Navbar = () => {
                       <a
                         href="/admin"
                         className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
->>>>>>> 0a37537a5a75f04bea537d8e269a7507ef82045b
                       >
-                        User Profile
-                      </Link>
-                      <Link
-                        to="/settings"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
-                        onClick={() => setShowDropdown(false)}
-                      >
-                        Account Setting
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
-                      >
-                        Logout
-                      </button>
-                      {userRole === 'Admin' && (
-                        <a
-                          href="/admin"
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Admin Page
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </div>
-                {/* Customer Dropdown */}
-                {userRole !== 'Admin' && userRole !== 'Staff' && (
-                  <div className="relative ml-4">
-                    <button
-                      onClick={() => setShowCustomerDropdown((prev) => !prev)}
-                      className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer focus:outline-none"
-                    >
-                      Customer
-                    </button>
-                    {showCustomerDropdown && (
-                      <div className="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg py-1 z-50">
-                        <Link
-                          to="/profile"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Profile
-                        </Link>
-                        <Link
-                          to="/cart"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Cart
-                        </Link>
-                        <Link
-                          to="/fill-booking-form"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Booking
-                        </Link>
-                        <Link
-                          to="/payment"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Payment
-                        </Link>
-                        <Link
-                          to="/payment-success"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Payment Success
-                        </Link>
-                        <Link
-                          to="/settings"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Account Setting
-                        </Link>
-                      </div>
+                        Admin Page
+                      </a>
                     )}
                   </div>
                 )}
-              </>
+              </div>
             ) : (
               <>
                 <Link
@@ -390,19 +293,19 @@ const Navbar = () => {
               <>
                 <Link
                   to="/"
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Home
                 </Link>
                 <Link
                   to="/services"
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Services
                 </Link>
                 <Link
                   to="/blog"
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
                 >
                   Blog
                 </Link>
