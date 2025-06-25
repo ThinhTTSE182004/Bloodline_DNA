@@ -4,6 +4,7 @@ import { FaSearch, FaCalendarAlt, FaFilter, FaDna, FaShoppingCart } from 'react-
 import ServiceDetail from '../../components/ServiceDetail';
 import { useCart } from '../../context/CartContext';
 import { useServices } from '../../context/ServiceContext';
+import { motion } from 'framer-motion';
 
 const ServicePage = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -87,8 +88,16 @@ const ServicePage = () => {
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Search and Filter Section */}
-          <div className="bg-white shadow rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center justify-center gap-4">
-            <div className="relative flex-grow">
+          <motion.div
+            initial={{ opacity: 0}}
+            animate={{ opacity: 1}}
+            transition={{ duration: 0.8, delay: 0}}
+            className="bg-white shadow rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center justify-center gap-4">
+            <motion.div
+              initial={{ opacity: 0}}
+              animate={{ opacity: 1}}
+              transition={{ duration: 0.8, delay: 0.2}} 
+              className="relative flex-grow">
               <input
                 type="text"
                 placeholder="Search services..."
@@ -99,8 +108,12 @@ const ServicePage = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <FaSearch className="w-5 h-5 text-gray-400" />
               </div>
-            </div>
-            <div className="relative flex-grow">
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0}}
+              animate={{ opacity: 1}}
+              transition={{ duration: 0.8, delay: 0.4}} 
+              className="relative flex-grow">
               <input
                 type="number"
                 placeholder="Min price"
@@ -112,8 +125,12 @@ const ServicePage = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="text-gray-400 font-bold">$</span>
               </div>
-            </div>
-            <div className="relative flex-grow">
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0}}
+              animate={{ opacity: 1}}
+              transition={{ duration: 0.8, delay: 0.6}} 
+              className="relative flex-grow">
               <input
                 type="number"
                 placeholder="Max price"
@@ -125,7 +142,7 @@ const ServicePage = () => {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                 <span className="text-gray-400 font-bold">$</span>
               </div>
-            </div>
+            </motion.div>
             <button
               onClick={handleSearch}
               className="px-6 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
@@ -133,15 +150,23 @@ const ServicePage = () => {
               <FaFilter className="w-5 h-5 mr-2" />
               Filter
             </button>
-          </div>
+          </motion.div>
 
           {/* Our Services Section */}
           <div>
-            <h2 className="text-2xl font-bold text-blue-600 text-center mb-8 flex items-center justify-center cursor-default">
+            <motion.h2
+              initial={{ opacity: 0, scale:0.8}}
+              animate={{ opacity: 1, scale:1}}
+              transition={{ duration: 0.8}}
+              className="text-2xl font-bold text-blue-600 text-center mb-8 flex items-center justify-center cursor-default">
               <FaDna className="w-7 h-7 mr-3" />
               Our Services
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            </motion.h2>
+            <motion.div 
+              initial={{ opacity: 0, y: 40 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               {services.map((service) => (
                 <div key={service.servicePackageId} className="bg-white shadow rounded-lg overflow-hidden">
                   {/* Service Image */}
@@ -173,7 +198,7 @@ const ServicePage = () => {
                   </div>
                 </div>
               ))}
-            </div>
+            </motion.div>
           </div>
         </div>
       </main>

@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaShoppingBag, FaShieldAlt, FaTruck, FaHeadphones } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import ServiceDetail from '../../components/ServiceDetail';
+import { motion } from 'framer-motion';
 
 const Cart = () => {
   const [selectedItems, setSelectedItems] = useState({});
@@ -61,15 +62,26 @@ const Cart = () => {
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Header Section */}
-          <div className="bg-white rounded-lg p-6 text-center">
-            <h1 className="text-4xl font-bold text-blue-700 mb-4 hover:text-blue-600 hover:cursor-default">YOUR SHOPPING CART</h1>
-            <div className="w-24 h-1 bg-blue-500 mx-auto mb-4"></div>
-            <p className="text-lg text-gray-700 hover:text-gray-900 hover:cursor-default">Review your selected services and proceed to checkout</p>
-          </div>
-
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="relative"
+          >
+            <div className="bg-white rounded-lg p-6 text-center">
+              <h1 className="text-4xl font-bold text-blue-700 mb-4 hover:text-blue-600 hover:cursor-default">YOUR SHOPPING CART</h1>
+              <div className="w-24 h-1 bg-blue-500 mx-auto mb-4"></div>
+              <p className="text-lg text-gray-700 hover:text-gray-900 hover:cursor-default">Review your selected services and proceed to checkout</p>
+            </div>
+          </motion.div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Services List Section */}
-            <div className="lg:col-span-2">
+            <motion.div
+              className="lg:col-span-2"
+              initial={{ opacity: 0, x: -60 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
               <div className="bg-white border-3 border-gray-300 rounded-lg p-6">
                 <div className="mb-4">
                   <h2 className="text-2xl font-bold text-gray-900 hover:text-black cursor-default">Selected Services</h2>
@@ -161,12 +173,17 @@ const Cart = () => {
                   </table>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Order Summary Section */}
             <div className="lg:col-span-1 space-y-4">
               {/* Order Summary Card */}
-              <div className="bg-white border-3 border-gray-300 rounded-lg p-6">
+              <motion.div
+                initial={{ opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                className="bg-white border-3 border-gray-300 rounded-lg p-6"
+              >
                 <h2 className="text-2xl font-bold text-gray-800 mb-4 hover:text-gray-900 hover:cursor-default">Order Summary</h2>
                 <div className="space-y-3">
                   <div className="flex justify-between text-base text-gray-700 border-b-2 border-gray-200 pb-2 cursor-default hover:text-gray-900">
@@ -195,10 +212,15 @@ const Cart = () => {
                 >
                   Add More Services
                 </Link>
-              </div>
+              </motion.div>
 
               {/* Trust Features Card */}
-              <div className="bg-white border-3 border-gray-300 rounded-lg p-6">
+              <motion.div
+                initial={{ opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="bg-white border-3 border-gray-300 rounded-lg p-6"
+              >
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 border-b-2 border-gray-200 pb-3">
                     <div className="bg-blue-100 p-2 rounded-lg border-2 border-blue-200">
@@ -228,7 +250,7 @@ const Cart = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
