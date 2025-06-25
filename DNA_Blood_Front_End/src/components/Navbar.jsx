@@ -11,7 +11,6 @@ const Navbar = () => {
   const [userName, setUserName] = useState('');
   const [userRole, setUserRole] = useState(null);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
   const navigate = useNavigate();
   const { cartCount } = useCart();
   const location = useLocation();
@@ -65,7 +64,6 @@ const Navbar = () => {
     setUserName('');
     setUserRole(null);
     setShowDropdown(false);
-    setShowCustomerDropdown(false);
     // Ngắt kết nối SignalR
     try {
       await signalRService.stopConnection();
@@ -106,42 +104,42 @@ const Navbar = () => {
                 <a
                   href="#home"
                   onClick={(e) => handleNavClick(e, 'home')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
                 >
                   Home
                 </a>
                 <a
                   href="#features"
                   onClick={(e) => handleNavClick(e, 'features')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
                 >
                   Features
                 </a>
                 <a
                   href="#services"
                   onClick={(e) => handleNavClick(e, 'services')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
                 >
                   Services
                 </a>
                 <a
                   href="#testimonials"
                   onClick={(e) => handleNavClick(e, 'testimonials')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
                 >
                   Feedback
                 </a>
                 <a
                   href="#faq"
                   onClick={(e) => handleNavClick(e, 'faq')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
                 >
                   FAQ
                 </a>
                 <a
                   href="#blog"
                   onClick={(e) => handleNavClick(e, 'blog')}
-                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200"
+                  className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
                 >
                   Blog
                 </a>
@@ -168,22 +166,6 @@ const Navbar = () => {
               )}
             </Link>
             {isLoggedIn ? (
-<<<<<<< HEAD
-              <>
-                <div className="relative">
-                  <button
-                    onClick={() => setShowDropdown(!showDropdown)}
-                    className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer focus:outline-none"
-                  >
-                    Hi, {userName}!
-                  </button>
-                  {showDropdown && (
-                    <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
-                        onClick={() => setShowDropdown(false)}
-=======
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
@@ -195,125 +177,46 @@ const Navbar = () => {
                   <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                     <Link
                       to="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
                       onClick={() => setShowDropdown(false)}
                     >
                       User Profile
                     </Link>
                     <Link
                       to="/account-setting"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
                       onClick={() => setShowDropdown(false)}
                     >
                       Account Setting
                     </Link>
                     <button
                       onClick={handleLogout}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
                     >
                       Logout
                     </button>
                     {userRole === 'Admin' && (
                       <a
                         href="/admin"
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
->>>>>>> 0a37537a5a75f04bea537d8e269a7507ef82045b
+                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                       >
-                        User Profile
-                      </Link>
-                      <Link
-                        to="/settings"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
-                        onClick={() => setShowDropdown(false)}
-                      >
-                        Account Setting
-                      </Link>
-                      <button
-                        onClick={handleLogout}
-                        className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-pointer"
-                      >
-                        Logout
-                      </button>
-                      {userRole === 'Admin' && (
-                        <a
-                          href="/admin"
-                          className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                        >
-                          Admin Page
-                        </a>
-                      )}
-                    </div>
-                  )}
-                </div>
-                {/* Customer Dropdown */}
-                {userRole !== 'Admin' && userRole !== 'Staff' && (
-                  <div className="relative ml-4">
-                    <button
-                      onClick={() => setShowCustomerDropdown((prev) => !prev)}
-                      className="text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer focus:outline-none"
-                    >
-                      Customer
-                    </button>
-                    {showCustomerDropdown && (
-                      <div className="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg py-1 z-50">
-                        <Link
-                          to="/profile"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Profile
-                        </Link>
-                        <Link
-                          to="/cart"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Cart
-                        </Link>
-                        <Link
-                          to="/fill-booking-form"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Booking
-                        </Link>
-                        <Link
-                          to="/payment"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Payment
-                        </Link>
-                        <Link
-                          to="/payment-success"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Payment Success
-                        </Link>
-                        <Link
-                          to="/settings"
-                          className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200"
-                          onClick={() => setShowCustomerDropdown(false)}
-                        >
-                          Account Setting
-                        </Link>
-                      </div>
+                        Admin Page
+                      </a>
                     )}
                   </div>
                 )}
-              </>
+              </div>
             ) : (
               <>
                 <Link
                   to="/login"
-                  className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-colors duration-200"
+                  className="bg-blue-800 text-white px-4 py-2 rounded-md hover:bg-blue-700 hover:text-blue-100 transition-colors duration-200 cursor-pointer"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-500 hover:text-cyan-100 transition-colors duration-200"
+                  className="bg-cyan-600 text-white px-4 py-2 rounded-md hover:bg-cyan-500 hover:text-cyan-100 transition-colors duration-200 cursor-pointer"
                 >
                   Register
                 </Link>
@@ -346,42 +249,42 @@ const Navbar = () => {
                 <a
                   href="#home"
                   onClick={(e) => handleNavClick(e, 'home')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Home
                 </a>
                 <a
                   href="#features"
                   onClick={(e) => handleNavClick(e, 'features')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Features
                 </a>
                 <a
                   href="#services"
                   onClick={(e) => handleNavClick(e, 'services')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Services
                 </a>
                 <a
                   href="#testimonials"
                   onClick={(e) => handleNavClick(e, 'testimonials')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Feedback
                 </a>
                 <a
                   href="#faq"
                   onClick={(e) => handleNavClick(e, 'faq')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   FAQ
                 </a>
                 <a
                   href="#blog"
                   onClick={(e) => handleNavClick(e, 'blog')}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Blog
                 </a>
@@ -390,19 +293,19 @@ const Navbar = () => {
               <>
                 <Link
                   to="/"
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Home
                 </Link>
                 <Link
                   to="/services"
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Services
                 </Link>
                 <Link
                   to="/blog"
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200"
                 >
                   Blog
                 </Link>
@@ -410,7 +313,7 @@ const Navbar = () => {
             )}
             <Link
               to="/cart"
-              className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-text flex items-center"
+              className="w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 flex items-center"
             >
               <FaShoppingCart className="w-5 h-5 mr-2" />
               Cart
@@ -427,7 +330,7 @@ const Navbar = () => {
                     setShowDropdown(!showDropdown);
                     setIsOpen(false);
                   }}
-                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 cursor-pointer focus:outline-none"
+                  className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 focus:outline-none"
                 >
                   Hi, {userName}!
                 </button>

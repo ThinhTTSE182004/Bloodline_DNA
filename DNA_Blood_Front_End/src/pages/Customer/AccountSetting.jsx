@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../../components/Navbar';
 import { useNavigate } from 'react-router-dom';
 import signalRService from '../../services/signalRService.js';
+import { motion } from 'framer-motion';
 
 const AccountSetting = () => {
   const navigate = useNavigate();
@@ -75,7 +76,7 @@ const AccountSetting = () => {
   const setupSignalR = async () => {
     try {
       await signalRService.startConnection();
-      
+
       // Lắng nghe sự kiện cập nhật profile
       signalRService.onUserProfileUpdate((updatedProfile) => {
         console.log('Profile updated via SignalR:', updatedProfile);
@@ -178,11 +179,19 @@ const AccountSetting = () => {
     <div className="min-h-screen bg-gray-100">
       <Navbar />
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          <h1 className="text-3xl font-extrabold text-blue-600 text-center uppercase tracking-wide mb-8 border-b-2 border-blue-600 pb-2">
-            Account Settings
-          </h1>
-
+        <div
+          className="max-w-4xl mx-auto space-y-8"
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="relative"
+          >
+            <h1 className="text-3xl font-extrabold text-blue-600 text-center uppercase tracking-wide mb-8 border-b-2 border-blue-600 pb-2">
+              Account Settings
+            </h1>
+          </motion.div>
           {error && (
             <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
               <div className="flex">
@@ -213,9 +222,9 @@ const AccountSetting = () => {
             </div>
           )}
 
-            <div className="bg-white shadow rounded-lg p-6 md:p-8">
+          <div className="bg-white shadow rounded-lg p-6 md:p-8">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+              <h2 className="text-xl font-semibold text-gray-900 flex items-center cursor-default">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-600">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
                 </svg>
@@ -270,8 +279,8 @@ const AccountSetting = () => {
                     onChange={handleChange}
                     readOnly={!isEditing}
                   />
+                </div>
               </div>
-            </div>
 
               {isEditing && (
                 <div className="flex justify-end space-x-4 mt-6">
@@ -285,15 +294,15 @@ const AccountSetting = () => {
                   >
                     Cancel
                   </button>
-              <button
-                type="submit"
+                  <button
+                    type="submit"
                     className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
+                  >
                     Save Changes
-              </button>
-            </div>
+                  </button>
+                </div>
               )}
-          </form>
+            </form>
           </div>
         </div>
       </main>
