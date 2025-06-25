@@ -20,7 +20,7 @@ const ServicePage = () => {
     e.preventDefault();
     let filtered = allServices;
     if (searchTerm) {
-      filtered = filtered.filter(service => 
+      filtered = filtered.filter(service =>
         service.serviceName.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
@@ -89,14 +89,14 @@ const ServicePage = () => {
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Search and Filter Section */}
           <motion.div
-            initial={{ opacity: 0}}
-            animate={{ opacity: 1}}
-            transition={{ duration: 0.8, delay: 0}}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0 }}
             className="bg-white shadow rounded-lg p-6 md:p-8 flex flex-col md:flex-row items-center justify-center gap-4">
             <motion.div
-              initial={{ opacity: 0}}
-              animate={{ opacity: 1}}
-              transition={{ duration: 0.8, delay: 0.2}} 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               className="relative flex-grow">
               <input
                 type="text"
@@ -109,10 +109,10 @@ const ServicePage = () => {
                 <FaSearch className="w-5 h-5 text-gray-400" />
               </div>
             </motion.div>
-            <motion.div 
-              initial={{ opacity: 0}}
-              animate={{ opacity: 1}}
-              transition={{ duration: 0.8, delay: 0.4}} 
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
               className="relative flex-grow">
               <input
                 type="number"
@@ -126,10 +126,10 @@ const ServicePage = () => {
                 <span className="text-gray-400 font-bold">$</span>
               </div>
             </motion.div>
-            <motion.div 
-              initial={{ opacity: 0}}
-              animate={{ opacity: 1}}
-              transition={{ duration: 0.8, delay: 0.6}} 
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
               className="relative flex-grow">
               <input
                 type="number"
@@ -155,14 +155,14 @@ const ServicePage = () => {
           {/* Our Services Section */}
           <div>
             <motion.h2
-              initial={{ opacity: 0, scale:0.8}}
-              animate={{ opacity: 1, scale:1}}
-              transition={{ duration: 0.8}}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8 }}
               className="text-2xl font-bold text-blue-600 text-center mb-8 flex items-center justify-center cursor-default">
               <FaDna className="w-7 h-7 mr-3" />
               Our Services
             </motion.h2>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
@@ -203,8 +203,8 @@ const ServicePage = () => {
         </div>
       </main>
       {showDetailModal && (
-        <ServiceDetail 
-          service={selectedService} 
+        <ServiceDetail
+          service={selectedService}
           onClose={handleCloseDetailModal}
           onAddToCart={handleAddToCart}
         />
