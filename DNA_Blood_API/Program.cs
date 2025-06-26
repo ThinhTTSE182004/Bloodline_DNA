@@ -9,6 +9,7 @@ using DNA_API1.Services;
 using DNA_API1.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using DNA_Blood_API.Services;
 
 namespace DNA_API1
 {
@@ -96,6 +97,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IStaffScheduleRepository, StaffScheduleRepository>();
             builder.Services.AddScoped<IResultRepository, ResultRepository>();
             builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
+            builder.Services.AddScoped(typeof(DNA_API1.Repository.IRepository<>), typeof(DNA_API1.Repository.RepositoryBase<>));
 
             // Service Registration
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -111,6 +113,8 @@ namespace DNA_API1
             builder.Services.AddScoped<ISampleTransferService, SampleTransferService>();
             builder.Services.AddScoped<IResultService, ResultService>();
             builder.Services.AddScoped<IOrderDetailService, OrderDetailService>();
+            builder.Services.AddScoped<IWorkShiftService, WorkShiftService>();
+            builder.Services.AddScoped<IShiftAssignmentService, ShiftAssignmentService>();
 
             // Add SignalR
             builder.Services.AddSignalR();

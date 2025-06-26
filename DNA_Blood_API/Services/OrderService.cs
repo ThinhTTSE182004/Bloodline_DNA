@@ -10,14 +10,17 @@ namespace DNA_API1.Services
         private readonly IOrderRepository _orderRepository;
         private readonly IStaffAssignmentService _staffAssignmentService;
         private readonly ISampleTransferRepository _sampleTransferService;
+        private readonly IStaffScheduleRepository _staffScheduleRepository;
         public OrderService(
             IOrderRepository orderRepository,
             IStaffAssignmentService staffAssignmentService,
-            ISampleTransferRepository sampleTransferRepository)
+            ISampleTransferRepository sampleTransferRepository,
+            IStaffScheduleRepository staffScheduleRepository)
         {
             _orderRepository = orderRepository;
             _staffAssignmentService = staffAssignmentService;
             _sampleTransferService = sampleTransferRepository;
+            _staffScheduleRepository = staffScheduleRepository;
         }
 
         public async Task<OrderHistoryDTO?> ConfirmOrderAsync(int orderId)
@@ -121,13 +124,28 @@ namespace DNA_API1.Services
                 var details = new List<OrderDetail>();
                 var samples = new List<Sample>();
                 var sampleKits = new List<SampleKit>();
-                var sampleTransferInfos = new List<(int StaffId, int MedicalStaffId)>();
+                var sampleTransferInfos = new List<(int, int)>();
                 var deliveryTasks = new List<DeliveryTask>();
 
                 foreach (var detailDto in dto.Details)
                 {
+                    // Lấy service package để lấy thông tin thời gian xử lý
+                    // (Giả sử _orderRepository có hàm lấy ServicePackage theo Id, nếu chưa có thì cần bổ sung)
+                    var servicePackage = await _orderRepository.GetServicePackageByIdAsync(detailDto.ServicePackageId);
+                    if (servicePackage == null)
+                        throw new Exception($"Service package id '{detailDto.ServicePackageId}' not found");
+
+                    var serviceName = servicePackage.ServiceName;
+                    var medicalProcessingTime = servicePackage.ProcessingTimeMinutes;
+                    var staffProcessingTime = _staffScheduleRepository.CalculateStaffProcessingTime(serviceName);
+                    var bookingDate = dto.BookingDate ?? DateTime.Now;
                     // Tự động phân công staff
-                    var (medicalStaffId, staffId) = await _staffAssignmentService.AssignStaffAsync(detailDto.ServicePackageId, dto.BookingDate);
+                    var (medicalStaffId, staffId) = await _staffAssignmentService.AutoAssignStaffAndMedicalForOrderAsync(
+                        bookingDate,
+                        serviceName,
+                        medicalProcessingTime,
+                        staffProcessingTime
+                    );
 
                     var detail = new OrderDetail
                     {

@@ -13,6 +13,14 @@ CREATE TABLE Permission (
     permission_name VARCHAR(100) UNIQUE NOT NULL
 )
 
+CREATE TABLE WorkShift (
+    shift_id  INT IDENTITY(1,1) PRIMARY KEY,
+    shift_name NVARCHAR(50) NOT NULL,
+    start_time TIME NOT NULL,
+    end_time TIME NOT NULL,
+    description NVARCHAR(255)
+);
+
 CREATE TABLE USERS (
     user_id INT IDENTITY(1,1) PRIMARY KEY,
     name NVARCHAR(100) NOT NULL,
@@ -23,6 +31,14 @@ CREATE TABLE USERS (
     created_at DATETIME DEFAULT GETDATE(),
     updated_at DATETIME DEFAULT GETDATE(),
     FOREIGN KEY (role_id) REFERENCES Roles(role_id)
+);
+CREATE TABLE ShiftAssignment (
+    assignment_id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL,
+    shift_id INT NOT NULL,
+    assignment_date DATE NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES USERS(user_id),
+    FOREIGN KEY (shift_id) REFERENCES WorkShift(shift_id)
 );
 
 
@@ -84,7 +100,8 @@ CREATE TABLE Service_package (
     service_name NVARCHAR(100) unique NOT NULL,
     category NVARCHAR(100),
     description NVARCHAR(MAX),
-    duration INT CHECK (duration > 0)
+    duration INT CHECK (duration > 0),
+	processing_time_minutes INT CHECK (processing_time_minutes > 0)
 )
 
 create table Choose_method (
@@ -263,13 +280,14 @@ INSERT INTO [Bloodline_DNA].[dbo].[Service_package] (
     [service_name],
     [category],
     [description],
-    [duration]
+    [duration],
+	[processing_time_minutes]
 ) VALUES
-(1, 'Maternal Ancestry Test', 'Ancestry', 'Test to determine maternal lineage based on mitochondrial DNA (mtDNA)', 7),
-(2, 'Paternal Ancestry Test', 'Ancestry', 'Test to determine paternal lineage based on Y-chromosome DNA (Y-STR)', 7),
-(3, 'Family Ancestry Test', 'Ancestry', 'DNA analysis to identify family relationships within a household', 10),
-(4, 'Sibling Relationship Test', 'Relationship', 'Test to verify sibling relationship using autosomal DNA analysis', 7),
-(5, 'Parentage Verification Test', 'Relationship', 'High accuracy DNA test to verify parent-child relationship using STR markers', 5);
+(1, 'Maternal Ancestry Test', 'Ancestry', 'Test to determine maternal lineage based on mitochondrial DNA (mtDNA)', 7,150),
+(2, 'Paternal Ancestry Test', 'Ancestry', 'Test to determine paternal lineage based on Y-chromosome DNA (Y-STR)', 7,120),
+(3, 'Family Ancestry Test', 'Ancestry', 'DNA analysis to identify family relationships within a household', 10,100),
+(4, 'Sibling Relationship Test', 'Relationship', 'Test to verify sibling relationship using autosomal DNA analysis', 7,90),
+(5, 'Parentage Verification Test', 'Relationship', 'High accuracy DNA test to verify parent-child relationship using STR markers', 5,110);
 
 INSERT INTO [Bloodline_DNA].[dbo].[Service_price] (
     [service_price_id],
