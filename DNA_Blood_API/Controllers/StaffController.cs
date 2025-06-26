@@ -17,12 +17,16 @@ namespace DNA_API1.Controllers
         private readonly ISampleService _sampleService;
         private readonly ISampleTransferService _sampleTransferService;
         private readonly IOrderDetailService _orderDetailService;
-        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService)
+        private readonly IFeedbackResponseService _feedbackResponseService;
+        private readonly IFeedbackService _feedbackService;
+        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService, IFeedbackResponseService feedbackResponseService, IFeedbackService feedbackService)
         {
             _orderService = orderService;
             _sampleService = sampleService;
             _sampleTransferService = sampleTransferService;
             _orderDetailService = orderDetailService;
+            _feedbackResponseService = feedbackResponseService;
+            _feedbackService = feedbackService;
         }
        
         // Danh sách mẫu xét nghiệm cần ghi nhận theo nhân viên phụ trách (loại, kit, trạng thái)
@@ -83,6 +87,29 @@ namespace DNA_API1.Controllers
             var staffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
             var orderDetails = await _orderDetailService.GetOrderDetailsByStaffIdAsync(staffId);
             return Ok(orderDetails);
+        }
+
+        [HttpPost("feedback-response")]
+        public async Task<IActionResult> PostFeedbackResponse([FromBody] DNA_API1.ViewModels.CreateFeedbackResponseDTO dto)
+        {
+            var staffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var response = new DNA_API1.Models.FeedbackResponse
+            {
+                FeedbackId = dto.FeedbackId,
+                StaffId = staffId,
+                ContentResponse = dto.ContentResponse,
+                CreateAt = dto.CreateAt ?? DateTime.Now,
+                UpdateAt = null
+            };
+            await _feedbackResponseService.AddAsync(response);
+            return Ok(new { message = "Phản hồi đánh giá thành công." });
+        }
+
+        [HttpGet("feedback-list")]
+        public async Task<IActionResult> GetAllFeedbacks()
+        {
+            var feedbacks = await _feedbackService.GetAllWithResponsesAsync();
+            return Ok(feedbacks);
         }
     }
 }

@@ -233,20 +233,7 @@ namespace DNA_API1.Services
                     collectionMethod.MethodName == "At Home" ? deliveryTasks : null
                 );
 
-                // 7. Create sample transfers after samples are saved
-                foreach (var (staffId, medicalStaffId) in sampleTransferInfos)
-                {
-                    var sample = samples[sampleTransferInfos.IndexOf((staffId, medicalStaffId))];
-                    var sampleTransfer = new SampleTransfer
-                    {
-                        SampleId = sample.SampleId,
-                        StaffId = staffId,
-                        MedicalStaffId = medicalStaffId,
-                        TransferDate = DateTime.Now,
-                        SampleTransferStatus = "Pending"
-                    };
-                    await _sampleTransferService.CreateSampleTransferAsync(sampleTransfer);
-                }
+                // Đã tạo sample transfer trong repository, KHÔNG tạo lại ở đây nữa!
 
                 return orderId;
             }
@@ -260,6 +247,16 @@ namespace DNA_API1.Services
         public async Task<IEnumerable<OrderDetailHistoryDTO>> GetOrderDetailsAsync(int orderId, int userId)
         {
             return await _orderRepository.GetOrderDetailsByOrderIdAsync(orderId, userId);
+        }
+
+        public async Task<bool> OrderExistsForUserAsync(int orderId, int userId)
+        {
+            return await _orderRepository.OrderExistsForUserAsync(orderId, userId);
+        }
+
+        public async Task<Order?> GetOrderByIdAndUserIdAsync(int orderId, int userId)
+        {
+            return await _orderRepository.GetOrderByIdAndUserIdAsync(orderId, userId);
         }
     }
 }
