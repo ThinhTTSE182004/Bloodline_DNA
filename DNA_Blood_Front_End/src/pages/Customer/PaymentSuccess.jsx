@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaTransgender, FaUsers, FaUserFriends, FaChevronDown, FaChevronUp, FaReceipt, FaShoppingBag } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const PaymentSuccess = () => {
   const navigate = useNavigate();
@@ -48,11 +49,17 @@ const PaymentSuccess = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Navbar />
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
-        <div className="bg-white shadow rounded-lg p-8 md:p-12 max-w-2xl w-full" style={{ borderRadius: '5px' }}>
+        <motion.div
+          initial={{ opacity: 0, scale:0.8}}
+          animate={{ opacity: 1, scale:1}}
+          transition={{ duration: 0.8 }}
+          className="bg-white shadow rounded-lg p-8 md:p-12 max-w-2xl w-full"
+          style={{ borderRadius: '5px' }}
+        >
           <div className="text-center mb-8">
-            <FaCheckCircle className="text-green-500 w-20 h-20 mx-auto mb-6" />
-            <h1 className="text-3xl font-bold text-blue-600 mb-4">Payment Successful!</h1>
-            <p className="text-gray-700 text-lg">
+            <FaCheckCircle className="text-green-500 w-52 h-52 mx-auto mb-6" />
+            <h1 className="text-2xl font-bold text-blue-600 mb-4">Payment Successful!</h1>
+            <p className="text-gray-700 text-base">
               Your order has been placed successfully. Thank you for your purchase!
             </p>
           </div>
@@ -81,53 +88,53 @@ const PaymentSuccess = () => {
                 <div className="mt-4 space-y-6 animate-fade-in">
                   {/* User Information */}
                   <div className="bg-gray-50 rounded-lg p-6">
-                    <h2 className="text-xl font-bold text-blue-600 mb-6 flex items-center">
+                    <h2 className="text-xl font-bold text-blue-600 mb-6 flex items-center justify-center">
                       <FaUser className="mr-2" /> User Information
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <div className="flex items-start space-x-3">
+                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaUser className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Full Name</div>
                           <div className="font-medium text-gray-900">{userDetails.fullName}</div>
                         </div>
                       </div>
-                      <div className="flex items-start space-x-3">
+                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaEnvelope className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Email</div>
                           <div className="font-medium text-gray-900">{userDetails.email}</div>
                         </div>
                       </div>
-                      <div className="flex items-start space-x-3">
+                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaPhone className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Phone</div>
                           <div className="font-medium text-gray-900">{userDetails.phone}</div>
                         </div>
                       </div>
-                      <div className="flex items-start space-x-3">
+                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaMapMarkerAlt className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Address</div>
                           <div className="font-medium text-gray-900">{userDetails.deliveryAddress || 'At Medical Center'}</div>
                         </div>
                       </div>
-                      <div className="flex items-start space-x-3">
+                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaCalendarAlt className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Date of Birth</div>
                           <div className="font-medium text-gray-900">{userDetails.birthDate}</div>
                         </div>
                       </div>
-                      <div className="flex items-start space-x-3">
+                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaTransgender className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Gender</div>
                           <div className="font-medium text-gray-900">{userDetails.sex}</div>
                         </div>
                       </div>
-                      <div className="flex items-start space-x-3">
+                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaUsers className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Relationship</div>
@@ -135,7 +142,7 @@ const PaymentSuccess = () => {
                         </div>
                       </div>
                       {userDetails.relationship !== 'self' && userDetails.relationship !== '' && (
-                        <div className="flex items-start space-x-3">
+                        <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                           <FaUserFriends className="mt-1 text-blue-500 w-5 h-5" />
                           <div>
                             <div className="text-sm text-gray-500">Related Person</div>
@@ -148,7 +155,7 @@ const PaymentSuccess = () => {
 
                   {/* Services Information */}
                   <div className="bg-gray-50 rounded-lg p-6">
-                    <h2 className="text-xl font-bold text-blue-600 mb-6 flex items-center">
+                    <h2 className="text-xl font-bold text-blue-600 mb-6 flex items-center justify-center">
                       <FaShoppingBag className="mr-2" /> Services Paid
                     </h2>
                     <div className="overflow-x-auto">
@@ -192,7 +199,7 @@ const PaymentSuccess = () => {
               Go to Home
             </Link>
           </div>
-        </div>
+        </motion.div>
       </main>
     </div>
   );

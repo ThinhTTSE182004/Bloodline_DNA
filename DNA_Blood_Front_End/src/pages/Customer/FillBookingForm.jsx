@@ -4,6 +4,7 @@ import { FaClipboardList, FaPencilAlt, FaFlask, FaPrescriptionBottleAlt, FaUser,
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useServices } from '../../context/ServiceContext';
+import { motion } from 'framer-motion';
 
 const FillBookingForm = () => {
   const [formData, setFormData] = useState({
@@ -122,7 +123,12 @@ const FillBookingForm = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Navbar />
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="max-w-5xl mx-auto space-y-8"
+        >
           {/* SELECTED SERVICES SUMMARY */}
           <div className="bg-white rounded-lg shadow-xl p-8 border-2 border-blue-100">
             <h2 className="text-2xl font-bold text-blue-700 mb-6 flex items-center hover:text-blue-600 hover:cursor-default">
@@ -395,7 +401,7 @@ const FillBookingForm = () => {
               </div>
             </form>
           </div>
-        </div>
+        </motion.div>
       </main>
     </div>
   );
