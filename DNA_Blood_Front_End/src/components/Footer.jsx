@@ -44,10 +44,10 @@ const Footer = () => {
           {/* Contact Info */}
           <div>
             <h3 className="text-lg font-semibold text-white mb-4 hover:text-blue-400 transition-colors duration-200 cursor-default">Contact Us</h3>
-            <p className="hover:text-white transition-colors cursor-text">123 DNA Street</p>
-            <p className="hover:text-white transition-colors cursor-text">New York, NY 10001</p>
-            <p className="hover:text-white transition-colors cursor-text">Phone: (555) 123-4567</p>
-            <p className="hover:text-white transition-colors cursor-text">Email: info@bloodlinedna.com</p>
+            <p className="hover:text-white transition-colors cursor-default">123 DNA Street</p>
+            <p className="hover:text-white transition-colors cursor-default">New York, NY 10001</p>
+            <p className="hover:text-white transition-colors cursor-default">Phone: (555) 123-4567</p>
+            <p className="hover:text-white transition-colors cursor-default">Email: info@bloodlinedna.com</p>
           </div>
 
           {/* Image Column */}

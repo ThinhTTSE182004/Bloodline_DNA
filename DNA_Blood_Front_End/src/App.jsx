@@ -32,6 +32,8 @@ import MedicalStaffOrder from './pages/MedicalStaff/MedicalStaffOrder';
 import ServiceDetail from './components/ServiceDetail';
 import Notification from './components/Notification';
 import Contact from './components/Contact';
+import ResetPassword from "./pages/ResetPassword";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const HomePage = () => (
     <>
@@ -81,6 +83,8 @@ const App = () => {
 
                                 {/* Other Routes */}
                                 <Route path="/oauth-success" element={<OAuthSuccess />} />
+                                <Route path="/reset-password" element={<ResetPassword />} />
+                                <Route path="/forgot-password" element={<ForgotPassword />} />
                                 <Route path="*" element={<Navigate to="/" />} />
                             </Routes>
                         </main>

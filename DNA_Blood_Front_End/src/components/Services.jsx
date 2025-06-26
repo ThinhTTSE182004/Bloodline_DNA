@@ -64,7 +64,7 @@ const Services = () => {
     <section id="services" className="py-16 bg-gray-50 w-full">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center cursor-default">
             <FaDna className="w-8 h-8 mr-3 text-blue-600" />
             Our Services
           </h2>
@@ -116,7 +116,7 @@ const Services = () => {
                     >
                       {service.serviceName}
                     </Link>
-                    <div className="text-blue-600 font-semibold text-lg mb-3">
+                    <div className="text-blue-600 font-semibold text-lg mb-3 cursor-default">
                       ${service.price.toLocaleString()}
                     </div>
 

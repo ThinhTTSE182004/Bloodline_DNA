@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaShoppingBag, FaShieldAlt, FaTruck, FaHeadphones } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import ServiceDetail from '../../components/ServiceDetail';
+import { motion } from 'framer-motion';
 
 const Cart = () => {
   const [selectedItems, setSelectedItems] = useState({});
@@ -61,34 +62,45 @@ const Cart = () => {
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Header Section */}
-          <div className="bg-white rounded-lg p-6 text-center">
-            <h1 className="text-4xl font-bold text-blue-700 mb-4">YOUR SHOPPING CART</h1>
-            <div className="w-24 h-1 bg-blue-500 mx-auto mb-4"></div>
-            <p className="text-lg text-gray-700">Review your selected services and proceed to checkout</p>
-          </div>
-
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.4, duration: 0.8 }}
+            className="relative"
+          >
+            <div className="bg-white rounded-lg p-6 text-center">
+              <h1 className="text-4xl font-bold text-blue-700 mb-4 hover:text-blue-600 hover:cursor-default">YOUR SHOPPING CART</h1>
+              <div className="w-24 h-1 bg-blue-500 mx-auto mb-4"></div>
+              <p className="text-lg text-gray-700 hover:text-gray-900 hover:cursor-default">Review your selected services and proceed to checkout</p>
+            </div>
+          </motion.div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Services List Section */}
-            <div className="lg:col-span-2">
+            <motion.div
+              className="lg:col-span-2"
+              initial={{ opacity: 0, x: -60 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+            >
               <div className="bg-white border-3 border-gray-300 rounded-lg p-6">
                 <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-gray-800">Selected Services</h2>
-                  <p className="text-base text-gray-600">Review and manage your selected services</p>
+                  <h2 className="text-2xl font-bold text-gray-900 hover:text-black cursor-default">Selected Services</h2>
+                  <p className="text-base text-gray-600 hover:text-gray-800 hover:cursor-default ">Review and manage your selected services</p>
                 </div>
                 <div className="border-3 border-gray-200 rounded-lg">
                   <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-100">
                       <tr>
-                        <th scope="col" className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase border-b-2 border-gray-300">
+                        <th scope="col" className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase border-b-2 border-gray-300 hover:text-black cursor-default">
                           Service Name
                         </th>
-                        <th scope="col" className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase border-b-2 border-gray-300">
+                        <th scope="col" className="px-4 py-3 text-center text-base font-semibold text-gray-700 uppercase border-b-2 border-gray-300 hover:text-black cursor-default">
                           Price
                         </th>
-                        <th scope="col" className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase border-b-2 border-gray-300">
+                        <th scope="col" className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase border-b-2 border-gray-300 hover:text-black cursor-default">
                           Select
                         </th>
-                        <th scope="col" className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase border-b-2 border-gray-300">
+                        <th scope="col" className="px-4 py-3 text-left text-base font-semibold text-gray-700 uppercase border-b-2 border-gray-300 hover:text-black cursor-default">
                           Action
                         </th>
                       </tr>
@@ -112,20 +124,20 @@ const Cart = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="px-4 py-3 border-b border-gray-200">
-                            <div className="text-base text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full inline-block border-2 border-blue-200">
+                          <td className="px-4 py-3 border-b border-gray-200 text-center group">
+                            <div className="text-base text-blue-600 font-semibold bg-blue-50 px-3 py-1 rounded-full inline-block border-2 border-blue-200 text-center group-hover:bg-blue-100 group-hover:border-blue-400 group-hover:text-blue-700 group-hover:cursor-default">
                               ${item.price.toLocaleString()}
                             </div>
                           </td>
                           <td className="px-4 py-3 border-b border-gray-200">
-                            <div className="flex items-center">
+                            <div className="flex items-center group hover:cursor-pointer">
                               <input
                                 type="checkbox"
-                                className="form-checkbox h-5 w-5 text-blue-600 rounded border-2 border-gray-300"
+                                className="form-checkbox h-5 w-5 text-blue-600 rounded border-2 orderb-gray-300 transition-colors duration-200 group-hover:text-gray-500 cursor-pointer"
                                 checked={selectedItems[item.servicePackageId] || false}
                                 onChange={() => handleSelectItem(item.servicePackageId)}
                               />
-                              <span className="ml-2 text-base text-gray-600">
+                              <span className="ml-2 text-base text-gray-600 transition-colors duration-200 group-hover:text-gray-800 cursor-pointer">
                                 {selectedItems[item.servicePackageId] ? 'Selected' : 'Select'}
                               </span>
                             </div>
@@ -133,7 +145,7 @@ const Cart = () => {
                           <td className="px-4 py-3 border-b border-gray-200">
                             <button
                               onClick={() => handleDeleteItem(item.servicePackageId)}
-                              className="text-red-600 hover:text-red-900 bg-red-50 p-2 rounded-full border-2 border-red-200"
+                              className="text-red-600 hover:text-red-500 bg-red-50 p-2 rounded-full border-2 border-red-200"
                             >
                               <FaTrash className="w-5 h-5" />
                             </button>
@@ -145,11 +157,11 @@ const Cart = () => {
                           <td colSpan="4" className="px-4 py-6 text-center">
                             <div className="flex flex-col items-center justify-center text-gray-500">
                               <FaShoppingBag className="w-12 h-12 mb-3 text-gray-400" />
-                              <p className="text-xl font-medium">Your cart is empty</p>
-                              <p className="text-base mt-1">Add some services to get started</p>
+                              <p className="text-xl font-medium hover:cursor-default">Your cart is empty</p>
+                              <p className="text-base mt-1 hover:cursor-default">Add some services to get started</p>
                               <Link
                                 to="/services"
-                                className="mt-3 px-4 py-2 bg-blue-600 text-white text-base rounded-md hover:bg-blue-700 border-2 border-blue-700"
+                                className="mt-3 px-4 py-2 bg-blue-600 text-white text-base rounded-md hover:bg-blue-700 border-2 border-blue-700 hover:cursor-pointer"
                               >
                                 Browse Services
                               </Link>
@@ -161,25 +173,30 @@ const Cart = () => {
                   </table>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
             {/* Order Summary Section */}
             <div className="lg:col-span-1 space-y-4">
               {/* Order Summary Card */}
-              <div className="bg-white border-3 border-gray-300 rounded-lg p-6">
-                <h2 className="text-2xl font-bold text-gray-800 mb-4">Order Summary</h2>
+              <motion.div
+                initial={{ opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8 }}
+                className="bg-white border-3 border-gray-300 rounded-lg p-6"
+              >
+                <h2 className="text-2xl font-bold text-gray-800 mb-4 hover:text-gray-900 hover:cursor-default">Order Summary</h2>
                 <div className="space-y-3">
-                  <div className="flex justify-between text-base text-gray-700 border-b-2 border-gray-200 pb-2">
-                    <span>Selected Items:</span>
-                    <span className="font-semibold">{selectedItemsCount}</span>
+                  <div className="flex justify-between text-base text-gray-700 border-b-2 border-gray-200 pb-2 cursor-default hover:text-gray-900">
+                    <span className="cursor-default">Selected Items:</span>
+                    <span className="font-semibold cursor-default">{selectedItemsCount}</span>
                   </div>
-                  <div className="flex justify-between text-base text-gray-700 border-b-2 border-gray-200 pb-2">
-                    <span>Subtotal:</span>
-                    <span className="font-semibold">${subtotal.toLocaleString()}</span>
+                  <div className="flex justify-between text-base text-gray-700 border-b-2 border-gray-200 pb-2 cursor-default hover:text-gray-900">
+                    <span className="cursor-default">Subtotal:</span>
+                    <span className="font-semibold cursor-default">${subtotal.toLocaleString()}</span>
                   </div>
-                  <div className="flex justify-between text-lg font-bold text-blue-700 pt-2">
-                    <span>Total:</span>
-                    <span>${total.toLocaleString()}</span>
+                  <div className="flex justify-between text-lg font-bold text-blue-700 pt-2 cursor-default hover:text-blue-600">
+                    <span className="cursor-default">Total:</span>
+                    <span className="cursor-default">${total.toLocaleString()}</span>
                   </div>
                 </div>
                 <button
@@ -195,18 +212,23 @@ const Cart = () => {
                 >
                   Add More Services
                 </Link>
-              </div>
+              </motion.div>
 
               {/* Trust Features Card */}
-              <div className="bg-white border-3 border-gray-300 rounded-lg p-6">
+              <motion.div
+                initial={{ opacity: 0, x: 60 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="bg-white border-3 border-gray-300 rounded-lg p-6"
+              >
                 <div className="space-y-4">
                   <div className="flex items-center gap-3 border-b-2 border-gray-200 pb-3">
                     <div className="bg-blue-100 p-2 rounded-lg border-2 border-blue-200">
                       <FaShieldAlt className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-gray-800">Secure Payment</h3>
-                      <p className="text-sm text-gray-600">Your payment information is protected</p>
+                      <h3 className="text-base font-semibold text-gray-800 hover:cursor-default hover:text-gray-900">Secure Payment</h3>
+                      <p className="text-sm text-gray-600 hover:cursor-default hover:text-gray-800">Your payment information is protected</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 border-b-2 border-gray-200 pb-3">
@@ -214,8 +236,8 @@ const Cart = () => {
                       <FaTruck className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-gray-800">Fast Delivery</h3>
-                      <p className="text-sm text-gray-600">Quick and reliable service delivery</p>
+                      <h3 className="text-base font-semibold text-gray-800 hover:cursor-default hover:text-gray-900">Fast Delivery</h3>
+                      <p className="text-sm text-gray-600 hover:cursor-default hover:text-gray-800">Quick and reliable service delivery</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -223,12 +245,12 @@ const Cart = () => {
                       <FaHeadphones className="w-6 h-6 text-blue-600" />
                     </div>
                     <div>
-                      <h3 className="text-base font-semibold text-gray-800">24/7 Support</h3>
-                      <p className="text-sm text-gray-600">We're here to help you anytime</p>
+                      <h3 className="text-base font-semibold text-gray-800 hover:cursor-default hover:text-gray-900">24/7 Support</h3>
+                      <p className="text-sm text-gray-600 hover:cursor-default hover:text-gray-800">We're here to help you anytime</p>
                     </div>
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>
