@@ -35,5 +35,29 @@ namespace DNA_API1.Repository
         {
             return await _context.Results.AnyAsync(r => r.OrderDetailId == orderDetailId);
         }
+
+        public async Task<List<Result>> GetResultsByUserIdAsync(int userId)
+        {
+            return await _context.Results
+                .Include(r => r.OrderDetail)
+                    .ThenInclude(od => od.Order)
+                .Include(r => r.OrderDetail)
+                    .ThenInclude(od => od.ServicePackage)
+                .Include(r => r.OrderDetail)
+                    .ThenInclude(od => od.Samples)
+                        .ThenInclude(s => s.SampleType)
+                .Where(r => r.OrderDetail.Order.OrderStatus != null && r.OrderDetail.Order.CustomerId == userId)
+                .ToListAsync();
+        }
+
+        public async Task<Result?> GetResultByIdAsync(int resultId)
+        {
+            return await _context.Results
+                .Include(r => r.OrderDetail)
+                    .ThenInclude(od => od.Order)
+                .Include(r => r.OrderDetail)
+                    .ThenInclude(od => od.ServicePackage)
+                .FirstOrDefaultAsync(r => r.ResultId == resultId);
+        }
     }
 }

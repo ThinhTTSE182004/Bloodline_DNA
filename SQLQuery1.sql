@@ -25,6 +25,14 @@ CREATE TABLE USERS (
     FOREIGN KEY (role_id) REFERENCES Roles(role_id)
 );
 
+CREATE TABLE PasswordResetToken (
+    id INT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL,
+    token NVARCHAR(256) NOT NULL,
+    expiry DATETIME NOT NULL,
+    is_used BIT DEFAULT 0,
+    CONSTRAINT FK_PasswordResetToken_User FOREIGN KEY (user_id) REFERENCES USERS(user_id)
+);
 
 create table User_profile (
 profile_id INT IDENTITY(1,1) PRIMARY KEY,
