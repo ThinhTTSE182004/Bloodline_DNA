@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaMoneyBillWave, FaUniversity, FaCheckCircle, FaUser, FaTransgender, FaCalendarAlt, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUsers, FaUserFriends } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import { useServices } from '../../context/ServiceContext';
+import { motion } from 'framer-motion';
 
 const Payment = () => {
   const [paymentMethod, setPaymentMethod] = useState('bankTransfer');
@@ -124,7 +125,12 @@ const Payment = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-gray-100 to-blue-100 flex flex-col">
       <Navbar />
       <main className="flex-grow pt-24 pb-12 px-2 sm:px-6 lg:px-8">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8"
+        >
           {/* User Information Card */}
           <div className="bg-white shadow-xl rounded-2xl p-8 flex flex-col items-center mb-8 transition-transform duration-300 hover:scale-105 hover:shadow-2xl group">
             <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300 cursor-default">CONFIRM USER INFORMATION</h2>
@@ -263,7 +269,7 @@ const Payment = () => {
               </button>
             </div>
           </div>
-        </div>
+        </motion.div>
       </main>
     </div>
   );
