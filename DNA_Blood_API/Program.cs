@@ -99,6 +99,9 @@ namespace DNA_API1
             builder.Services.AddScoped<IOrderDetailRepository, OrderDetailRepository>();
             builder.Services.AddScoped(typeof(DNA_API1.Repository.IRepository<>), typeof(DNA_API1.Repository.RepositoryBase<>));
             builder.Services.AddScoped<IPasswordResetTokenRepository, PasswordResetTokenRepository>();
+            builder.Services.AddScoped<IFeedbackResponseService, FeedbackResponseService>();
+            builder.Services.AddScoped<IFeedbackResponseRepository, FeedbackResponseRepository>();
+            builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
 
 
             // Service Registration
@@ -119,6 +122,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IShiftAssignmentService, ShiftAssignmentService>();
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
+            builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 
             // Add SignalR
             builder.Services.AddSignalR();

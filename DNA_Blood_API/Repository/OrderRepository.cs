@@ -264,5 +264,15 @@ namespace DNA_API1.Repository
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> OrderExistsForUserAsync(int orderId, int userId)
+        {
+            return await _context.Orders.AnyAsync(o => o.OrderId == orderId && o.CustomerId == userId);
+        }
+
+        public async Task<Order?> GetOrderByIdAndUserIdAsync(int orderId, int userId)
+        {
+            return await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId && o.CustomerId == userId);
+        }
     }
 }
