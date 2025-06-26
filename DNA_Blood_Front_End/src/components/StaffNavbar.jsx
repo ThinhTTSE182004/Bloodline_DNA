@@ -58,6 +58,12 @@ const StaffNavbar = () => {
             >
               Orders
             </Link>
+            <Link
+              to="/staff/feedback"
+              className="text-black font-medium hover:text-blue-600 transition-colors duration-300"
+            >
+              Feedback
+            </Link>
             <div className="relative">
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
@@ -118,6 +124,13 @@ const StaffNavbar = () => {
               onClick={() => setIsOpen(false)}
             >
               Orders
+            </Link>
+            <Link
+              to="/staff/feedback"
+              className="block w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-300"
+              onClick={() => setIsOpen(false)}
+            >
+              Feedback
             </Link>
             <div className="mt-4">
               <button

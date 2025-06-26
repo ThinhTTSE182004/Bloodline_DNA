@@ -2,7 +2,6 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import signalRService from '../../services/signalRService.js';
-import { motion } from 'framer-motion';
 
 const Profile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -10,6 +9,15 @@ const Profile = () => {
   const [error, setError] = useState(null);
   const [orderHistory, setOrderHistory] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
+  const [results, setResults] = useState([]);
+  const [expandedOrderId, setExpandedOrderId] = useState(null);
+  const [shareStatus, setShareStatus] = useState({});
+  const [feedbackModal, setFeedbackModal] = useState({ open: false, orderId: null });
+  const [feedback, setFeedback] = useState({ rating: 0, comment: '' });
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [feedbackMsg, setFeedbackMsg] = useState('');
+  const [feedbackResponseModal, setFeedbackResponseModal] = useState({ open: false, feedbacks: [], loading: false, error: '', orderId: null });
+  const [feedbackList, setFeedbackList] = useState([]);
   const navigate = useNavigate();
 
   const fetchProfile = useCallback(async () => {
@@ -120,29 +128,61 @@ const Profile = () => {
     }
   };
 
+  const fetchResults = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const response = await fetch('https://localhost:7113/api/UserProfile/Results', {
+        headers: {
+          'Authorization': `Bearer ${token.trim()}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch results');
+      }
+      const data = await response.json();
+      setResults(data);
+    } catch (err) {
+      console.error('Error fetching results:', err);
+    }
+  };
+
   const fetchOrderDetail = async (orderId) => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-
-      console.log('Fetching detail for orderId:', orderId);
-
       const response = await fetch(`https://localhost:7113/api/UserProfile/GetOrderDetail?orderId=${orderId}`, {
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
           'Content-Type': 'application/json'
         }
       });
-
       if (!response.ok) {
         throw new Error('Failed to fetch order detail');
       }
-
       const data = await response.json();
-      console.log('Order detail data:', data);
       setSelectedOrder(Array.isArray(data) ? data[0] : data);
     } catch (err) {
       console.error('Error fetching order detail:', err);
+    }
+  };
+
+  const fetchFeedbackList = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (!token) return;
+      const res = await fetch('https://localhost:7113/api/UserProfile/FeedbackList', {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      if (!res.ok) throw new Error('Failed to fetch feedback list');
+      const data = await res.json();
+      setFeedbackList(data);
+    } catch {
+      setFeedbackList([]);
     }
   };
 
@@ -150,8 +190,8 @@ const Profile = () => {
     fetchProfile();
     fetchOrderHistory();
     setupSignalR();
-
-    // Cleanup function
+    fetchResults();
+    fetchFeedbackList();
     return () => {
       signalRService.stopConnection();
     };
@@ -242,10 +282,7 @@ const Profile = () => {
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* User Profile Card */}
-          <motion.div
-            initial={{ opacity: 0}}
-            animate={{ opacity: 1}}
-            transition={{ duration: 0.8, delay: 0 }}
+          <div
             className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl"
           >
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
@@ -278,13 +315,10 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Personal Information Card */}
-          <motion.div
-            initial={{ opacity: 0}}
-            animate={{ opacity: 1}}
-            transition={{ duration: 0.8, delay: 0.2 }}
+          <div
             className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl"
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center cursor-default">
@@ -314,13 +348,10 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
 
           {/* Order History Section */}
-          <motion.div
-            initial={{ opacity: 0}}
-            animate={{ opacity: 1}}
-            transition={{ duration: 0.8, delay: 0.4 }}
+          <div
             className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl"
           >
             <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center cursor-default">
@@ -330,51 +361,156 @@ const Profile = () => {
               Order History
             </h2>
             <div className="space-y-4">
-              {orderHistory.map((order) => (
-                <div 
-                  key={order.orderId}
-                  className="w-full h-auto bg-gray-50 rounded-lg p-4 cursor-pointer transform transition-all duration-300 hover:bg-gray-100 hover:shadow-md"
-                  onClick={() => fetchOrderDetail(order.orderId)}
-                >
-                  <div className="flex flex-col md:flex-row md:justify-between md:items-center h-full gap-2 md:gap-0">
-                    <div className="flex-1 flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{order.serviceName}</h3>
-                        <div className="flex flex-wrap gap-2 text-sm text-gray-600 mt-1 items-center">
-                          <span>Order ID: {order.orderId}</span>
-                          <span>|</span>
-                          <span>{order.orderDate ? new Date(order.orderDate).toLocaleDateString() : ''}</span>
-                          <span>|</span>
-                          <span>Payment: {order.paymentMethod}</span>
-                          <span>|</span>
-                          <span>Collection: {order.collectionMethod || order.sampleCollectionMethod}</span>
+              {orderHistory.map((order) => {
+                const orderResults = results.filter(r => r.orderDetailId === order.orderId);
+                const feedbackForOrder = feedbackList.find(fb => fb.orderId === order.orderId);
+                return (
+                  <React.Fragment key={order.orderId}>
+                    <div className="w-full h-auto bg-gray-50 rounded-lg p-4 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-md cursor-pointer"
+                      onClick={() => fetchOrderDetail(order.orderId)}>
+                      <div className="flex flex-col md:flex-row md:justify-between md:items-center h-full gap-2 md:gap-0">
+                        <div className="flex-1 flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900">{order.serviceName}</h3>
+                            <div className="flex flex-wrap gap-2 text-sm text-gray-600 mt-1 items-center">
+                              <span>Order ID: {order.orderId}</span>
+                              <span>|</span>
+                              <span>{order.orderDate ? new Date(order.orderDate).toLocaleDateString() : ''}</span>
+                              <span>|</span>
+                              <span>Payment: {order.paymentMethod}</span>
+                              <span>|</span>
+                              <span>Collection: {order.collectionMethod || order.sampleCollectionMethod}</span>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-right mt-2 md:mt-0">
+                          <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            order.orderStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                            order.orderStatus === 'Completed' ? 'bg-green-100 text-green-800' :
+                            'bg-blue-100 text-blue-800'
+                          }`}>
+                            {order.orderStatus}
+                          </span>
+                          <span className={`ml-2 px-3 py-1 rounded-full text-xs font-medium ${
+                            order.paymentStatus === 'PaymentCompleted' ? 'bg-green-100 text-green-800' :
+                            order.paymentStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-gray-100 text-gray-800'
+                          }`}>
+                            {order.paymentStatus}
+                          </span>
+                          <p className="mt-2 text-lg font-semibold text-blue-600">
+                            {order.totalAmount != null ? order.totalAmount.toLocaleString() : 'N/A'} VND
+                          </p>
                         </div>
                       </div>
                     </div>
-                    <div className="text-right mt-2 md:mt-0">
-                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                        order.orderStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                        order.orderStatus === 'Completed' ? 'bg-green-100 text-green-800' :
-                        'bg-blue-100 text-blue-800'
-                      }`}>
-                        {order.orderStatus}
-                      </span>
-                      <span className={`ml-2 px-3 py-1 rounded-full text-xs font-medium ${
-                        order.paymentStatus === 'PaymentCompleted' ? 'bg-green-100 text-green-800' :
-                        order.paymentStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-gray-100 text-gray-800'
-                      }`}>
-                        {order.paymentStatus}
-                      </span>
-                      <p className="mt-2 text-lg font-semibold text-blue-600">
-                        {order.totalAmount != null ? order.totalAmount.toLocaleString() : 'N/A'} VND
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                    {orderResults.length > 0 && (
+                      <div className="flex flex-col items-start">
+                        <div className="flex flex-row gap-2 mb-2">
+                          <button
+                            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
+                            onClick={e => { e.stopPropagation(); setExpandedOrderId(expandedOrderId === order.orderId ? null : order.orderId); }}
+                          >
+                            {expandedOrderId === order.orderId ? 'Hide Result' : 'See Result'}
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-60"
+                            disabled={shareStatus[orderResults[0].resultId]?.loading}
+                            onClick={async e => {
+                              e.stopPropagation();
+                              setShareStatus(s => ({ ...s, [orderResults[0].resultId]: { loading: true, message: '' } }));
+                              try {
+                                const token = localStorage.getItem('token');
+                                const res = await fetch('https://localhost:7113/api/UserProfile/ShareResult', {
+                                  method: 'POST',
+                                  headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${token}`
+                                  },
+                                  body: JSON.stringify({ resultId: orderResults[0].resultId, toEmail: userProfile.email })
+                                });
+                                if (res.ok) {
+                                  setShareStatus(s => ({ ...s, [orderResults[0].resultId]: { loading: false, message: 'Result shared to your email!' } }));
+                                } else {
+                                  const err = await res.text();
+                                  setShareStatus(s => ({ ...s, [orderResults[0].resultId]: { loading: false, message: 'Error: ' + err } }));
+                                }
+                              } catch (err) {
+                                setShareStatus(s => ({ ...s, [orderResults[0].resultId]: { loading: false, message: 'Error: ' + err.message } }));
+                              }
+                            }}
+                          >
+                            {shareStatus[orderResults[0].resultId]?.loading ? 'Sharing...' : 'Share to Email'}
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+                            onClick={e => { e.stopPropagation(); setFeedbackModal({ open: true, orderId: order.orderId }); setFeedback({ rating: 0, comment: '' }); setFeedbackMsg(''); }}
+                          >
+                            Feedback
+                          </button>
+                          <button
+                            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition disabled:opacity-60"
+                            disabled={!feedbackList.find(fb => fb.orderId === order.orderId)}
+                            onClick={async e => {
+                              e.stopPropagation();
+                              const found = feedbackList.find(fb => fb.orderId === order.orderId);
+                              if (!found) {
+                                setFeedbackResponseModal({ open: true, feedbacks: [], loading: false, error: 'You have not submitted feedback for this order.', orderId: order.orderId });
+                                return;
+                              }
+                              setFeedbackResponseModal({ open: true, feedbacks: [], loading: true, error: '', orderId: order.orderId });
+                              try {
+                                const token = localStorage.getItem('token');
+                                const res = await fetch(`https://localhost:7113/api/UserProfile/FeedbackResponse/${found.feedbackId}`, {
+                                  headers: {
+                                    'Authorization': `Bearer ${token}`,
+                                    'Content-Type': 'application/json'
+                                  }
+                                });
+                                if (!res.ok) throw new Error('Failed to fetch feedback response');
+                                const data = await res.json();
+                                setFeedbackResponseModal({ open: true, feedbacks: data, loading: false, error: '', orderId: order.orderId });
+                              } catch {
+                                setFeedbackResponseModal({ open: true, feedbacks: [], loading: false, error: 'Error loading response', orderId: order.orderId });
+                              }
+                            }}
+                          >
+                            See Feedback Response
+                          </button>
+                        </div>
+                        {shareStatus[orderResults[0].resultId]?.message && (
+                          <div className="mb-2 text-xs text-blue-700 text-left">{shareStatus[orderResults[0].resultId].message}</div>
+                        )}
+                        {expandedOrderId === order.orderId && (
+                          <div className="w-full mt-2 space-y-4">
+                            {orderResults.map(result => (
+                              <div key={result.resultId} className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 shadow hover:shadow-lg transition-all">
+                                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
+                                  <div>
+                                    <div className="text-gray-700 text-sm mb-1">Test Name: <span className="font-semibold text-green-700">{result.testName}</span></div>
+                                    <div className="text-gray-700 text-sm mb-1">Result Status: <span className={`font-semibold ${result.resultStatus === 'Positive' ? 'text-green-600' : 'text-red-600'}`}>{result.resultStatus}</span></div>
+                                    <div className="text-gray-500 text-xs mb-1">Report Date: {result.reportDate ? new Date(result.reportDate).toLocaleString() : 'N/A'}</div>
+                                    <div className="text-gray-500 text-xs mb-1">Created At: {result.createAt ? new Date(result.createAt).toLocaleString() : 'N/A'}</div>
+                                    <div className="text-gray-700 text-sm mb-1">Summary: {result.testSummary || 'N/A'}</div>
+                                    <div className="text-gray-700 text-sm mb-1">Raw Data: {result.rawDataPath || 'N/A'}</div>
+                                    <div className="text-gray-700 text-sm mb-1">Report URL: {result.reportUrl || 'N/A'}</div>
+                                    <div className="text-gray-700 text-sm mb-1">Samples: {result.samples && result.samples.length > 0 ? result.samples.map(s => `${s.sampleName} (${s.sampleStatus})`).join(', ') : 'N/A'}</div>
+                                  </div>
+                                  <div className="flex flex-col items-end gap-2">
+                                    <div className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Result ID: {result.resultId}</div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </React.Fragment>
+                );
+              })}
             </div>
-          </motion.div>
+          </div>
 
           {/* Order Detail Modal */}
           {selectedOrder && (
@@ -440,6 +576,133 @@ const Profile = () => {
                   </div>
                 </div>
               </div>
+            </div>
+          )}
+
+          {/* Feedback Modal */}
+          {feedbackModal.open && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative animate-fade-in">
+                <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onClick={() => setFeedbackModal({ open: false, orderId: null })}>&times;</button>
+                <h2 className="text-xl font-bold mb-4 text-center text-yellow-600">Order Feedback</h2>
+                <form onSubmit={async e => {
+                  e.preventDefault();
+                  setFeedbackLoading(true);
+                  setFeedbackMsg('');
+                  try {
+                    const token = localStorage.getItem('token');
+                    const res = await fetch('https://localhost:7113/api/UserProfile/Feedback', {
+                      method: 'POST',
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                      },
+                      body: JSON.stringify({
+                        orderId: feedbackModal.orderId,
+                        name: userProfile.name,
+                        rating: feedback.rating,
+                        comment: feedback.comment,
+                        createAt: new Date().toISOString()
+                      })
+                    });
+                    if (res.ok) {
+                      setFeedbackMsg('Thank you for your feedback!');
+                      fetchFeedbackList();
+                      setTimeout(() => setFeedbackModal({ open: false, orderId: null }), 1500);
+                    } else {
+                      const err = await res.text();
+                      setFeedbackMsg('Error: ' + err);
+                    }
+                  } catch (err) {
+                    setFeedbackMsg('Error: ' + err.message);
+                  }
+                  setFeedbackLoading(false);
+                }} className="space-y-4">
+                  <div>
+                    <label className="block mb-1 font-medium">Your Name</label>
+                    <input type="text" value={userProfile.name} disabled className="w-full border p-2 rounded bg-gray-100" />
+                  </div>
+                  <div>
+                    <label className="block mb-1 font-medium">Rating</label>
+                    <div className="flex gap-1">
+                      {[1,2,3,4,5].map(star => (
+                        <button
+                          type="button"
+                          key={star}
+                          className={`text-2xl ${feedback.rating >= star ? 'text-yellow-400' : 'text-gray-300'} focus:outline-none`}
+                          onClick={() => setFeedback(f => ({ ...f, rating: star }))}
+                          tabIndex={0}
+                          aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
+                        >
+                          ★
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block mb-1 font-medium">Comment</label>
+                    <textarea
+                      className="w-full border p-2 rounded"
+                      rows={3}
+                      value={feedback.comment}
+                      onChange={e => setFeedback(f => ({ ...f, comment: e.target.value }))}
+                      placeholder="Share your experience..."
+                      required
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 transition font-semibold disabled:opacity-60"
+                    disabled={feedbackLoading || feedback.rating === 0}
+                  >
+                    {feedbackLoading ? 'Sending...' : 'Submit Feedback'}
+                  </button>
+                  {feedbackMsg && <div className="mt-2 text-center text-yellow-700">{feedbackMsg}</div>}
+                </form>
+              </div>
+              <style>{`
+                @keyframes fade-in {
+                  from { opacity: 0; transform: translateY(20px); }
+                  to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-in { animation: fade-in 0.7s cubic-bezier(.4,0,.2,1) both; }
+              `}</style>
+            </div>
+          )}
+
+          {/* Feedback Response Modal */}
+          {feedbackResponseModal.open && (
+            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+              <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative animate-fade-in">
+                <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onClick={() => setFeedbackResponseModal({ open: false, feedbacks: [], loading: false, error: '', orderId: null })}>&times;</button>
+                <h2 className="text-xl font-bold mb-4 text-center text-purple-700 flex items-center justify-center">
+                  <svg xmlns='http://www.w3.org/2000/svg' className='w-7 h-7 mr-2 text-purple-500' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2M15 3h-6a2 2 0 00-2 2v3a2 2 0 002 2h6a2 2 0 002-2V5a2 2 0 00-2-2z' /></svg>
+                  Feedback Response
+                </h2>
+                {feedbackResponseModal.loading ? (
+                  <div className="text-center py-8 text-purple-600 font-semibold">Loading...</div>
+                ) : feedbackResponseModal.error ? (
+                  <div className="text-center text-red-600 py-8">{feedbackResponseModal.error}</div>
+                ) : feedbackResponseModal.feedbacks.length === 0 ? (
+                  <div className="text-center text-gray-500 py-8">No response yet.</div>
+                ) : (
+                  <ul className="space-y-4">
+                    {feedbackResponseModal.feedbacks.map((resp, idx) => (
+                      <li key={idx} className="bg-purple-50 border-l-4 border-purple-400 rounded-lg p-4 flex items-start gap-2 shadow">
+                        <svg xmlns='http://www.w3.org/2000/svg' className='w-6 h-6 text-purple-500 flex-shrink-0 mt-1' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2' /></svg>
+                        <span className="text-gray-800 text-base">{resp}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+              <style>{`
+                @keyframes fade-in {
+                  from { opacity: 0; transform: translateY(20px); }
+                  to { opacity: 1; transform: translateY(0); }
+                }
+                .animate-fade-in { animation: fade-in 0.7s cubic-bezier(.4,0,.2,1) both; }
+              `}</style>
             </div>
           )}
         </div>

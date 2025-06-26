@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaEdit, FaSpinner, FaExclamationTriangle, FaChartPie, FaTags, FaShippingFast, FaCheckCircle } from 'react-icons/fa';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js';
+import StaffFeedback from './StaffFeedback';
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
