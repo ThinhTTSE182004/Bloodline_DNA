@@ -89,7 +89,7 @@ namespace DNA_Blood_API.Services
                     int needMedical = 3 - assignedMedical.Count;
                     var availableMedical = medicalStaffs.Where(u =>
                         !assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date)
-                        && !(shift.ShiftName.ToLower().Contains("sáng") && assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date.AddDays(-1) && a.Shift.ShiftName.ToLower().Contains("chiều")))
+                        && !(shift.ShiftName.ToLower().Contains("Morning") && assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date.AddDays(-1) && a.Shift.ShiftName.ToLower().Contains("Afternoon")))
                         && assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month) < maxShiftPerMonth
                     ).OrderBy(u => assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month)).ToList();
                     var selectedMedical = availableMedical.OrderBy(x => rand.Next()).Take(needMedical);
@@ -115,7 +115,7 @@ namespace DNA_Blood_API.Services
                     int needStaff = 4 - assignedStaff.Count;
                     var availableStaff = staffs.Where(u =>
                         !assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date)
-                        && !(shift.ShiftName.ToLower().Contains("sáng") && assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date.AddDays(-1) && a.Shift.ShiftName.ToLower().Contains("chiều")))
+                        && !(shift.ShiftName.ToLower().Contains("Morning") && assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date.AddDays(-1) && a.Shift.ShiftName.ToLower().Contains("Afternoon")))
                         && assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month) < maxShiftPerMonth
                     ).OrderBy(u => assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month)).ToList();
                     var selectedStaff = availableStaff.OrderBy(x => rand.Next()).Take(needStaff);
