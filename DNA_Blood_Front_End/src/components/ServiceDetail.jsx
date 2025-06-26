@@ -23,31 +23,31 @@ const ServiceDetail = ({ service, onClose, onAddToCart }) => {
 
         <div className="space-y-6">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900 mb-2 transform transition-all duration-300 hover:scale-105">
+            <h2 className="text-3xl font-bold text-gray-900 mb-2 transform transition-all duration-300 hover:scale-105 cursor-default hover:text-black">
               {service.serviceName}
             </h2>
             <div className="w-20 h-1 bg-blue-500 mx-auto mb-4 transition-all duration-300 hover:w-32"></div>
           </div>
           
           <div className="space-y-6">
-            <div className="transform transition-all duration-300 hover:scale-105">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">Service Details</h3>
-              <p className="text-gray-600 leading-relaxed">{service.description || 'No description available'}</p>
+            <div className="transform transition-all duration-300 hover:scale-105 group">
+              <h3 className="text-xl font-semibold text-gray-900 mb-3 cursor-default group-hover:text-black">Service Details</h3>
+              <p className="text-gray-600 leading-relaxed group-hover:text-gray-800">{service.description || 'No description available'}</p>
             </div>
 
-            <div className="transform transition-all duration-300 hover:scale-105">
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">What's Included</h3>
-              <ul className="list-disc list-inside text-gray-600 space-y-3">
-                <li className="transform transition-all duration-300 hover:translate-x-2">Professional DNA Analysis</li>
-                <li className="transform transition-all duration-300 hover:translate-x-2">Detailed Report</li>
-                <li className="transform transition-all duration-300 hover:translate-x-2">Expert Consultation</li>
-                <li className="transform transition-all duration-300 hover:translate-x-2">Secure Data Storage</li>
+            <div className="transform transition-all duration-300 hover:scale-105 group">
+              <h3 className="text-xl font-semibold text-gray-900 mb-3 cursor-default group-hover:text-black">What's Included</h3>
+              <ul className="list-disc list-inside text-gray-600 space-y-3 group-hover:text-gray-800">
+                <li className="transform transition-all duration-300 hover:translate-x-2 cursor-default">Professional DNA Analysis</li>
+                <li className="transform transition-all duration-300 hover:translate-x-2 cursor-default">Detailed Report</li>
+                <li className="transform transition-all duration-300 hover:translate-x-2 cursor-default">Expert Consultation</li>
+                <li className="transform transition-all duration-300 hover:translate-x-2 cursor-default">Secure Data Storage</li>
               </ul>
             </div>
 
             <div className="border-t pt-6">
               <div className="flex justify-between items-center mb-6">
-                <p className="text-3xl font-bold text-blue-600 transform transition-all duration-300 hover:scale-105">
+                <p className="text-3xl font-bold text-blue-600 transform transition-all duration-300 hover:scale-105 cursor-default hover:text-blue-700">
                   ${service.price.toLocaleString()}
                 </p>
               </div>

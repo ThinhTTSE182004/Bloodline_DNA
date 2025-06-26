@@ -15,6 +15,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Google;
+using System.Web;
+using DNA_API1.Services;
 
 namespace LoginAPI.Controllers
 {
@@ -25,12 +27,41 @@ namespace LoginAPI.Controllers
     {
         private readonly IAuthService _authService;
         private readonly ITokenService _tokenService;
+        private readonly IEmailService  _emailService;
+        private readonly IPasswordResetService _passwordResetService;
 
-        public AuthController(IAuthService authService, ITokenService tokenService)
+        public AuthController(IAuthService authService, ITokenService tokenService, IEmailService emailService, IPasswordResetService passwordResetService)
         {
             _authService = authService;
             _tokenService = tokenService;
+            _emailService = emailService;
+            _passwordResetService = passwordResetService;
         }
+   
+
+
+        [AllowAnonymous]
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
+        {
+            await _passwordResetService.SendForgotPasswordEmailAsync(model.Email);
+            return Ok(new { message = "Đã gửi email đặt lại mật khẩu (nếu email tồn tại)." });
+        }
+
+        public class ResetPasswordRequestDTO
+        {
+            public string Token { get; set; }
+            public string NewPassword { get; set; }
+        }
+
+        [AllowAnonymous]
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDTO model)
+        {
+            await _passwordResetService.ResetPasswordAsync(model.Token, model.NewPassword);
+            return Ok(new { message = "Đổi mật khẩu thành công." });
+        }
+
 
         [HttpPost("register")]
         public async Task<ActionResult<UserProfileDTO>> Register(RegisterDTO request)

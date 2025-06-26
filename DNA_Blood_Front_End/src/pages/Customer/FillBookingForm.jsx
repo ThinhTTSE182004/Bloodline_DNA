@@ -4,6 +4,7 @@ import { FaClipboardList, FaPencilAlt, FaFlask, FaPrescriptionBottleAlt, FaUser,
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useServices } from '../../context/ServiceContext';
+import { motion } from 'framer-motion';
 
 const FillBookingForm = () => {
   const [formData, setFormData] = useState({
@@ -104,11 +105,11 @@ const FillBookingForm = () => {
         <Navbar />
         <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center bg-white rounded-lg shadow-lg p-8">
-            <h2 className="text-3xl font-bold text-red-600 mb-4">No Service Selected</h2>
-            <p className="text-lg text-gray-600 mb-6">Please select a service from the services page to proceed with your booking.</p>
+            <h2 className="text-3xl font-bold text-red-600 mb-4 hover:cursor-default">No Service Selected</h2>
+            <p className="text-lg text-gray-600 mb-6 hover:cursor-default">Please select a service from the services page to proceed with your booking.</p>
             <button
               onClick={() => navigate('/services')}
-              className="px-8 py-3 bg-blue-600 text-white text-lg rounded-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg"
+              className="px-8 py-3 bg-blue-600 text-white text-lg rounded-md hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:cursor-pointer"
             >
               Go to Services
             </button>
@@ -122,32 +123,37 @@ const FillBookingForm = () => {
     <div className="min-h-screen bg-gray-100 flex flex-col">
       <Navbar />
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto space-y-8">
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1 }}
+          className="max-w-5xl mx-auto space-y-8"
+        >
           {/* SELECTED SERVICES SUMMARY */}
           <div className="bg-white rounded-lg shadow-xl p-8 border-2 border-blue-100">
-            <h2 className="text-2xl font-bold text-blue-700 mb-6 flex items-center">
+            <h2 className="text-2xl font-bold text-blue-700 mb-6 flex items-center hover:text-blue-600 hover:cursor-default">
               <FaClipboardList className="w-7 h-7 mr-3 text-blue-600" />
               Selected Services Details
             </h2>
             <div className="space-y-4">
               {selectedServices.map((service) => (
-                <div key={service.servicePackageId} className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200">
-                  <span className="flex items-center text-lg">
+                <div key={service.servicePackageId} className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200 group hover:border-blue-300 hover:bg-blue-100">
+                  <span className="flex items-center text-lg cursor-default">
                     <FaCheckCircle className="text-green-500 mr-3 w-5 h-5" />
                     {service.serviceName}
                   </span>
-                  <span className="font-bold text-blue-700 text-lg">{service.price?.toLocaleString()} đ</span>
+                  <span className="font-bold text-blue-700 text-lg cursor-default group-hover:text-blue-600">{service.price?.toLocaleString()} đ</span>
                 </div>
               ))}
               <div className="flex justify-end pt-4 mt-4 border-t-2 border-blue-200">
-                <p className="text-2xl font-bold text-blue-700">Total Amount: {calculateTotalAmount()} đ</p>
+                <p className="text-2xl font-bold text-blue-700 cursor-default hover:text-blue-600">Total Amount: {calculateTotalAmount()} đ</p>
               </div>
             </div>
           </div>
 
           {/* ENTER SERVICE DETAILS */}
           <div className="bg-white rounded-lg shadow-xl p-8 border-2 border-blue-100">
-            <h2 className="text-2xl font-bold text-blue-700 mb-8 flex items-center">
+            <h2 className="text-2xl font-bold text-blue-700 mb-8 flex items-center hover:text-blue-600 hover:cursor-default">
               <FaPencilAlt className="w-7 h-7 mr-3 text-blue-600" />
               Enter Service Details
             </h2>
@@ -170,7 +176,7 @@ const FillBookingForm = () => {
                   <select
                     id="testType"
                     name="testType"
-                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer"
                     value={formData.testType}
                     onChange={handleChange}
                   >
@@ -189,7 +195,7 @@ const FillBookingForm = () => {
                   <select
                     id="sampleCollectionMethod"
                     name="sampleCollectionMethod"
-                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer"
                     value={formData.sampleCollectionMethod}
                     onChange={handleChange}
                   >
@@ -208,7 +214,7 @@ const FillBookingForm = () => {
                   <select
                     id="sampleType"
                     name="sampleType"
-                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer "
                     value={formData.sampleType}
                     onChange={handleChange}
                   >
@@ -245,7 +251,7 @@ const FillBookingForm = () => {
                   <select
                     id="gender"
                     name="gender"
-                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer"
                     value={formData.gender}
                     onChange={handleChange}
                   >
@@ -266,7 +272,7 @@ const FillBookingForm = () => {
                     type="date"
                     name="dateOfBirth"
                     id="dateOfBirth"
-                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:cursor-text"
                     value={formData.dateOfBirth}
                     onChange={handleChange}
                   />
@@ -350,7 +356,7 @@ const FillBookingForm = () => {
                   <select
                     id="relationshipToPatient"
                     name="relationshipToPatient"
-                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:cursor-pointer"
                     value={formData.relationshipToPatient}
                     onChange={handleChange}
                   >
@@ -395,7 +401,7 @@ const FillBookingForm = () => {
               </div>
             </form>
           </div>
-        </div>
+        </motion.div>
       </main>
     </div>
   );

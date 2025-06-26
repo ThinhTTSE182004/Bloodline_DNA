@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import signalRService from '../../services/signalRService.js';
+import { motion } from 'framer-motion';
 
 const Profile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -75,7 +76,7 @@ const Profile = () => {
       setLoading(false);
       // Nếu thiếu thông tin, chuyển hướng sang Account Setting
       if (!profileData.name || !profileData.email || !profileData.phone) {
-        navigate('/settings', { replace: true });
+        navigate('/account-setting', { replace: true });
       }
 
     } catch (err) {
@@ -241,7 +242,12 @@ const Profile = () => {
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* User Profile Card */}
-          <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
+          <motion.div
+            initial={{ opacity: 0}}
+            animate={{ opacity: 1}}
+            transition={{ duration: 0.8, delay: 0 }}
+            className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl"
+          >
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
               <div className="flex-shrink-0">
                 <div className="h-24 w-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-4xl transform transition-all duration-300 hover:scale-110">
@@ -251,8 +257,8 @@ const Profile = () => {
                 </div>
               </div>
               <div className="flex-grow text-center md:text-left">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{userProfile.name}</h1>
-                <p className="text-gray-600 flex items-center justify-center md:justify-start">
+                <h1 className="text-3xl font-bold text-gray-900 mb-2 cursor-default">{userProfile.name}</h1>
+                <p className="text-gray-600 flex items-center justify-center md:justify-start cursor-default">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2 text-blue-500">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                   </svg>
@@ -260,7 +266,7 @@ const Profile = () => {
                 </p>
                 <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-3">
                   <Link 
-                    to="/settings"
+                    to="/account-setting"
                     className="flex items-center px-6 py-3 bg-white border-2 border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2">
@@ -272,11 +278,16 @@ const Profile = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Personal Information Card */}
-          <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+          <motion.div
+            initial={{ opacity: 0}}
+            animate={{ opacity: 1}}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl"
+          >
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center cursor-default">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-500">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
               </svg>
@@ -288,8 +299,8 @@ const Profile = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5H4.5A2.25 2.25 0 0 0 2.25 6.75m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L2.52 8.91A2.25 2.25 0 0 1 1.5 6.993V6.75" />
                 </svg>
                 <div>
-                  <p className="text-sm text-gray-500">Email Address</p>
-                  <p className="text-gray-900 font-medium">{userProfile.email}</p>
+                  <p className="text-sm text-gray-500 cursor-default">Email Address</p>
+                  <p className="text-gray-900 font-medium cursor-default">{userProfile.email}</p>
                 </div>
               </div>
               <div className="flex items-center p-4 bg-gray-50 rounded-lg transform transition-all duration-300 hover:bg-gray-100">
@@ -298,16 +309,21 @@ const Profile = () => {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 0 3 3m-3-3-3 3M12 18.75h.008v.008H12v-.008Z" />
                 </svg>
                 <div>
-                  <p className="text-sm text-gray-500">Phone Number</p>
-                  <p className="text-gray-900 font-medium">{userProfile.phone}</p>
+                  <p className="text-sm text-gray-500 cursor-default">Phone Number</p>
+                  <p className="text-gray-900 font-medium cursor-default">{userProfile.phone}</p>
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Order History Section */}
-          <div className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl">
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+          <motion.div
+            initial={{ opacity: 0}}
+            animate={{ opacity: 1}}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl"
+          >
+            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center cursor-default">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-500">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
               </svg>
@@ -358,68 +374,68 @@ const Profile = () => {
                 </div>
               ))}
             </div>
-          </div>
+          </motion.div>
 
           {/* Order Detail Modal */}
           {selectedOrder && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
               <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-xl font-semibold text-gray-900">Order Details</h3>
+                <div className="flex justify-between items-center mb-4 rounded-lg bg-blue-400 px-4 py-3 cursor-default hover:shadow-xl group">
+                  <h3 className="text-xl font-semibold px-1 text-gray-900  hover:border-100 group-hover:text-black">Order Details</h3>
                   <button 
                     onClick={() => setSelectedOrder(null)}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-gray-500 rounded-full p-2 transition-colors duration-200 hover:bg-red-400 hover:text-white"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                     </svg>
                   </button>
                 </div>
                 <div className="space-y-4">
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-sm text-gray-500">Order ID</p>
-                      <p className="font-medium">{selectedOrder.orderId}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Order ID</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.orderId}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Service</p>
-                      <p className="font-medium">{selectedOrder.serviceName}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Service</p>
+                      <p className="font-medium px-3 text-gray-700 hover:text-black">{selectedOrder.serviceName}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Test Type</p>
-                      <p className="font-medium">{selectedOrder.testType || 'N/A'}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:black">Test Type</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.testType || 'N/A'}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Sample Type</p>
-                      <p className="font-medium">{selectedOrder.sampleType || 'N/A'}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Sample Type</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.sampleType || 'N/A'}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Participant</p>
-                      <p className="font-medium">{selectedOrder.participantName || 'N/A'}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Participant</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.participantName || 'N/A'}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Relationship</p>
-                      <p className="font-medium">{selectedOrder.relationship || 'N/A'}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Relationship</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.relationship || 'N/A'}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Collection Method</p>
-                      <p className="font-medium">{selectedOrder.collectionMethod || 'N/A'}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Collection Method</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.collectionMethod || 'N/A'}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Payment Method</p>
-                      <p className="font-medium">{selectedOrder.paymentMethod || 'N/A'}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Payment Method</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.paymentMethod || 'N/A'}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Total Amount</p>
-                      <p className="font-medium">{selectedOrder.total != null ? selectedOrder.total.toLocaleString() : 'N/A'} VND</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Total Amount</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.total != null ? selectedOrder.total.toLocaleString() : 'N/A'} VND</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Status</p>
-                      <p className="font-medium">{selectedOrder.orderStatus || 'N/A'}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Status</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.orderStatus || 'N/A'}</p>
                     </div>
-                    <div>
-                      <p className="text-sm text-gray-500">Created At</p>
-                      <p className="font-medium">{selectedOrder.createAt ? new Date(selectedOrder.createAt).toLocaleString() : 'N/A'}</p>
+                    <div className="bg-gray-50 rounded-lg border border-gray-300 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-xl hover:border-gray-900 group">
+                      <p className="text-sm text-gray-500 px-3 group-hover:text-black">Created At</p>
+                      <p className="font-medium px-3 text-gray-700 group-hover:text-black">{selectedOrder.createAt ? new Date(selectedOrder.createAt).toLocaleString() : 'N/A'}</p>
                     </div>
                   </div>
                 </div>

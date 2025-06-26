@@ -109,12 +109,20 @@ const Login = () => {
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
               required
             />
-            <div className="mt-2 text-right">
-              <span className="text-sm text-gray-600">Don't have an account? </span>
-              <a href="/register" className="text-sm text-blue-600 hover:text-blue-800 transition-colors duration-300">
-                Register
-              </a>
-            </div>
+            <div className="mt-2 flex justify-between items-center">
+  <span className="text-sm text-gray-600">
+    Don't have an account?{" "}
+    <a href="/register" className="text-sm text-blue-600 hover:text-blue-800 transition-colors duration-300">
+      Register
+    </a>
+  </span>
+  <a
+    href="/forgot-password"
+    className="text-sm text-blue-600 hover:text-blue-800 transition-colors duration-300"
+  >
+    Forgot password?
+  </a>
+</div>
           </div>
           <button
             type="submit"
@@ -159,6 +167,7 @@ const Login = () => {
             </svg>
             Login with Google
           </button>
+          
         </div>
       </div>
     </div>

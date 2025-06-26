@@ -54,6 +54,9 @@ public partial class User
     [InverseProperty("Customer")]
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
+    [InverseProperty("User")]
+    public virtual ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
+
     [ForeignKey("RoleId")]
     [InverseProperty("Users")]
     public virtual Role? Role { get; set; }
