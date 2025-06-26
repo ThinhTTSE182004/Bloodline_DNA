@@ -297,7 +297,7 @@ public partial class BloodlineDnaContext : DbContext
         {
             entity.HasKey(e => e.ServicePackageId).HasName("PK__Service___96859327B2574EBA");
 
-            entity.Property(e => e.ServicePackageId).ValueGeneratedNever();
+            entity.Property(e => e.ServicePackageId).UseIdentityColumn();
         });
 
         modelBuilder.Entity<ServicePrice>(entity =>

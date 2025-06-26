@@ -104,7 +104,7 @@ FOREIGN KEY (TestTypeID) REFERENCES TestType(TestTypeID)
 
 
 CREATE TABLE Service_package (
-    service_package_id INT  PRIMARY KEY,
+    service_package_id INT IDENTITY(1,1)  PRIMARY KEY,
     service_name NVARCHAR(100) unique NOT NULL,
     category NVARCHAR(100),
     description NVARCHAR(MAX),
@@ -284,18 +284,17 @@ INSERT INTO [Bloodline_DNA].[dbo].[Collection_method] (
 
 
 INSERT INTO [Bloodline_DNA].[dbo].[Service_package] (
-    [service_package_id],
     [service_name],
     [category],
     [description],
     [duration],
 	[processing_time_minutes]
 ) VALUES
-(1, 'Maternal Ancestry Test', 'Ancestry', 'Test to determine maternal lineage based on mitochondrial DNA (mtDNA)', 7,150),
-(2, 'Paternal Ancestry Test', 'Ancestry', 'Test to determine paternal lineage based on Y-chromosome DNA (Y-STR)', 7,120),
-(3, 'Family Ancestry Test', 'Ancestry', 'DNA analysis to identify family relationships within a household', 10,100),
-(4, 'Sibling Relationship Test', 'Relationship', 'Test to verify sibling relationship using autosomal DNA analysis', 7,90),
-(5, 'Parentage Verification Test', 'Relationship', 'High accuracy DNA test to verify parent-child relationship using STR markers', 5,110);
+( 'Maternal Ancestry Test', 'Ancestry', 'Test to determine maternal lineage based on mitochondrial DNA (mtDNA)', 7,150),
+( 'Paternal Ancestry Test', 'Ancestry', 'Test to determine paternal lineage based on Y-chromosome DNA (Y-STR)', 7,120),
+( 'Family Ancestry Test', 'Ancestry', 'DNA analysis to identify family relationships within a household', 10,100),
+( 'Sibling Relationship Test', 'Relationship', 'Test to verify sibling relationship using autosomal DNA analysis', 7,90),
+( 'Parentage Verification Test', 'Relationship', 'High accuracy DNA test to verify parent-child relationship using STR markers', 5,110);
 
 INSERT INTO [Bloodline_DNA].[dbo].[Service_price] (
     [service_price_id],

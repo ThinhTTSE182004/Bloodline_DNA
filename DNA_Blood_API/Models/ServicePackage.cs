@@ -11,6 +11,7 @@ namespace DNA_API1.Models;
 public partial class ServicePackage
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Column("service_package_id")]
     public int ServicePackageId { get; set; }
 
