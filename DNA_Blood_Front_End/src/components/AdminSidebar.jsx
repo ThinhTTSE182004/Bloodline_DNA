@@ -1,10 +1,13 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaTachometerAlt, FaUserPlus, FaUsersCog, FaUserFriends, FaPlusCircle, FaClipboardList, FaVials, FaChartBar, FaEye, FaBoxOpen } from 'react-icons/fa';
+import { FaTachometerAlt, FaUserPlus, FaUserMd, FaCalendarAlt, FaListAlt, FaUsersCog, FaUserFriends, FaPlusCircle, FaClipboardList, FaVials, FaChartBar, FaEye, FaBoxOpen } from 'react-icons/fa';
 
 const menuItems = [
-  { label: 'Dashboard', icon: <FaTachometerAlt />, to: '/admin/dashboard' },
-  { label: 'Tạo tài khoản nhân viên', icon: <FaUserPlus />, to: '/admin/create-account' },
+  { label: 'Dashboard', icon: <FaTachometerAlt />, to: '/admin' },
+  { label: 'Đăng ký tài khoản nhân viên', icon: <FaUserPlus />, to: '/admin/register-staff' },
+  { label: 'Đăng ký tài khoản Medical Staff', icon: <FaUserMd />, to: '/admin/register-medical-staff' },
+  { label: 'Create Work Shift', icon: <FaCalendarAlt />, to: '/admin/create-workshift' },
+  { label: 'Work Shift List', icon: <FaListAlt />, to: '/admin/workshift-list' },
   { label: 'Quản lý nhân viên', icon: <FaUsersCog />, to: '/admin/staffs' },
   { label: 'Quản lý khách hàng', icon: <FaUserFriends />, to: '/admin/customers' },
   { label: 'Tạo dịch vụ', icon: <FaPlusCircle />, to: '/admin/create-service' },

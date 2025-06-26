@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -34,6 +34,11 @@ import Notification from './components/Notification';
 import Contact from './components/Contact';
 import ResetPassword from "./pages/ResetPassword";
 import ForgotPassword from "./pages/ForgotPassword";
+import RegisterStaff from './pages/Admin/RegisterStaff';
+import RegisterMedicalStaff from './pages/Admin/RegisterMedicalStaff';
+import CreateWorkShift from './pages/Admin/CreateWorkShift';
+import WorkShiftList from './pages/Admin/WorkShiftList';
+import StaffFeedback from './pages/Staff/StaffFeedback';
 
 const HomePage = () => (
     <>
@@ -73,6 +78,7 @@ const App = () => {
                                 <Route path="/staff" element={<Staff />} />
                                 <Route path="/staff/orders" element={<StaffOrder />} />
                                 <Route path="/staff/profile" element={<StaffProfile />} />
+                                <Route path="/staff/feedback" element={<StaffFeedback />} />
 
                                 {/* Medical Staff Routes */}
                                 <Route path="/medical-staff" element={<MedicalStaff />} />
@@ -80,6 +86,10 @@ const App = () => {
 
                                 {/* Admin Routes */}
                                 <Route path="/admin" element={<AdminPage />} />
+                                <Route path="/admin/register-staff" element={<RegisterStaff />} />
+                                <Route path="/admin/register-medical-staff" element={<RegisterMedicalStaff />} />
+                                <Route path="/admin/create-workshift" element={<CreateWorkShift />} />
+                                <Route path="/admin/workshift-list" element={<WorkShiftList />} />
 
                                 {/* Other Routes */}
                                 <Route path="/oauth-success" element={<OAuthSuccess />} />
