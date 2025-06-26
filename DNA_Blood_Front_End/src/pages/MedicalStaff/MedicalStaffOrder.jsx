@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import MedicalStaffNavbar from '../../components/MedicalStaffNavbar';
 import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaSpinner, FaExclamationTriangle, FaCheck, FaFlask, FaCheckCircle, FaPlusCircle } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const MedicalStaffOrder = () => {
   const [samples, setSamples] = useState([]);
@@ -192,7 +193,11 @@ const MedicalStaffOrder = () => {
           {actionError && <div className="bg-red-50 border-l-4 border-red-400 p-4"><p className="text-sm text-red-700">{actionError}</p></div>}
 
           {/* Sample Transfers Table */}
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay:0}}
+            className="bg-white shadow-lg rounded-lg overflow-hidden">
             <div className="px-6 py-5 bg-gradient-to-r from-blue-600 to-blue-700">
               <h2 className="text-xl font-bold text-white flex items-center"><FaClipboardList className="mr-2" /> Sample Transfers</h2>
             </div>
@@ -234,10 +239,14 @@ const MedicalStaffOrder = () => {
                 </tbody>
               </table>
             </div>
-          </div>
+          </motion.div>
           
           {/* Sample Management Table */}
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay:0.2}}
+            className="bg-white shadow-lg rounded-lg overflow-hidden">
             <div className="px-6 py-5 bg-gradient-to-r from-teal-600 to-teal-700">
               <h2 className="text-xl font-bold text-white flex items-center"><FaFlask className="mr-2" /> Sample Processing</h2>
             </div>
@@ -292,10 +301,14 @@ const MedicalStaffOrder = () => {
                 </tbody>
               </table>
             </div>
-          </div>
+          </motion.div>
 
           {/* Order Details Table */}
-          <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay:0.4}}
+            className="bg-white shadow-lg rounded-lg overflow-hidden">
             <div className="px-6 py-5 bg-gradient-to-r from-green-600 to-green-700">
                 <h2 className="text-xl font-bold text-white flex items-center"><FaClipboardList className="mr-2" /> Order Details</h2>
             </div>
@@ -350,7 +363,7 @@ const MedicalStaffOrder = () => {
                     </tbody>
                 </table>
             </div>
-          </div>
+          </motion.div>
         </div>
       </main>
 
