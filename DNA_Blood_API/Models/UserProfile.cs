@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("User_profile")]
-[Index("Email", Name = "UQ__User_pro__AB6E61646F0C7D3D", IsUnique = true)]
-[Index("UserId", Name = "UQ__User_pro__B9BE370E9C9D3B56", IsUnique = true)]
+[Index("Email", Name = "UQ__User_pro__AB6E6164257358ED", IsUnique = true)]
+[Index("UserId", Name = "UQ__User_pro__B9BE370E32CDC06F", IsUnique = true)]
 public partial class UserProfile
 {
     [Key]

@@ -183,7 +183,7 @@ const Navbar = () => {
                       User Profile
                     </Link>
                     <Link
-                      to="/settings"
+                      to="/account-setting"
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-blue-600 hover:bg-gray-100 transition-colors duration-200 cursor-text"
                       onClick={() => setShowDropdown(false)}
                     >
@@ -347,7 +347,7 @@ const Navbar = () => {
                       User Profile
                     </Link>
                     <Link
-                      to="/settings"
+                      to="/account-setting"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-md"
                       onClick={() => {
                         setShowDropdown(false);

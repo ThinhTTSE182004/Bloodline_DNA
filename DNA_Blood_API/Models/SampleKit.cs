@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Sample_kit")]
-[Index("KitCode", Name = "UQ__Sample_k__2476981602171FD7", IsUnique = true)]
+[Index("KitCode", Name = "UQ__Sample_k__24769816C9764DD0", IsUnique = true)]
 public partial class SampleKit
 {
     [Key]

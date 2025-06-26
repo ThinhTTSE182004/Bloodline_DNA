@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("USERS")]
-[Index("Email", Name = "UQ__USERS__AB6E616418FD9D23", IsUnique = true)]
+[Index("Email", Name = "UQ__USERS__AB6E6164FAEFA0AE", IsUnique = true)]
 public partial class User
 {
     [Key]
@@ -69,6 +69,9 @@ public partial class User
 
     [InverseProperty("Staff")]
     public virtual ICollection<Sample> Samples { get; set; } = new List<Sample>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<ShiftAssignment> ShiftAssignments { get; set; } = new List<ShiftAssignment>();
 
     [InverseProperty("User")]
     public virtual UserProfile? UserProfile { get; set; }
