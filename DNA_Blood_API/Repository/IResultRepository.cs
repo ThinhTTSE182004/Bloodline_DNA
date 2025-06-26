@@ -7,5 +7,7 @@ namespace DNA_API1.Repository
     {
         Task<Result> AddResultAsync(CreateResultDTO result);
         Task<bool> ExistsByOrderDetailIdAsync(int orderDetailId);
+        Task<List<Result>> GetResultsByUserIdAsync(int userId);
+        Task<Result?> GetResultByIdAsync(int resultId);
     }
 }

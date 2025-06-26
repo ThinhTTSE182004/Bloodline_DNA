@@ -22,14 +22,11 @@ public partial class Order
     [StringLength(50)]
     public string OrderStatus { get; set; } = null!;
 
-    [Column("booking_date", TypeName = "datetime")]
-    public DateTime? BookingDate { get; set; }
-
     [Column("create_at", TypeName = "datetime")]
     public DateTime? CreateAt { get; set; }
 
-    // [Column("update_at", TypeName = "datetime")]
-    // public DateTime? UpdateAt { get; set; }
+    [Column("booking_date", TypeName = "datetime")]
+    public DateTime? BookingDate { get; set; }
 
     [ForeignKey("CollectionMethodId")]
     [InverseProperty("Orders")]

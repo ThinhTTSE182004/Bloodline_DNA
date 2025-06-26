@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("USERS")]
-[Index("Email", Name = "UQ__USERS__AB6E616418FD9D23", IsUnique = true)]
+[Index("Email", Name = "UQ__USERS__AB6E616420BDF9E5", IsUnique = true)]
 public partial class User
 {
     [Key]
@@ -53,6 +53,9 @@ public partial class User
 
     [InverseProperty("Customer")]
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
+
+    [InverseProperty("User")]
+    public virtual ICollection<PasswordResetToken> PasswordResetTokens { get; set; } = new List<PasswordResetToken>();
 
     [ForeignKey("RoleId")]
     [InverseProperty("Users")]
