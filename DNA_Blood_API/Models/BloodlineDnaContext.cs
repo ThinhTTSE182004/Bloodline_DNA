@@ -356,8 +356,6 @@ public partial class BloodlineDnaContext : DbContext
         modelBuilder.Entity<WorkShift>(entity =>
         {
             entity.HasKey(e => e.ShiftId).HasName("PK__WorkShif__7B267220A554438D");
-
-            entity.Property(e => e.ShiftId).ValueGeneratedNever();
         });
 
         OnModelCreatingPartial(modelBuilder);

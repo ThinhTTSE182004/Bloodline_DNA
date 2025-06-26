@@ -10,6 +10,7 @@ namespace DNA_API1.Models;
 public partial class WorkShift
 {
     [Key]
+    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
     [Column("shift_id")]
     public int ShiftId { get; set; }
 
