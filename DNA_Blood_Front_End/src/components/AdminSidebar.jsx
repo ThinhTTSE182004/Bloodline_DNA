@@ -10,12 +10,11 @@ const menuItems = [
   { label: 'Work Shift List', icon: <FaListAlt />, to: '/admin/workshift-list' },
   { label: 'Quản lý nhân viên', icon: <FaUsersCog />, to: '/admin/staffs' },
   { label: 'Quản lý khách hàng', icon: <FaUserFriends />, to: '/admin/customers' },
-  { label: 'Tạo dịch vụ', icon: <FaPlusCircle />, to: '/admin/create-service' },
   { label: 'Quản lý dịch vụ', icon: <FaBoxOpen />, to: '/admin/services' },
   { label: 'Quản lý đơn hàng', icon: <FaClipboardList />, to: '/admin/orders' },
   { label: 'Quản lý mẫu xét nghiệm', icon: <FaVials />, to: '/admin/samples' },
-  { label: 'Thống kê & báo cáo', icon: <FaChartBar />, to: '/admin/statistics' },
   { label: 'Góc nhìn người dùng', icon: <FaEye />, to: '/' },
+  { label: 'Phân công công việc', icon: <FaClipboardList />, to: '/admin/work-assignment' },
 ];
 
 const AdminSidebar = () => {

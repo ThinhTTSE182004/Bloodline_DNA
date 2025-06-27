@@ -85,13 +85,19 @@ namespace DNA_Blood_API.Services
                 {
                     // Medical Staff
                     var medicalStaffs = usersEntity.Where(u => u.RoleId == 4).ToList();
-                    var assignedMedical = assignments.Where(a => a.ShiftId == shift.ShiftId && a.AssignmentDate == date && a.User.RoleId == 4).ToList();
+
+                    // Sửa: kiểm tra null cho a.User
+                    var assignedMedical = assignments
+                        .Where(a => a.ShiftId == shift.ShiftId && a.AssignmentDate == date && a.User != null && a.User.RoleId == 4)
+                        .ToList();
+
                     int needMedical = 3 - assignedMedical.Count;
                     var availableMedical = medicalStaffs.Where(u =>
                         !assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date)
                         && !(shift.ShiftName.ToLower().Contains("Morning") && assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date.AddDays(-1) && a.Shift.ShiftName.ToLower().Contains("Afternoon")))
                         && assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month) < maxShiftPerMonth
                     ).OrderBy(u => assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month)).ToList();
+
                     var selectedMedical = availableMedical.OrderBy(x => rand.Next()).Take(needMedical);
                     foreach (var u in selectedMedical)
                     {
@@ -111,13 +117,19 @@ namespace DNA_Blood_API.Services
 
                     // Staff
                     var staffs = usersEntity.Where(u => u.RoleId == 2).ToList();
-                    var assignedStaff = assignments.Where(a => a.ShiftId == shift.ShiftId && a.AssignmentDate == date && a.User.RoleId == 2).ToList();
+
+                    // Sửa: kiểm tra null cho a.User
+                    var assignedStaff = assignments
+                        .Where(a => a.ShiftId == shift.ShiftId && a.AssignmentDate == date && a.User != null && a.User.RoleId == 2)
+                        .ToList();
+
                     int needStaff = 4 - assignedStaff.Count;
                     var availableStaff = staffs.Where(u =>
                         !assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date)
                         && !(shift.ShiftName.ToLower().Contains("Morning") && assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date.AddDays(-1) && a.Shift.ShiftName.ToLower().Contains("Afternoon")))
                         && assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month) < maxShiftPerMonth
                     ).OrderBy(u => assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month)).ToList();
+
                     var selectedStaff = availableStaff.OrderBy(x => rand.Next()).Take(needStaff);
                     foreach (var u in selectedStaff)
                     {
