@@ -4,6 +4,8 @@ import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaEdit, FaSpinner, FaExclamationTriangle, FaChartPie, FaTags, FaShippingFast, FaCheckCircle } from 'react-icons/fa';
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js';
+import StaffFeedback from './StaffFeedback';
+import { motion } from 'framer-motion';
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
@@ -183,7 +185,13 @@ const Staff = () => {
       <StaffNavbar />
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-[1600px] mx-auto">
-          <h1 className="text-3xl font-bold text-gray-800 mb- cursor-default">Staff Dashboard</h1>
+        <motion.h1
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="flex justify-center text-3xl font-bold text-gray-800 mb-8 cursor-default">
+            Staff Dashboard
+          </motion.h1>
           {error && (
             <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4">
               <p className="text-sm text-red-700">{error}</p>
@@ -191,24 +199,36 @@ const Staff = () => {
           )}
           
           {/* Stats Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay:0}}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <StatCard icon={<FaClipboardList className="w-8 h-8 text-blue-500"/>} title="Total Assigned Orders" value={stats.totalAssignedOrders} color="border-l-4 border-blue-500" />
             <StatCard icon={<FaTags className="w-8 h-8 text-green-500"/>} title="Total Samples" value={stats.totalSamples} color="border-l-4 border-green-500" />
             <StatCard icon={<FaShippingFast className="w-8 h-8 text-yellow-500"/>} title="Pending Samples" value={stats.pendingSamples} color="border-l-4 border-yellow-500" />
             <StatCard icon={<FaCheckCircle className="w-8 h-8 text-purple-500"/>} title="Completed Samples" value={stats.completedSamples} color="border-l-4 border-purple-500" />
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Chart */}
-            <div className="lg:col-span-1 bg-white shadow-lg rounded-lg p-6 cursor-default group">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay:0.2}}
+              className="lg:col-span-1 bg-white shadow-lg rounded-lg p-6 cursor-default group">
               <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center group-hover:text-black"><FaChartPie className="mr-2 text-gray-600 group-hover:text-gray-800"/>Sample Status Distribution</h2>
               <div className="h-80 flex items-center justify-center">
                  <Pie data={chartData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'top' }, title: { display: true, text: 'Sample Status' } } }} />
               </div>
-            </div>
+            </motion.div>
 
             {/* Recent Samples Table */}
-            <div className="lg:col-span-2 bg-white shadow-lg rounded-lg overflow-hidden">
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.8, delay:0.4}}
+              className="lg:col-span-2 bg-white shadow-lg rounded-lg overflow-hidden">
               <div className="px-6 py-5 bg-gradient-to-r from-blue-600 to-blue-700">
                 <h2 className="text-xl font-bold text-white flex items-center">
                   <FaClipboardList className="mr-2" />
@@ -253,7 +273,7 @@ const Staff = () => {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
           </div>
         </div>
       </main>

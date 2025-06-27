@@ -18,13 +18,17 @@ namespace DNA_API1.Controllers
         private readonly IUserProfileService _userProfileService;
         private readonly IOrderService _orderService;
         private readonly IResultService _resultService;
+        private readonly IFeedbackService _feedbackService;
+        private readonly IFeedbackResponseService _feedbackResponseService;
         
 
-        public UserProfileController(IUserProfileService userProfileService, IOrderService orderService, IResultService resultService)
+        public UserProfileController(IUserProfileService userProfileService, IOrderService orderService, IResultService resultService, IFeedbackService feedbackService, IFeedbackResponseService feedbackResponseService)
         {
             _userProfileService = userProfileService;
             _orderService = orderService;
             _resultService = resultService;
+            _feedbackService = feedbackService;
+            _feedbackResponseService = feedbackResponseService;
         }
 
 
@@ -85,6 +89,48 @@ namespace DNA_API1.Controllers
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
             await _resultService.ShareResultByEmailAsync(userId, request);
             return Ok(new { message = "Đã gửi kết quả xét nghiệm qua email." });
+        }
+
+        [HttpPost("Feedback")]
+        public async Task<IActionResult> PostFeedback([FromBody] DNA_API1.ViewModels.CreateFeedbackDTO dto)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+
+            var order = await _orderService.GetOrderByIdAndUserIdAsync(dto.OrderId, userId);
+            if (order == null)
+                return BadRequest("Đơn hàng không tồn tại hoặc không thuộc về bạn.");
+
+            // 2. Kiểm tra đã feedback chưa
+            if (await _feedbackService.ExistsByOrderIdAsync(dto.OrderId))
+                return BadRequest("Đơn hàng này đã có feedback.");
+
+            // 3. Lưu feedback
+            var feedback = new DNA_API1.Models.Feedback
+            {
+                OrderId = dto.OrderId,
+                Name = dto.Name,
+                Rating = dto.Rating,
+                Comment = dto.Comment,
+                CreateAt = dto.CreateAt ?? DateTime.Now,
+                UpdateAt = null
+            };
+            await _feedbackService.AddAsync(feedback);
+            return Ok(new { message = "Gửi đánh giá thành công." });
+        }
+
+        [HttpGet("feedback-list")]
+        public async Task<IActionResult> GetAllFeedbacks()
+        {
+            var feedbacks = await _feedbackService.GetAllWithResponsesAsync();
+            return Ok(feedbacks);
+        }
+
+        [HttpGet("FeedbackResponse/{feedbackId}")]
+        public async Task<IActionResult> GetFeedbackResponses(int feedbackId)
+        {
+            var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var contents = await _feedbackResponseService.GetContentsByFeedbackIdAndUserIdAsync(feedbackId, userId);
+            return Ok(contents);
         }
     }
 }

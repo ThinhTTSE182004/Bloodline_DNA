@@ -1,5 +1,16 @@
 Vui Lòng Đọc Hướng Dẫn Sử Dụng Trước Khi Chạy Code
 
+
+
+
+
+
+
+
+
+
+
+
 🔐 Sample Accounts for Login (Tài khoản mẫu để đăng nhập)
 Sau khi clone project và chạy database, bạn có thể đăng nhập ngay bằng các tài khoản mẫu dưới đây. Tất cả đều dùng mật khẩu mặc định 123456, đã được mã hóa theo chuẩn Microsoft.AspNetCore.Identity.PasswordHasher.
 
