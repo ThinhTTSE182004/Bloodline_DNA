@@ -10,6 +10,7 @@ using DNA_API1.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using DNA_Blood_API.Services;
+using DNA_Blood_API.Repository;
 
 namespace DNA_API1
 {
@@ -103,6 +104,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IFeedbackResponseRepository, FeedbackResponseRepository>();
             builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+            builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 
             // Service Registration
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -124,6 +126,8 @@ namespace DNA_API1
             builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
             builder.Services.AddScoped<IFeedbackService, FeedbackService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
+            builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+
             // Add SignalR
             builder.Services.AddSignalR();
 
