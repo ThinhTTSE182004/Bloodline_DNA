@@ -274,5 +274,23 @@ namespace DNA_API1.Repository
         {
             return await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId && o.CustomerId == userId);
         }
+
+        public async Task<List<Order>> GetOrdersByPaymentStatusAsync(string paymentStatus)
+        {
+            return await _context.Orders
+                .Include(o => o.Payment)
+                .Where(o => o.Payment != null && o.Payment.PaymentStatus == paymentStatus)
+                .ToListAsync();
+        }
+
+        public async Task<List<Order>> GetAllOrdersAsync()
+        {
+            return await _context.Orders
+                .Include(o => o.Payment)
+                .Include(o => o.CollectionMethod)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.ServicePackage)
+                .ToListAsync();
+        }
     }
 }

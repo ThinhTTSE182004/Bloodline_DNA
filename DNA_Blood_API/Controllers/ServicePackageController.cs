@@ -13,6 +13,7 @@ namespace DNA_API1.Controllers
     public class ServicePackageController : ControllerBase
     {
         private readonly IServiceService _serviceService;
+
         public ServicePackageController(IServiceService serviceService)
         {
             _serviceService = serviceService;
@@ -57,5 +58,8 @@ namespace DNA_API1.Controllers
             var result = await _serviceService.UpdateServicePriceAsync(servicePackageId, dto.Price);
             return Ok(result);
         }
+
+
+       
     }
 } 

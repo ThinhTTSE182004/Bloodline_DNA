@@ -118,6 +118,13 @@ namespace DNA_API1.Controllers
             return Ok(new { message = "Gửi đánh giá thành công." });
         }
 
+        [HttpGet("feedback-list")]
+        public async Task<IActionResult> GetAllFeedbacks()
+        {
+            var feedbacks = await _feedbackService.GetAllWithResponsesAsync();
+            return Ok(feedbacks);
+        }
+
         [HttpGet("FeedbackResponse/{feedbackId}")]
         public async Task<IActionResult> GetFeedbackResponses(int feedbackId)
         {
