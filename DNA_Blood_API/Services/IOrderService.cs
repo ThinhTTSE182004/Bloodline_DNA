@@ -1,4 +1,5 @@
 ﻿using DNA_API1.ViewModels;
+using DNA_API1.Models;
 
 namespace DNA_API1.Services
 {
@@ -11,6 +12,12 @@ namespace DNA_API1.Services
 
         Task<List<OrderHistoryDTO>> GetAllOrdersForStaffAsync();
 
-       
+        Task<bool> OrderExistsForUserAsync(int orderId, int userId);
+
+        Task<Order?> GetOrderByIdAndUserIdAsync(int orderId, int userId);
+
+        Task<List<OrderHistoryDTO>> GetOrdersByPaymentStatusAsync(string paymentStatus);
+
+        Task<List<OrderHistoryDTO>> GetAllOrdersAsync();
     }
 }

@@ -48,9 +48,19 @@ namespace DNA_API1.Services
             await _tokenRepository.AddTokenAsync(resetToken);
 
             var resetLink = $"http://localhost:5173/reset-password?token={token}";
-            var subject = "Đặt lại mật khẩu DNA Testing";
-            var body = $"<p>Bạn hoặc ai đó đã yêu cầu đặt lại mật khẩu cho tài khoản này.</p>" +
-                       $"<p>Nhấn vào <a href='{resetLink}'>đây</a> để đặt lại mật khẩu. Link có hiệu lực trong 15 phút.</p>";
+            var subject = "Password Reset Request - Bloodline DNA";
+
+            var body = $@"
+            <p>Hello,</p>
+            <p>We received a request to reset the password associated with your account at <strong>Bloodline DNA</strong>.</p>
+            <p>If you initiated this request, please click the link below to set a new password. For your security, this link will remain valid for only <strong>15 minutes</strong> from the time it was sent:</p>
+            <p><a href='{resetLink}'>Reset your password</a></p>
+            <p>If you did not request a password reset, no further action is needed. Simply disregard this email. Your account will remain secure and unchanged.</p>
+            <p>If you have any questions or require assistance, feel free to contact our support team at any time. We are here to help.</p>
+            <p>Thank you for choosing <strong>Bloodline DNA</strong>.</p>
+            <p>Best regards,<br/>
+            The Bloodline DNA Support Team</p>";
+
 
             await _emailService.SendEmailAsync(email, subject, body);
         }

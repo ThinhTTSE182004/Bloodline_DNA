@@ -264,5 +264,33 @@ namespace DNA_API1.Repository
             _context.Orders.Update(order);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<bool> OrderExistsForUserAsync(int orderId, int userId)
+        {
+            return await _context.Orders.AnyAsync(o => o.OrderId == orderId && o.CustomerId == userId);
+        }
+
+        public async Task<Order?> GetOrderByIdAndUserIdAsync(int orderId, int userId)
+        {
+            return await _context.Orders.FirstOrDefaultAsync(o => o.OrderId == orderId && o.CustomerId == userId);
+        }
+
+        public async Task<List<Order>> GetOrdersByPaymentStatusAsync(string paymentStatus)
+        {
+            return await _context.Orders
+                .Include(o => o.Payment)
+                .Where(o => o.Payment != null && o.Payment.PaymentStatus == paymentStatus)
+                .ToListAsync();
+        }
+
+        public async Task<List<Order>> GetAllOrdersAsync()
+        {
+            return await _context.Orders
+                .Include(o => o.Payment)
+                .Include(o => o.CollectionMethod)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.ServicePackage)
+                .ToListAsync();
+        }
     }
 }

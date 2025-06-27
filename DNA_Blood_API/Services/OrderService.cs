@@ -234,9 +234,10 @@ namespace DNA_API1.Services
                 );
 
                 // 7. Create sample transfers after samples are saved
-                foreach (var (staffId, medicalStaffId) in sampleTransferInfos)
+                for (int i = 0; i < samples.Count; i++)
                 {
-                    var sample = samples[sampleTransferInfos.IndexOf((staffId, medicalStaffId))];
+                    var sample = samples[i];
+                    var (staffId, medicalStaffId) = sampleTransferInfos[i];
                     var sampleTransfer = new SampleTransfer
                     {
                         SampleId = sample.SampleId,
@@ -260,6 +261,48 @@ namespace DNA_API1.Services
         public async Task<IEnumerable<OrderDetailHistoryDTO>> GetOrderDetailsAsync(int orderId, int userId)
         {
             return await _orderRepository.GetOrderDetailsByOrderIdAsync(orderId, userId);
+        }
+
+        public async Task<bool> OrderExistsForUserAsync(int orderId, int userId)
+        {
+            return await _orderRepository.OrderExistsForUserAsync(orderId, userId);
+        }
+
+        public async Task<Order?> GetOrderByIdAndUserIdAsync(int orderId, int userId)
+        {
+            return await _orderRepository.GetOrderByIdAndUserIdAsync(orderId, userId);
+        }
+
+        public async Task<List<OrderHistoryDTO>> GetOrdersByPaymentStatusAsync(string paymentStatus)
+        {
+            var orders = await _orderRepository.GetOrdersByPaymentStatusAsync(paymentStatus);
+            return orders.Select(o => new OrderHistoryDTO
+            {
+                OrderId = o.OrderId,
+                ServiceName = o.OrderDetails.FirstOrDefault()?.ServicePackage?.ServiceName ?? "Unknown",
+                OrderDate = o.CreateAt ?? DateTime.Now,
+                OrderStatus = o.OrderStatus,
+                TotalAmount = o.Payment?.Total ?? 0,
+                PaymentMethod = o.Payment?.PaymentMethod ?? "Unknown",
+                PaymentStatus = o.Payment?.PaymentStatus ?? "Pending",
+                SampleCollectionMethod = o.CollectionMethod?.MethodName ?? "Unknown"
+            }).ToList();
+        }
+
+        public async Task<List<OrderHistoryDTO>> GetAllOrdersAsync()
+        {
+            var orders = await _orderRepository.GetAllOrdersAsync();
+            return orders.Select(o => new OrderHistoryDTO
+            {
+                OrderId = o.OrderId,
+                ServiceName = o.OrderDetails.FirstOrDefault()?.ServicePackage?.ServiceName ?? "Unknown",
+                OrderDate = o.CreateAt ?? DateTime.Now,
+                OrderStatus = o.OrderStatus,
+                TotalAmount = o.Payment?.Total ?? 0,
+                PaymentMethod = o.Payment?.PaymentMethod ?? "Unknown",
+                PaymentStatus = o.Payment?.PaymentStatus ?? "Pending",
+                SampleCollectionMethod = o.CollectionMethod?.MethodName ?? "Unknown"
+            }).ToList();
         }
     }
 }
