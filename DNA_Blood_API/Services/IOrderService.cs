@@ -15,5 +15,9 @@ namespace DNA_API1.Services
         Task<bool> OrderExistsForUserAsync(int orderId, int userId);
 
         Task<Order?> GetOrderByIdAndUserIdAsync(int orderId, int userId);
+
+        Task<List<OrderHistoryDTO>> GetOrdersByPaymentStatusAsync(string paymentStatus);
+
+        Task<List<OrderHistoryDTO>> GetAllOrdersAsync();
     }
 }

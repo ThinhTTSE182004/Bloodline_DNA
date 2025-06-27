@@ -27,5 +27,7 @@ namespace DNA_API1.Repository
         Task<List<Order>> GetOrdersWithNavigationAsync();
         Task<bool> OrderExistsForUserAsync(int orderId, int userId);
         Task<Order?> GetOrderByIdAndUserIdAsync(int orderId, int userId);
+        Task<List<Order>> GetOrdersByPaymentStatusAsync(string paymentStatus);
+        Task<List<Order>> GetAllOrdersAsync();
     }
 } 

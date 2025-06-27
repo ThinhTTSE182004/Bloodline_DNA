@@ -102,7 +102,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IFeedbackResponseService, FeedbackResponseService>();
             builder.Services.AddScoped<IFeedbackResponseRepository, FeedbackResponseRepository>();
             builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
-
+            builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 
             // Service Registration
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -123,7 +123,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IEmailService, EmailService>();
             builder.Services.AddScoped<IPasswordResetService, PasswordResetService>();
             builder.Services.AddScoped<IFeedbackService, FeedbackService>();
-
+            builder.Services.AddScoped<IPaymentService, PaymentService>();
             // Add SignalR
             builder.Services.AddSignalR();
 
