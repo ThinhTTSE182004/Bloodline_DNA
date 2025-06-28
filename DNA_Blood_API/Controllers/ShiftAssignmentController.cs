@@ -65,7 +65,7 @@ namespace DNA_Blood_API.Controllers
         [HttpPost("SuggestAssignments")]
         public async Task<IActionResult> SuggestAssignments([FromBody] SuggestAssignmentsRequestDTO request)
         {
-            var suggestions = await _shiftAssignmentService.SuggestAssignments(request.Shifts, request.Users, request.Dates, request.MaxShiftPerMonth);
+            var suggestions = await _shiftAssignmentService.SuggestAssignments(request.Shifts, request.Users, request.Dates);
             return Ok(suggestions);
         }
 
