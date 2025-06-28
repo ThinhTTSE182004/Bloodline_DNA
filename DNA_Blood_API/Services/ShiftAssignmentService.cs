@@ -57,8 +57,7 @@ namespace DNA_Blood_API.Services
         public async Task<List<ShiftAssignmentSuggestionDTO>> SuggestAssignments(
             List<ShiftSimpleDTO> shifts,
             List<UserSimpleDTO> users,
-            List<DateOnly> dates,
-            int maxShiftPerMonth = 20)
+            List<DateOnly> dates)
         {
             // Map DTO sang entity đơn giản
             var workShifts = shifts.Select(s => new WorkShift
@@ -77,78 +76,138 @@ namespace DNA_Blood_API.Services
 
             var suggestions = new List<ShiftAssignmentSuggestionDTO>();
             var assignments = (await _shiftAssignmentRepository.GetAllAsync()).ToList();
-            var rand = new Random();
+
+            // Dictionary để theo dõi số ca đã gợi ý cho mỗi user trong mỗi tháng
+            var suggestedCountPerUserPerMonth = new Dictionary<(int UserId, int Year, int Month), int>();
+
+            // Tách nhân viên theo role và sắp xếp theo số ca hiện tại
+            var medicalStaffs = usersEntity.Where(u => u.RoleId == 4).ToList();
+            var staffs = usersEntity.Where(u => u.RoleId == 2).ToList();
+
+            // Index để thực hiện Round-Robin
+            var medicalIndex = 0;
+            var staffIndex = 0;
 
             foreach (var date in dates)
             {
                 foreach (var shift in workShifts)
                 {
                     // Medical Staff
-                    var medicalStaffs = usersEntity.Where(u => u.RoleId == 4).ToList();
-
-                    // Sửa: kiểm tra null cho a.User
                     var assignedMedical = assignments
                         .Where(a => a.ShiftId == shift.ShiftId && a.AssignmentDate == date && a.User != null && a.User.RoleId == 4)
                         .ToList();
 
                     int needMedical = 3 - assignedMedical.Count;
-                    var availableMedical = medicalStaffs.Where(u =>
-                        !assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date)
-                        && !(shift.ShiftName.ToLower().Contains("Morning") && assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date.AddDays(-1) && a.Shift.ShiftName.ToLower().Contains("Afternoon")))
-                        && assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month) < maxShiftPerMonth
-                    ).OrderBy(u => assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month)).ToList();
-
-                    var selectedMedical = availableMedical.OrderBy(x => rand.Next()).Take(needMedical);
-                    foreach (var u in selectedMedical)
+                    for (int i = 0; i < needMedical && medicalStaffs.Count > 0; i++)
                     {
-                        suggestions.Add(new ShiftAssignmentSuggestionDTO
+                        // Tìm Medical Staff phù hợp theo Round-Robin
+                        var selectedMedical = FindNextAvailableStaff(
+                            medicalStaffs, 
+                            date, 
+                            shift, 
+                            assignments, 
+                            suggestedCountPerUserPerMonth,
+                            ref medicalIndex);
+
+                        if (selectedMedical != null)
                         {
-                            UserId = u.UserId,
-                            UserName = u.Name,
-                            RoleId = u.RoleId ?? 0,
-                            RoleName = "Medical Staff",
-                            ShiftId = shift.ShiftId,
-                            ShiftName = shift.ShiftName,
-                            AssignmentDate = date,
-                            AssignedCountInMonth = assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month),
-                            IsSuggested = true
-                        });
+                            // Cập nhật số ca đã gợi ý
+                            var key = (selectedMedical.UserId, date.Year, date.Month);
+                            if (!suggestedCountPerUserPerMonth.ContainsKey(key))
+                                suggestedCountPerUserPerMonth[key] = 0;
+                            suggestedCountPerUserPerMonth[key]++;
+
+                            suggestions.Add(new ShiftAssignmentSuggestionDTO
+                            {
+                                UserId = selectedMedical.UserId,
+                                UserName = selectedMedical.Name,
+                                RoleId = selectedMedical.RoleId ?? 0,
+                                RoleName = "Medical Staff",
+                                ShiftId = shift.ShiftId,
+                                ShiftName = shift.ShiftName,
+                                AssignmentDate = date,
+                                AssignedCountInMonth = GetTotalAssignmentsInMonth(selectedMedical.UserId, date, assignments, suggestedCountPerUserPerMonth),
+                                IsSuggested = true
+                            });
+                        }
                     }
 
                     // Staff
-                    var staffs = usersEntity.Where(u => u.RoleId == 2).ToList();
-
-                    // Sửa: kiểm tra null cho a.User
                     var assignedStaff = assignments
                         .Where(a => a.ShiftId == shift.ShiftId && a.AssignmentDate == date && a.User != null && a.User.RoleId == 2)
                         .ToList();
 
                     int needStaff = 4 - assignedStaff.Count;
-                    var availableStaff = staffs.Where(u =>
-                        !assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date)
-                        && !(shift.ShiftName.ToLower().Contains("Morning") && assignments.Any(a => a.UserId == u.UserId && a.AssignmentDate == date.AddDays(-1) && a.Shift.ShiftName.ToLower().Contains("Afternoon")))
-                        && assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month) < maxShiftPerMonth
-                    ).OrderBy(u => assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month)).ToList();
-
-                    var selectedStaff = availableStaff.OrderBy(x => rand.Next()).Take(needStaff);
-                    foreach (var u in selectedStaff)
+                    for (int i = 0; i < needStaff && staffs.Count > 0; i++)
                     {
-                        suggestions.Add(new ShiftAssignmentSuggestionDTO
+                        // Tìm Staff phù hợp theo Round-Robin
+                        var selectedStaff = FindNextAvailableStaff(
+                            staffs, 
+                            date, 
+                            shift, 
+                            assignments, 
+                            suggestedCountPerUserPerMonth,
+                            ref staffIndex);
+
+                        if (selectedStaff != null)
                         {
-                            UserId = u.UserId,
-                            UserName = u.Name,
-                            RoleId = u.RoleId ?? 0,
-                            RoleName = "Staff",
-                            ShiftId = shift.ShiftId,
-                            ShiftName = shift.ShiftName,
-                            AssignmentDate = date,
-                            AssignedCountInMonth = assignments.Count(a => a.UserId == u.UserId && a.AssignmentDate.Month == date.Month),
-                            IsSuggested = true
-                        });
+                            // Cập nhật số ca đã gợi ý
+                            var key = (selectedStaff.UserId, date.Year, date.Month);
+                            if (!suggestedCountPerUserPerMonth.ContainsKey(key))
+                                suggestedCountPerUserPerMonth[key] = 0;
+                            suggestedCountPerUserPerMonth[key]++;
+
+                            suggestions.Add(new ShiftAssignmentSuggestionDTO
+                            {
+                                UserId = selectedStaff.UserId,
+                                UserName = selectedStaff.Name,
+                                RoleId = selectedStaff.RoleId ?? 0,
+                                RoleName = "Staff",
+                                ShiftId = shift.ShiftId,
+                                ShiftName = shift.ShiftName,
+                                AssignmentDate = date,
+                                AssignedCountInMonth = GetTotalAssignmentsInMonth(selectedStaff.UserId, date, assignments, suggestedCountPerUserPerMonth),
+                                IsSuggested = true
+                            });
+                        }
                     }
                 }
             }
             return suggestions;
+        }
+
+        // Helper method để tính tổng số ca trong tháng (database + gợi ý)
+        private int GetTotalAssignmentsInMonth(int userId, DateOnly date, List<ShiftAssignment> assignments, Dictionary<(int UserId, int Year, int Month), int> suggestedCount)
+        {
+            var dbCount = assignments.Count(a => a.UserId == userId && a.AssignmentDate.Month == date.Month && a.AssignmentDate.Year == date.Year);
+            var suggestedCountForUser = suggestedCount.GetValueOrDefault((userId, date.Year, date.Month), 0);
+            return dbCount + suggestedCountForUser;
+        }
+
+        private User FindNextAvailableStaff(
+            List<User> staffs,
+            DateOnly date,
+            WorkShift shift,
+            List<ShiftAssignment> assignments,
+            Dictionary<(int UserId, int Year, int Month), int> suggestedCount,
+            ref int index)
+        {
+            if (staffs.Count == 0) return null;
+
+            // Lọc ra những nhân viên có thể làm việc trong ngày này
+            var availableStaffs = staffs.Where(s => 
+                !assignments.Any(a => a.UserId == s.UserId && a.AssignmentDate == date) &&
+                !(shift.ShiftName.ToLower().Contains("Morning") && assignments.Any(a => a.UserId == s.UserId && a.AssignmentDate == date.AddDays(-1) && a.Shift.ShiftName.ToLower().Contains("Afternoon")))
+            ).ToList();
+
+            if (availableStaffs.Count == 0) return null;
+
+            // Luôn chọn nhân viên có tổng số ca thấp nhất (database + suggested)
+            var selectedStaff = availableStaffs
+                .OrderBy(s => GetTotalAssignmentsInMonth(s.UserId, date, assignments, suggestedCount))
+                .First();
+
+            return selectedStaff;
         }
     }
 } 

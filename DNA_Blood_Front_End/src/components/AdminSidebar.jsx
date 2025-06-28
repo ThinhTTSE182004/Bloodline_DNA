@@ -11,8 +11,6 @@ const menuItems = [
   { label: 'Quản lý nhân viên', icon: <FaUsersCog />, to: '/admin/staffs' },
   { label: 'Quản lý khách hàng', icon: <FaUserFriends />, to: '/admin/customers' },
   { label: 'Quản lý dịch vụ', icon: <FaBoxOpen />, to: '/admin/services' },
-  { label: 'Quản lý đơn hàng', icon: <FaClipboardList />, to: '/admin/orders' },
-  { label: 'Quản lý mẫu xét nghiệm', icon: <FaVials />, to: '/admin/samples' },
   { label: 'Góc nhìn người dùng', icon: <FaEye />, to: '/' },
   { label: 'Phân công công việc', icon: <FaClipboardList />, to: '/admin/work-assignment' },
 ];
