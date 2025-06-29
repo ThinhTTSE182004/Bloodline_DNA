@@ -1,4 +1,8 @@
-Vui Lòng Đọc Hướng Dẫn Trước Khi Sử Dụng Repo này 
+Vui Lòng Đọc Hướng Dẫn Trước Khi Sử Dụng Repo này
+
+Video Hướng Dẫn Setup Sử Dụng Project SWP: 
+=>   https://drive.google.com/file/d/1G_SkxpiZNnr7HCBDZPsjY_3uH2WL7Y_L/view?usp=sharing
+
 
 Bộ Dữ liệu mẫu cho Staff
 [
