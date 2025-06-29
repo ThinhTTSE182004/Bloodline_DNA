@@ -174,7 +174,7 @@ const Profile = () => {
     try {
       const token = localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('https://localhost:7113/api/UserProfile/FeedbackList', {
+      const res = await fetch('https://localhost:7113/api/UserProfile/feedback-list', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -365,7 +365,6 @@ const Profile = () => {
             <div className="space-y-4">
               {orderHistory.map((order) => {
                 const orderResults = results.filter(r => r.orderDetailId === order.orderId);
-                const feedbackForOrder = feedbackList.find(fb => fb.orderId === order.orderId);
                 return (
                   <React.Fragment key={order.orderId}>
                     <div className="w-full h-auto bg-gray-50 rounded-lg p-4 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-md cursor-pointer"
@@ -445,13 +444,16 @@ const Profile = () => {
                             {shareStatus[orderResults[0].resultId]?.loading ? 'Sharing...' : 'Share to Email'}
                           </button>
                           <button
-                            className="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600 transition"
+                            className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg flex items-center font-medium"
                             onClick={e => { e.stopPropagation(); setFeedbackModal({ open: true, orderId: order.orderId }); setFeedback({ rating: 0, comment: '' }); setFeedbackMsg(''); }}
                           >
-                            Feedback
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                            Give Feedback
                           </button>
                           <button
-                            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition disabled:opacity-60"
+                            className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition disabled:opacity-60 flex items-center"
                             disabled={!feedbackList.find(fb => fb.orderId === order.orderId)}
                             onClick={async e => {
                               e.stopPropagation();
@@ -460,23 +462,19 @@ const Profile = () => {
                                 setFeedbackResponseModal({ open: true, feedbacks: [], loading: false, error: 'You have not submitted feedback for this order.', orderId: order.orderId });
                                 return;
                               }
-                              setFeedbackResponseModal({ open: true, feedbacks: [], loading: true, error: '', orderId: order.orderId });
-                              try {
-                                const token = localStorage.getItem('token');
-                                const res = await fetch(`https://localhost:7113/api/UserProfile/FeedbackResponse/${found.feedbackId}`, {
-                                  headers: {
-                                    'Authorization': `Bearer ${token}`,
-                                    'Content-Type': 'application/json'
-                                  }
-                                });
-                                if (!res.ok) throw new Error('Failed to fetch feedback response');
-                                const data = await res.json();
-                                setFeedbackResponseModal({ open: true, feedbacks: data, loading: false, error: '', orderId: order.orderId });
-                              } catch {
-                                setFeedbackResponseModal({ open: true, feedbacks: [], loading: false, error: 'Error loading response', orderId: order.orderId });
-                              }
+                              // Sử dụng contentResponses từ API mới
+                              setFeedbackResponseModal({ 
+                                open: true, 
+                                feedbacks: found.contentResponses || [], 
+                                loading: false, 
+                                error: '', 
+                                orderId: order.orderId 
+                              });
                             }}
                           >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                            </svg>
                             See Feedback Response
                           </button>
                         </div>
@@ -583,10 +581,27 @@ const Profile = () => {
 
           {/* Feedback Modal */}
           {feedbackModal.open && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative animate-fade-in">
-                <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onClick={() => setFeedbackModal({ open: false, orderId: null })}>&times;</button>
-                <h2 className="text-xl font-bold mb-4 text-center text-yellow-600">Order Feedback</h2>
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative animate-fade-in">
+                <button 
+                  className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300" 
+                  onClick={() => setFeedbackModal({ open: false, orderId: null })}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-4 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Share Your Experience</h2>
+                  <p className="text-gray-600">Help us improve our services</p>
+                </div>
+
                 <form onSubmit={async e => {
                   e.preventDefault();
                   setFeedbackLoading(true);
@@ -619,19 +634,44 @@ const Profile = () => {
                     setFeedbackMsg('Error: ' + err.message);
                   }
                   setFeedbackLoading(false);
-                }} className="space-y-4">
-                  <div>
-                    <label className="block mb-1 font-medium">Your Name</label>
-                    <input type="text" value={userProfile.name} disabled className="w-full border p-2 rounded bg-gray-100" />
+                }} className="space-y-6">
+                  
+                  {/* Customer Info Section */}
+                  <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 border border-blue-200">
+                    <div className="flex items-center mb-3">
+                      <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Customer Information</span>
+                    </div>
+                    <input 
+                      type="text" 
+                      value={userProfile.name} 
+                      disabled 
+                      className="w-full bg-white border border-blue-200 rounded-lg p-3 text-gray-900 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500" 
+                    />
                   </div>
-                  <div>
-                    <label className="block mb-1 font-medium">Rating</label>
-                    <div className="flex gap-1">
+
+                  {/* Rating Section */}
+                  <div className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-xl p-4 border border-yellow-200">
+                    <div className="flex items-center mb-3">
+                      <div className="w-8 h-8 bg-yellow-500 rounded-full flex items-center justify-center mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Rate Your Experience</span>
+                    </div>
+                    <div className="flex justify-center gap-2">
                       {[1,2,3,4,5].map(star => (
                         <button
                           type="button"
                           key={star}
-                          className={`text-2xl ${feedback.rating >= star ? 'text-yellow-400' : 'text-gray-300'} focus:outline-none`}
+                          className={`text-3xl transition-all duration-300 transform hover:scale-110 ${
+                            feedback.rating >= star ? 'text-yellow-400' : 'text-gray-300'
+                          } focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2 rounded-full p-1`}
                           onClick={() => setFeedback(f => ({ ...f, rating: star }))}
                           tabIndex={0}
                           aria-label={`Rate ${star} star${star > 1 ? 's' : ''}`}
@@ -640,70 +680,264 @@ const Profile = () => {
                         </button>
                       ))}
                     </div>
+                    <div className="text-center mt-2">
+                      <span className="text-sm text-gray-600">
+                        {feedback.rating === 0 && 'Select your rating'}
+                        {feedback.rating === 1 && 'Poor'}
+                        {feedback.rating === 2 && 'Fair'}
+                        {feedback.rating === 3 && 'Good'}
+                        {feedback.rating === 4 && 'Very Good'}
+                        {feedback.rating === 5 && 'Excellent'}
+                      </span>
+                    </div>
                   </div>
-                  <div>
-                    <label className="block mb-1 font-medium">Comment</label>
+
+                  {/* Comment Section */}
+                  <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-xl p-4 border border-green-200">
+                    <div className="flex items-center mb-3">
+                      <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center mr-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                        </svg>
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">Share Your Thoughts</span>
+                    </div>
                     <textarea
-                      className="w-full border p-2 rounded"
-                      rows={3}
+                      className="w-full bg-white border border-green-200 rounded-lg p-3 text-gray-900 resize-none focus:outline-none focus:ring-2 focus:ring-green-500"
+                      rows={4}
                       value={feedback.comment}
                       onChange={e => setFeedback(f => ({ ...f, comment: e.target.value }))}
-                      placeholder="Share your experience..."
+                      placeholder="Tell us about your experience with our service..."
                       required
                     />
                   </div>
+
+                  {/* Submit Button */}
                   <button
                     type="submit"
-                    className="w-full bg-yellow-500 text-white py-2 rounded hover:bg-yellow-600 transition font-semibold disabled:opacity-60"
+                    className={`w-full py-3 px-6 rounded-xl font-semibold text-white transition-all duration-300 transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                      feedbackLoading || feedback.rating === 0
+                        ? 'bg-gray-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 focus:ring-yellow-500 shadow-lg hover:shadow-xl'
+                    }`}
                     disabled={feedbackLoading || feedback.rating === 0}
                   >
-                    {feedbackLoading ? 'Sending...' : 'Submit Feedback'}
+                    {feedbackLoading ? (
+                      <div className="flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                        Sending Feedback...
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                        Submit Feedback
+                      </div>
+                    )}
                   </button>
-                  {feedbackMsg && <div className="mt-2 text-center text-yellow-700">{feedbackMsg}</div>}
+
+                  {/* Message Display */}
+                  {feedbackMsg && (
+                    <div className={`text-center p-3 rounded-lg font-medium ${
+                      feedbackMsg.includes('Thank you') 
+                        ? 'bg-green-100 text-green-800 border border-green-200' 
+                        : 'bg-red-100 text-red-800 border border-red-200'
+                    }`}>
+                      {feedbackMsg}
+                    </div>
+                  )}
                 </form>
               </div>
+              
               <style>{`
                 @keyframes fade-in {
-                  from { opacity: 0; transform: translateY(20px); }
-                  to { opacity: 1; transform: translateY(0); }
+                  from { 
+                    opacity: 0; 
+                    transform: translateY(20px) scale(0.95); 
+                  }
+                  to { 
+                    opacity: 1; 
+                    transform: translateY(0) scale(1); 
+                  }
                 }
-                .animate-fade-in { animation: fade-in 0.7s cubic-bezier(.4,0,.2,1) both; }
+                .animate-fade-in { 
+                  animation: fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; 
+                }
               `}</style>
             </div>
           )}
 
           {/* Feedback Response Modal */}
           {feedbackResponseModal.open && (
-            <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-              <div className="bg-white rounded-lg shadow-lg p-8 w-full max-w-md relative animate-fade-in">
-                <button className="absolute top-2 right-2 text-gray-500 hover:text-gray-700" onClick={() => setFeedbackResponseModal({ open: false, feedbacks: [], loading: false, error: '', orderId: null })}>&times;</button>
-                <h2 className="text-xl font-bold mb-4 text-center text-purple-700 flex items-center justify-center">
-                  <svg xmlns='http://www.w3.org/2000/svg' className='w-7 h-7 mr-2 text-purple-500' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2M15 3h-6a2 2 0 00-2 2v3a2 2 0 002 2h6a2 2 0 002-2V5a2 2 0 00-2-2z' /></svg>
-                  Feedback Response
-                </h2>
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative animate-fade-in">
+                <button 
+                  className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300" 
+                  onClick={() => setFeedbackResponseModal({ open: false, feedbacks: [], loading: false, error: '', orderId: null })}
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                    </svg>
+                  </div>
+                  <h2 className="text-2xl font-bold text-gray-900 mb-2">Feedback Response</h2>
+                  <p className="text-gray-600">Your feedback and our response</p>
+                </div>
+
                 {feedbackResponseModal.loading ? (
-                  <div className="text-center py-8 text-purple-600 font-semibold">Loading...</div>
+                  <div className="text-center py-12">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                    <p className="text-purple-600 font-semibold">Loading response...</p>
+                  </div>
                 ) : feedbackResponseModal.error ? (
-                  <div className="text-center text-red-600 py-8">{feedbackResponseModal.error}</div>
-                ) : feedbackResponseModal.feedbacks.length === 0 ? (
-                  <div className="text-center text-gray-500 py-8">No response yet.</div>
-                ) : (
-                  <ul className="space-y-4">
-                    {feedbackResponseModal.feedbacks.map((resp, idx) => (
-                      <li key={idx} className="bg-purple-50 border-l-4 border-purple-400 rounded-lg p-4 flex items-start gap-2 shadow">
-                        <svg xmlns='http://www.w3.org/2000/svg' className='w-6 h-6 text-purple-500 flex-shrink-0 mt-1' fill='none' viewBox='0 0 24 24' stroke='currentColor'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8h2a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2v-8a2 2 0 012-2h2' /></svg>
-                        <span className="text-gray-800 text-base">{resp}</span>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  <div className="text-center py-12">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                      </svg>
+                    </div>
+                    <p className="text-red-600 font-semibold">{feedbackResponseModal.error}</p>
+                  </div>
+                ) : (() => {
+                  const feedback = feedbackList.find(fb => fb.orderId === feedbackResponseModal.orderId);
+                  if (!feedback) {
+                    return (
+                      <div className="text-center py-12">
+                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                          </svg>
+                        </div>
+                        <p className="text-gray-500 font-semibold">No feedback found for this order.</p>
+                      </div>
+                    );
+                  }
+
+                  return (
+                    <div className="space-y-6">
+                      {/* Customer Feedback Section */}
+                      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
+                        <div className="flex items-center mb-4">
+                          <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900">Your Feedback</h3>
+                            <p className="text-sm text-gray-600">Submitted on {new Date(feedback.createAt).toLocaleDateString()}</p>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-4">
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-gray-700">Customer:</span>
+                            <span className="text-sm text-gray-900 font-semibold">{feedback.name}</span>
+                          </div>
+                          
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm font-medium text-gray-700">Rating:</span>
+                            <div className="flex items-center">
+                              {[1, 2, 3, 4, 5].map((star) => (
+                                <svg
+                                  key={star}
+                                  className={`h-5 w-5 ${star <= feedback.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+                                  fill="currentColor"
+                                  viewBox="0 0 20 20"
+                                >
+                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                </svg>
+                              ))}
+                              <span className="ml-2 text-sm font-semibold text-gray-900">({feedback.rating}/5)</span>
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <span className="text-sm font-medium text-gray-700 block mb-2">Comment:</span>
+                            <div className="bg-white rounded-lg p-4 border border-blue-200">
+                              <p className="text-gray-900 italic">"{feedback.comment}"</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Staff Response Section */}
+                      <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-6 border border-purple-200">
+                        <div className="flex items-center mb-4">
+                          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center mr-3">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-900">Staff Response</h3>
+                            <p className="text-sm text-gray-600">Our team's reply to your feedback</p>
+                          </div>
+                        </div>
+
+                        {feedback.contentResponses && feedback.contentResponses.length > 0 ? (
+                          <div className="space-y-3">
+                            {feedback.contentResponses.map((response, index) => (
+                              <div key={index} className="bg-white rounded-lg p-4 border border-purple-200 shadow-sm hover:shadow-md transition-all duration-300 hover:scale-[1.02]">
+                                <div className="flex items-start">
+                                  <div className="flex-shrink-0 mr-3">
+                                    <div className="w-6 h-6 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-sm">
+                                      <span className="text-xs text-white font-bold">{index + 1}</span>
+                                    </div>
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-gray-900 leading-relaxed mb-2">{response}</p>
+                                    <div className="flex items-center text-xs text-gray-500">
+                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                      </svg>
+                                      <span>Response #{index + 1}</span>
+                                      <span className="mx-2">•</span>
+                                      <span>Staff Team</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="text-center py-8">
+                            <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-100 rounded-full mb-3">
+                              <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            </div>
+                            <p className="text-gray-500 font-medium">Response is being prepared</p>
+                            <p className="text-sm text-gray-400 mt-1">Our team will respond soon</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
+              
               <style>{`
                 @keyframes fade-in {
-                  from { opacity: 0; transform: translateY(20px); }
-                  to { opacity: 1; transform: translateY(0); }
+                  from { 
+                    opacity: 0; 
+                    transform: translateY(20px) scale(0.95); 
+                  }
+                  to { 
+                    opacity: 1; 
+                    transform: translateY(0) scale(1); 
+                  }
                 }
-                .animate-fade-in { animation: fade-in 0.7s cubic-bezier(.4,0,.2,1) both; }
+                .animate-fade-in { 
+                  animation: fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; 
+                }
               `}</style>
             </div>
           )}

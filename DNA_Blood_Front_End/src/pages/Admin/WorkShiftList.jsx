@@ -13,6 +13,7 @@ const WorkShiftList = () => {
   const [modalData, setModalData] = useState({ shiftId: '', shiftName: '', startTime: '', endTime: '', description: '' });
   const [modalMsg, setModalMsg] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState({ show: false, shiftId: null });
+  const [sidebarOpen, setSidebarOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -134,9 +135,9 @@ const WorkShiftList = () => {
 
   return (
     <>
-      <AdminNavbar />
-      <AdminSidebar />
-      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 md:ml-64 transition-all duration-300">
+      <AdminNavbar onSidebarToggle={() => setSidebarOpen(true)} />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
           <h1 className="text-2xl font-bold text-center mb-6">Work Shift List</h1>
           {loading ? (

@@ -44,8 +44,6 @@ const Login = () => {
         });
         window.dispatchEvent(loginEvent);
 
-        alert('Đăng nhập thành công!');
-        
         // Chuyển hướng dựa trên role
         if (userRole === 'Staff') {
           navigate('/staff');

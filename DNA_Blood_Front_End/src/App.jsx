@@ -41,6 +41,8 @@ import WorkShiftList from './pages/Admin/WorkShiftList';
 import StaffFeedback from './pages/Staff/StaffFeedback';
 import WorkAssignment from './pages/Admin/WorkAssignment';
 import ServiceManager from './pages/Admin/ServiceManager';
+import StaffManagement from './pages/Admin/StaffManagement';
+import AllOrders from './pages/Admin/AllOrders';
 import CustomerLayout from './pages/Customer/CustomerLayout';
 
 const HomePage = () => (
@@ -95,6 +97,8 @@ const App = () => {
                                 <Route path="/admin/workshift-list" element={<WorkShiftList />} />
                                 <Route path="/admin/work-assignment" element={<WorkAssignment />} />
                                 <Route path="/admin/services" element={<ServiceManager />} />
+                                <Route path="/admin/staff-management" element={<StaffManagement />} />
+                                <Route path="/admin/all-orders" element={<AllOrders />} />
 
                                 {/* Other Routes */}
                                 <Route path="/oauth-success" element={<OAuthSuccess />} />
