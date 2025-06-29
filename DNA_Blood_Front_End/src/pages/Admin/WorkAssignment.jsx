@@ -268,7 +268,11 @@ const WorkAssignment = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="pt-32 pb-8 w-4/5 mx-auto min-h-screen transition-all duration-300">
         {/* Modern Monthly Calendar */}
-        <div className="w-full flex flex-col items-center justify-center mb-8">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0 }}
+          className="w-full flex flex-col items-center justify-center mb-8">
           <div className="relative w-full rounded-md shadow-none overflow-hidden bg-green-100" style={{marginTop: 0}}>
             {/* Header with light green color, rounded corners */}
             <div className="bg-green-200 p-6 flex flex-col items-center justify-center rounded-t-md border-b-0 relative">
@@ -307,10 +311,15 @@ const WorkAssignment = () => {
               </div>
             </div>
           </div>
-        </div>
+        </motion.div>
         {/* 2 staff/medical staff tables */}
         <div className="flex flex-col md:flex-row gap-8 mb-10 w-full max-w-5xl mx-auto">
-          <div className="flex-1 bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+          <motion.div 
+            initial={{ opacity: 0, x: -40}}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8}}
+            viewport={{ once: true }}
+            className="flex-1 bg-white rounded-xl shadow-lg p-6 border border-blue-100">
             <h2 className="font-semibold mb-2 text-blue-700">Medical Staffs</h2>
             <table className="w-full text-left">
               <thead>
@@ -330,8 +339,13 @@ const WorkAssignment = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-          <div className="flex-1 bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 40}}
+            whileInView={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.8}}
+            viewport={{ once: true }}
+            className="flex-1 bg-white rounded-xl shadow-lg p-6 border border-blue-100">
             <h2 className="font-semibold mb-2 text-blue-700">Staffs</h2>
             <table className="w-full text-left">
               <thead>
@@ -351,29 +365,42 @@ const WorkAssignment = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </motion.div>
         </div>
         {/* Shift assignment table by week */}
         <div className="mt-4">
           {/* Auto Assignment and Accept Assignment All buttons */}
           <div className="flex gap-4 mb-4 justify-end">
-            <button
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8}}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8}}
+              viewport={{ once: true }}
               className="px-4 py-2 bg-blue-600 text-white rounded font-bold shadow hover:bg-blue-700 transition"
               onClick={fetchSuggestedAssignments}
               disabled={loadingAutoAssign}
             >
               {loadingAutoAssign ? 'Auto-suggesting...' : 'Auto Assignment for Employee'}
-            </button>
-            <button
+            </motion.button>
+            <motion.button
+              initial={{ opacity: 0, scale: 0.8}}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8}}
+              viewport={{ once: true }}
               className="px-4 py-2 bg-green-600 text-white rounded font-bold shadow hover:bg-green-700 transition"
               onClick={handleAcceptAll}
               disabled={loadingAcceptAll}
             >
               {loadingAcceptAll ? 'Confirming all...' : 'Accept Assignment All'}
-            </button>
+            </motion.button>
           </div>
           {weeks.map((weekDates, weekIdx) => (
-            <div key={weekIdx} className="mb-10 bg-white rounded-2xl shadow-xl border border-blue-100 p-6 transition hover:shadow-2xl">
+            <motion.div 
+              initial={{ opacity: 0, y: 40}}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8}}
+              viewport={{ once: true }}
+              key={weekIdx} className="mb-10 bg-white rounded-2xl shadow-xl border border-blue-100 p-6 transition hover:shadow-2xl">
               <h3 className="font-semibold mb-4 text-blue-700 text-lg">Week {weekIdx + 1}</h3>
               <div className="overflow-x-auto">
                 <table className="min-w-full w-full border border-blue-200 text-sm">
@@ -413,7 +440,7 @@ const WorkAssignment = () => {
                   </tbody>
                 </table>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
         {/* Shift assignment popup */}

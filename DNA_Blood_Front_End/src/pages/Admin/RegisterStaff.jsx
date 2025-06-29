@@ -62,13 +62,63 @@ const RegisterStaff = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8 space-y-10">
-          <h1 className="text-2xl font-bold text-center mb-6">Create Staff Account</h1>
+          <motion.h1 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0 }}
+            className="text-2xl font-bold text-center mb-6">
+            Create Staff Account
+          </motion.h1>
           <form onSubmit={handleStaffSubmit} className="space-y-4">
-            <input name="username" value={staffForm.username} onChange={handleStaffChange} placeholder="Username" className="w-full border p-2 rounded" required />
-            <input name="password" type="password" value={staffForm.password} onChange={handleStaffChange} placeholder="Password" className="w-full border p-2 rounded" required />
-            <input name="email" value={staffForm.email} onChange={handleStaffChange} placeholder="Email" className="w-full border p-2 rounded" required />
-            <input name="phone" value={staffForm.phone} onChange={handleStaffChange} placeholder="Phone" className="w-full border p-2 rounded" required />
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Create Staff</button>
+            <motion.input 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              name="username" 
+              value={staffForm.username} 
+              onChange={handleStaffChange} 
+              placeholder="Username" 
+              className="w-full border p-2 rounded" 
+              required />
+            <motion.input 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              name="password" 
+              type="password" 
+              value={staffForm.password} 
+              onChange={handleStaffChange} 
+              placeholder="Password" 
+              className="w-full border p-2 rounded" 
+              required />
+            <motion.input 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              name="email" 
+              value={staffForm.email} 
+              onChange={handleStaffChange} 
+              placeholder="Email" 
+              className="w-full border p-2 rounded" 
+              required />
+            <motion.input 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              name="phone" 
+              value={staffForm.phone} 
+              onChange={handleStaffChange} 
+              placeholder="Phone" 
+              className="w-full border p-2 rounded" 
+              required />
+            <motion.button 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              type="submit" 
+              className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+              Create Staff
+            </motion.button>
           </form>
           {staffMsg && <div className="mt-2 text-center text-red-600">{staffMsg}</div>}
         </div>

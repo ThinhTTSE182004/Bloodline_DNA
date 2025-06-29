@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AdminNavbar from '../../components/AdminNavbar';
 import AdminSidebar from '../../components/AdminSidebar';
 import { FaSearch, FaFilter, FaCheck, FaClock, FaMoneyBillWave, FaCreditCard, FaHome, FaHospital } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const AllOrders = () => {
   const [orders, setOrders] = useState([]);
@@ -182,10 +183,14 @@ const AllOrders = () => {
       <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">All Orders</h1>
-            <p className="text-gray-600">Manage and track all customer orders</p>
-          </div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className=" mb-8">
+            <h1 className="flex justify-center text-3xl font-bold text-gray-900 mb-2">All Orders</h1>
+            <p className="flex justify-center text-gray-600">Manage and track all customer orders</p>
+          </motion.div>
 
           {error && (
             <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
@@ -195,7 +200,11 @@ const AllOrders = () => {
 
           {/* Statistics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-blue-100">
                   <FaCheck className="h-6 w-6 text-blue-600" />
@@ -205,9 +214,13 @@ const AllOrders = () => {
                   <p className="text-2xl font-bold text-gray-900">{totalOrders}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-yellow-500">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-yellow-100">
                   <FaClock className="h-6 w-6 text-yellow-600" />
@@ -217,9 +230,13 @@ const AllOrders = () => {
                   <p className="text-2xl font-bold text-gray-900">{pendingOrders}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-green-100">
                   <FaMoneyBillWave className="h-6 w-6 text-green-600" />
@@ -229,9 +246,13 @@ const AllOrders = () => {
                   <p className="text-2xl font-bold text-gray-900">{paidOrders}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-purple-100">
                   <FaCreditCard className="h-6 w-6 text-purple-600" />
@@ -241,11 +262,15 @@ const AllOrders = () => {
                   <p className="text-2xl font-bold text-gray-900">${totalRevenue.toLocaleString()}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* Search and Filter */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="bg-white rounded-xl shadow-lg p-6 mb-8">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
@@ -283,10 +308,14 @@ const AllOrders = () => {
                 </select>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Orders Table */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0.5 }}
+            className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">Order List</h3>
               <p className="text-sm text-gray-600">Showing {filteredOrders.length} of {totalOrders} orders</p>
@@ -385,7 +414,7 @@ const AllOrders = () => {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </>

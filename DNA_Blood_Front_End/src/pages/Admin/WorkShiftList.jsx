@@ -139,13 +139,23 @@ const WorkShiftList = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-8">
-          <h1 className="text-2xl font-bold text-center mb-6">Work Shift List</h1>
+          <motion.h1 
+            initial={{ opacity: 0, scale: 0.8}}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0}}
+            className="text-2xl font-bold text-center mb-6">
+            Work Shift List
+          </motion.h1>
           {loading ? (
             <div className="text-center py-8">Loading...</div>
           ) : error ? (
             <div className="text-center text-red-600 py-8">{error}</div>
           ) : (
-            <div className="overflow-x-auto">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8}}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.1}}
+              className="overflow-x-auto">
               <table className="min-w-full border border-gray-200">
                 <thead>
                   <tr className="bg-gray-100">
@@ -188,7 +198,7 @@ const WorkShiftList = () => {
                   )}
                 </tbody>
               </table>
-            </div>
+            </motion.div>
           )}
         </div>
       </div>

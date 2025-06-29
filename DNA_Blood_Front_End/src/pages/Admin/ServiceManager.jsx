@@ -109,16 +109,24 @@ const ServiceManager = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-7xl w-full mx-auto bg-white shadow-lg rounded-lg p-8">
-          <div className="flex justify-between items-center mb-6">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0 }}
+            className="flex justify-between items-center mb-6">
             <h1 className="text-2xl font-bold text-green-700">Service Management</h1>
             <button className="px-4 py-2 bg-blue-600 text-white rounded font-bold shadow hover:bg-blue-700 transition" onClick={() => setShowCreate(true)}>Create</button>
-          </div>
+          </motion.div>
           {error && <div className="text-red-600 mb-4">{error}</div>}
           {loading ? (
             <div className="text-center py-8 text-gray-500">Loading services...</div>
           ) : (
             <div className="overflow-x-auto">
-              <table className="min-w-full border border-gray-200 rounded-xl overflow-hidden">
+              <motion.table 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="min-w-full border border-gray-200 rounded-xl overflow-hidden">
                 <thead>
                   <tr className="bg-green-50">
                     <th className="px-4 py-2 border">Service Name</th>
@@ -145,7 +153,7 @@ const ServiceManager = () => {
                     <tr><td colSpan={5} className="text-center py-4 text-gray-400">No services available.</td></tr>
                   )}
                 </tbody>
-              </table>
+              </motion.table>
             </div>
           )}
         </div>
