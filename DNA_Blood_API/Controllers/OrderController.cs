@@ -9,14 +9,16 @@ namespace DNA_API1.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
+  
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IPaymentService _paymentService;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IPaymentService paymentService)
         {
             _orderService = orderService;
+            _paymentService = paymentService;
         }
 
         // Lấy user_id từ token
@@ -25,7 +27,7 @@ namespace DNA_API1.Controllers
             var claim = User.FindFirst(ClaimTypes.NameIdentifier);
             return claim != null && int.TryParse(claim.Value, out var id) ? id : null;
         }
-
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Customer")]
         [HttpPost("CreateOrder")]
         public async Task<IActionResult> CreateOrder([FromBody] CreateOrderWithPaymentDTO dto)
         {
@@ -57,6 +59,30 @@ namespace DNA_API1.Controllers
                     error = ex.ToString() // Trả về cả stack trace
                 });
             }
+        }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [HttpGet("orders-by-payment-status")]
+        public async Task<IActionResult> GetOrdersByPaymentStatus([FromQuery] string status)
+        {
+            var orders = await _orderService.GetOrdersByPaymentStatusAsync(status);
+            return Ok(orders);
+        }
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [HttpGet("all-orders")]
+        public async Task<IActionResult> GetAllOrders()
+        {
+            var orders = await _orderService.GetAllOrdersAsync();
+            return Ok(orders);
+        }
+
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
+        [HttpPut("update-payment-status")]
+        public IActionResult UpdatePaymentStatusByOrder([FromBody] UpdatePaymentStatusByOrderDTO dto)
+        {
+            var result = _paymentService.UpdatePaymentStatusByOrderId(dto.OrderId, dto.Status);
+            if (result)
+                return Ok(new { message = "Payment status updated successfully." });
+            return NotFound(new { message = "Payment not found for the given orderId." });
         }
     }
 }

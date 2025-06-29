@@ -233,7 +233,21 @@ namespace DNA_API1.Services
                     collectionMethod.MethodName == "At Home" ? deliveryTasks : null
                 );
 
-                // Đã tạo sample transfer trong repository, KHÔNG tạo lại ở đây nữa!
+                // 7. Create sample transfers after samples are saved
+                for (int i = 0; i < samples.Count; i++)
+                {
+                    var sample = samples[i];
+                    var (staffId, medicalStaffId) = sampleTransferInfos[i];
+                    var sampleTransfer = new SampleTransfer
+                    {
+                        SampleId = sample.SampleId,
+                        StaffId = staffId,
+                        MedicalStaffId = medicalStaffId,
+                        TransferDate = DateTime.Now,
+                        SampleTransferStatus = "Pending"
+                    };
+                    await _sampleTransferService.CreateSampleTransferAsync(sampleTransfer);
+                }
 
                 return orderId;
             }
@@ -257,6 +271,38 @@ namespace DNA_API1.Services
         public async Task<Order?> GetOrderByIdAndUserIdAsync(int orderId, int userId)
         {
             return await _orderRepository.GetOrderByIdAndUserIdAsync(orderId, userId);
+        }
+
+        public async Task<List<OrderHistoryDTO>> GetOrdersByPaymentStatusAsync(string paymentStatus)
+        {
+            var orders = await _orderRepository.GetOrdersByPaymentStatusAsync(paymentStatus);
+            return orders.Select(o => new OrderHistoryDTO
+            {
+                OrderId = o.OrderId,
+                ServiceName = o.OrderDetails.FirstOrDefault()?.ServicePackage?.ServiceName ?? "Unknown",
+                OrderDate = o.CreateAt ?? DateTime.Now,
+                OrderStatus = o.OrderStatus,
+                TotalAmount = o.Payment?.Total ?? 0,
+                PaymentMethod = o.Payment?.PaymentMethod ?? "Unknown",
+                PaymentStatus = o.Payment?.PaymentStatus ?? "Pending",
+                SampleCollectionMethod = o.CollectionMethod?.MethodName ?? "Unknown"
+            }).ToList();
+        }
+
+        public async Task<List<OrderHistoryDTO>> GetAllOrdersAsync()
+        {
+            var orders = await _orderRepository.GetAllOrdersAsync();
+            return orders.Select(o => new OrderHistoryDTO
+            {
+                OrderId = o.OrderId,
+                ServiceName = o.OrderDetails.FirstOrDefault()?.ServicePackage?.ServiceName ?? "Unknown",
+                OrderDate = o.CreateAt ?? DateTime.Now,
+                OrderStatus = o.OrderStatus,
+                TotalAmount = o.Payment?.Total ?? 0,
+                PaymentMethod = o.Payment?.PaymentMethod ?? "Unknown",
+                PaymentStatus = o.Payment?.PaymentStatus ?? "Pending",
+                SampleCollectionMethod = o.CollectionMethod?.MethodName ?? "Unknown"
+            }).ToList();
         }
     }
 }

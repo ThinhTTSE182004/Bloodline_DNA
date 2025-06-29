@@ -39,6 +39,8 @@ import RegisterMedicalStaff from './pages/Admin/RegisterMedicalStaff';
 import CreateWorkShift from './pages/Admin/CreateWorkShift';
 import WorkShiftList from './pages/Admin/WorkShiftList';
 import StaffFeedback from './pages/Staff/StaffFeedback';
+import WorkAssignment from './pages/Admin/WorkAssignment';
+import ServiceManager from './pages/Admin/ServiceManager';
 
 const HomePage = () => (
     <>
@@ -90,6 +92,8 @@ const App = () => {
                                 <Route path="/admin/register-medical-staff" element={<RegisterMedicalStaff />} />
                                 <Route path="/admin/create-workshift" element={<CreateWorkShift />} />
                                 <Route path="/admin/workshift-list" element={<WorkShiftList />} />
+                                <Route path="/admin/work-assignment" element={<WorkAssignment />} />
+                                <Route path="/admin/services" element={<ServiceManager />} />
 
                                 {/* Other Routes */}
                                 <Route path="/oauth-success" element={<OAuthSuccess />} />

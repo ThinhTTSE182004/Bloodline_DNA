@@ -13,7 +13,7 @@ namespace DNA_Blood_API.Services
         Task<ShiftAssignment> UpdateAsync(int assignmentId, ShiftAssignmentCreateOrUpdateDTO dto);
         Task DeleteAsync(int id);
         Task<int> CountAssignedByRoleAsync(int shiftId, System.DateOnly date, int roleId);
-        Task<List<ShiftAssignmentSuggestionDTO>> SuggestAssignments(List<ShiftSimpleDTO> shifts, List<UserSimpleDTO> users, List<System.DateOnly> dates, int maxShiftPerMonth = 20);
+        Task<List<ShiftAssignmentSuggestionDTO>> SuggestAssignments(List<ShiftSimpleDTO> shifts, List<UserSimpleDTO> users, List<System.DateOnly> dates);
     }
 
     public class ShiftAssignmentCreateOrUpdateDTO

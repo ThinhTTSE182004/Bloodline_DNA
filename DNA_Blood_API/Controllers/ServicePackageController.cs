@@ -13,13 +13,14 @@ namespace DNA_API1.Controllers
     public class ServicePackageController : ControllerBase
     {
         private readonly IServiceService _serviceService;
+
         public ServicePackageController(IServiceService serviceService)
         {
             _serviceService = serviceService;
         }
 
         // Lấy tất cả dịch vụ kèm giá
-        [HttpGet]
+        [HttpGet("GetAllServicePackage")]
         public async Task<IActionResult> GetAll()
         {
             var result = await _serviceService.GetAllServicesWithPriceAsync();
@@ -27,7 +28,7 @@ namespace DNA_API1.Controllers
         }
 
         // Thêm mới dịch vụ
-        [HttpPost]
+        [HttpPost("CreateServicePackage")]
         public async Task<IActionResult> Add([FromBody] CreateServiceDTO dto)
         {
             var result = await _serviceService.AddServiceAsync(dto);
@@ -35,7 +36,7 @@ namespace DNA_API1.Controllers
         }
 
         // Chỉnh sửa thông tin dịch vụ
-        [HttpPut("{id}")]
+        [HttpPut("UpdateServicePackage")]
         public async Task<IActionResult> Update(int id, [FromBody] UpdateServiceDTO dto)
         {
             var result = await _serviceService.UpdateServiceAsync(id, dto);
@@ -43,7 +44,7 @@ namespace DNA_API1.Controllers
         }
 
         // Xóa dịch vụ
-        [HttpDelete("{id}")]
+        [HttpDelete("DeleteServicePackage")]
         public async Task<IActionResult> Delete(int id)
         {
             await _serviceService.DeleteServiceAsync(id);
@@ -51,11 +52,14 @@ namespace DNA_API1.Controllers
         }
 
         // Cập nhật giá dịch vụ
-        [HttpPut("UpdatePrice/{servicePackageId}")]
+        [HttpPut("UpdatePrice")]
         public async Task<IActionResult> UpdatePrice(int servicePackageId, [FromBody] UpdateServicePriceDTO dto)
         {
             var result = await _serviceService.UpdateServicePriceAsync(servicePackageId, dto.Price);
             return Ok(result);
         }
+
+
+       
     }
 } 
