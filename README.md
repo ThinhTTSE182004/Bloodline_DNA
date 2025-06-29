@@ -1,59 +1,177 @@
-Vui Lòng Đọc Hướng Dẫn Sử Dụng Trước Khi Chạy Code
+Vui Lòng Đọc Hướng Dẫn Trước Khi Sử Dụng Repo này
+
+Video Hướng Dẫn Setup Sử Dụng Project SWP: 
+=>   https://drive.google.com/file/d/1G_SkxpiZNnr7HCBDZPsjY_3uH2WL7Y_L/view?usp=sharing
 
 
+Bộ Dữ liệu mẫu cho Staff
+[
 
+  {
+    "username": "Nguyễn Văn An",
+    "password": "12345678",
+    "email": "nguyenvanan@gmail.com",
+    "phone": "0912345678"
+  }
+  
+  {
+    "username": "Trần Thị Thùy",
+    "password": "password123",
+    "email": "tranthithuy@yahoo.com",
+    "phone": "0908765432"
+  }
+  
+  {
+    "username": "Lê Minh Thư",
+    "password": "thu12345",
+    "email": "leminhthu@hotmail.com",
+    "phone": "0987654321"
+  }
+  
+  {
+    "username": "Phạm Thanh Sơn",
+    "password": "son12345",
+    "email": "phamthanhson@outlook.com",
+    "phone": "0923456789"
+  }
+  
+  {
+    "username": "Hoàng Thị Ma",
+    "password": "ma123456",
+    "email": "hoangthima@gmail.com",
+    "phone": "0965432109"
+  }
+  
+  {
+    "username": "Đoàn Văn Khánh",
+    "password": "khanhpassword",
+    "email": "doanvankhanh@mail.com",
+    "phone": "0901234567"
+  }
+  
+  {
+    "username": "Ngô Thị Thảo",
+    "password": "password2023",
+    "email": "ngothithao@outlook.com",
+    "phone": "0912349876"
+  }
+  
+  {
+    "username": "Vương Thanh Hà",
+    "password": "thanhha123",
+    "email": "vuongthanhha@yahoo.com",
+    "phone": "0923456789"
+  }
+  
+  {
+    "username": "Trần Như Quyền",
+    "password": "quyenpassword",
+    "email": "trannhuquyen@gmail.com",
+    "phone": "0945678901"
+  }
+  
+  {
+    "username": "Phan Thị Thùy",
+    "password": "thuy56789",
+    "email": "phanthithuy@hotmail.com",
+    "phone": "0981234567"
+  }
+  
+]
 
-
-
-
-
-
-
-
-
-🔐 Sample Accounts for Login (Tài khoản mẫu để đăng nhập)
-Sau khi clone project và chạy database, bạn có thể đăng nhập ngay bằng các tài khoản mẫu dưới đây. Tất cả đều dùng mật khẩu mặc định 123456, đã được mã hóa theo chuẩn Microsoft.AspNetCore.Identity.PasswordHasher.
-
-Role	Email	Password	
-
-Admin	thinhttse182004@fpt.edu.vn	123456	Quản trị hệ thống
-
-Staff	thinhttse182004@gmail.com	123456	Nhân viên
-
-Customer	thaithinh9595@gmail.com	123456	Khách hàng
-
-✅ Mật khẩu đã được mã hóa an toàn, không phải plaintext.
-
-1.
-DB thêm 1 trường status vào trong order_detail.(Đã sửa lại trong câu query luôn), xóa db chạy lại giúp 
-T xóa các file tạo staff và medical Staff trong db vì đ có vào dc
-T đã có api register cho staff và medical lấy cái đó mà tạo lại
-Nhớ là 5 staff và 5 medicall (staff tạo trước 5 thằng rồi tới medical)
-Medical nhớ thêm cái chuyên viên.
-
-2. API staff
-
-2.1 Cho phép lấy toàn bộ đơn hàng và thay đổi trạng thái payment_status thành thanh toán thành công
-
-2.2 Cho phép lấy  danh sách mẫu (Sample) xét nghiệm cần ghi nhận theo nhân viên phụ trách và chỉnh sửa nó
-
-2.3 Cho phép lấy sample_transfer được phụ trách bởi staffId và Update sample_transfer_status thành đang được đưa cho medical
-
-
-3. API medical 
-
-3.1 Cho phép lấy  danh sách mẫu (Sample) xét nghiệm cần ghi nhận theo nhân viên phụ trách và chỉnh sửa "Đã hoàn thành"
-Tất cả các mẫu thuộc order khi đã ở trạng thái đã hoàn thành thì mới đc ghi vào order_detail
-
-3.2 Cập nhật sample_transfer khi mà nhận dc mẫu từ staff
-
-3.3 cái api để kiểm tra xem các sample thuộc order_detail đã ở trạng thái hoàn thành hết chưa
-
-3.4 Nếu đã hoàn thành r thì mới cập nhật vào bảng result.
-
-4. Sửa lại api GetOrderDetail trong userProfileController
-vì t thấy 1 order sẽ có nhiểu order_detail mà mình chỉ select first thôi nên t chỉnh thành list 
-Nên là FE sửa lại t cái này để hiện ra 1 list luôn. 
-
+Bộ Dữ Liệu Cho Medical Staff
+[
+  
+  {
+    "username": "Nguyễn Thị Lan",
+    "password": "12345678",
+    "email": "nguyenthilan@gmail.com",
+    "phone": "0912345678",
+    "yoe": 5,
+    "specialization": "Software Development"
+  }
+  
+  {
+    "username": "Trần Minh Tú",
+    "password": "password123",
+    "email": "tranminhtu@yahoo.com",
+    "phone": "0908765432",
+    "yoe": 3,
+    "specialization": "Data Analysis"
+  }
+  
+  {
+    "username": "Lê Thị Hương",
+    "password": "thu12345",
+    "email": "lethihuong@hotmail.com",
+    "phone": "0987654321",
+    "yoe": 2,
+    "specialization": "UI/UX Design"
+  }
+  
+  {
+    "username": "Phạm Quang Huy",
+    "password": "son12345",
+    "email": "phamquanghuy@outlook.com",
+    "phone": "0923456789",
+    "yoe": 8,
+    "specialization": "Machine Learning"
+  }
+  
+  {
+    "username": "Hoàng Thanh Mai",
+    "password": "ma123456",
+    "email": "hoangthanhmai@gmail.com",
+    "phone": "0965432109",
+    "yoe": 6,
+    "specialization": "Cybersecurity"
+  }
+  
+  {
+    "username": "Đoàn Bích Liên",
+    "password": "khanhpassword",
+    "email": "doanbichlien@mail.com",
+    "phone": "0901234567",
+    "yoe": 4,
+    "specialization": "Cloud Computing"
+  }
+  
+  {
+    "username": "Ngô Thiên Kim",
+    "password": "password2023",
+    "email": "ngothienkim@outlook.com",
+    "phone": "0912349876",
+    "yoe": 7,
+    "specialization": "Software Testing"
+  }
+  
+  {
+    "username": "Vương Hồng Hà",
+    "password": "thanhha123",
+    "email": "vuonghongha@yahoo.com",
+    "phone": "0923456789",
+    "yoe": 9,
+    "specialization": "Project Management"
+  }
+  
+  {
+    "username": "Trần Quang Hạ",
+    "password": "quyenpassword",
+    "email": "tranquangha@gmail.com",
+    "phone": "0945678901",
+    "yoe": 1,
+    "specialization": "Frontend Development"
+  }
+  
+  {
+    "username": "Phan Thị Yến",
+    "password": "thuy56789",
+    "email": "phanthiyen@hotmail.com",
+    "phone": "0981234567",
+    "yoe": 3,
+    "specialization": "Mobile App Development"
+  }
+  
+]
 
 

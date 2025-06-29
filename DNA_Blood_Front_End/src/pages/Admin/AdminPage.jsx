@@ -19,6 +19,7 @@ const AdminPage = () => {
   const [satisfactionData, setSatisfactionData] = useState([]);
   const [mostUsedServiceData, setMostUsedServiceData] = useState([]);
   const [statsCache, setStatsCache] = useState({});
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -151,9 +152,9 @@ const AdminPage = () => {
 
   return (
     <>
-      <AdminNavbar />
-      <AdminSidebar />
-      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 md:ml-64 transition-all duration-300">
+      <AdminNavbar onSidebarToggle={() => setSidebarOpen(true)} />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
           <motion.h1
             initial={{ opacity: 0, scale: 0.8}}
@@ -162,7 +163,7 @@ const AdminPage = () => {
             className="text-3xl font-bold text-green-700 mb-8 text-center">Admin Dashboard
           </motion.h1>
           {loading ? (
-            <div className="text-center py-20 text-lg text-gray-500">Đang tải dữ liệu...</div>
+            <div className="text-center py-20 text-lg text-gray-500">Loading data...</div>
           ) : (
             <>
               {/* Summary Cards */}
@@ -206,7 +207,7 @@ const AdminPage = () => {
                   animate={{ opacity: 1, x: 1 }}
                   transition={{ duration: 0.8, delay: 1 }}
                   className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-pink-400">
-                  <span className="text-2xl font-bold text-pink-700">{totalServiceValue.toLocaleString()} đ</span>
+                  <span className="text-2xl font-bold text-pink-700">{totalServiceValue.toLocaleString()} VND</span>
                   <span className="text-gray-600 mt-2">Total Service Value</span>
                 </motion.div>
                 <motion.div 
@@ -226,7 +227,7 @@ const AdminPage = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 1.4}}
                   className="bg-white rounded-xl shadow p-6 flex flex-col items-center w-full max-w-xs">
-                  <span className="font-bold text-lg mb-2 text-green-700">Tỷ lệ Medical Staff / Staff</span>
+                  <span className="font-bold text-lg mb-2 text-green-700">Medical Staff / Staff Ratio</span>
                   <ResponsiveContainer width={180} height={180}>
                     <PieChart>
                       <Pie
@@ -252,33 +253,33 @@ const AdminPage = () => {
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.8, delay: 1.4}}
                   className="bg-white rounded-xl shadow p-6 flex-1">
-                  <span className="font-bold text-lg mb-2 text-purple-700 block">Dịch vụ theo loại</span>
+                  <span className="font-bold text-lg mb-2 text-purple-700 block">Services by Category</span>
                   <ul className="mt-2 space-y-1">
                     {Object.entries(serviceByCategory).map(([cat, count]) => (
                       <li key={cat} className="flex justify-between border-b py-1">
                         <span className="font-semibold text-gray-700">{cat}</span>
-                        <span className="text-gray-600">{count} dịch vụ</span>
+                        <span className="text-gray-600">{count} services</span>
                       </li>
                     ))}
                   </ul>
                 </motion.div>
               </div>
 
-              {/* Bảng dịch vụ */}
+              {/* Services Table */}
               <motion.div 
                 initial={{ opacity: 0, y: -40}}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 1.6}}
                 className="bg-white rounded-xl shadow p-6 mb-10">
-                <h2 className="text-xl font-bold text-purple-700 mb-4">Danh sách dịch vụ</h2>
+                <h2 className="text-xl font-bold text-purple-700 mb-4">Service List</h2>
                 <div className="overflow-x-auto">
                   <table className="min-w-full border border-gray-200">
                     <thead>
                       <tr className="bg-gray-100">
-                        <th className="px-4 py-2 border">Tên dịch vụ</th>
-                        <th className="px-4 py-2 border">Loại</th>
-                        <th className="px-4 py-2 border">Mô tả</th>
-                        <th className="px-4 py-2 border">Giá (đ)</th>
+                        <th className="px-4 py-2 border">Service Name</th>
+                        <th className="px-4 py-2 border">Category</th>
+                        <th className="px-4 py-2 border">Description</th>
+                        <th className="px-4 py-2 border">Price (VND)</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -291,28 +292,28 @@ const AdminPage = () => {
                         </tr>
                       ))}
                       {services.length === 0 && (
-                        <tr><td colSpan={4} className="text-center py-4 text-gray-400">Không có dịch vụ nào.</td></tr>
+                        <tr><td colSpan={4} className="text-center py-4 text-gray-400">No services available.</td></tr>
                       )}
                     </tbody>
                   </table>
                 </div>
               </motion.div>
 
-              {/* Bảng ca làm việc */}
+              {/* Work Shifts Table */}
               <motion.div 
                 initial={{ opacity: 0, y: -40}}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8}}
                 viewport={{ once: true }}
                 className="bg-white rounded-xl shadow p-6 mb-10">
-                <h2 className="text-xl font-bold text-yellow-700 mb-4">Danh sách ca làm việc</h2>
+                <h2 className="text-xl font-bold text-yellow-700 mb-4">Work Shifts List</h2>
                 <div className="overflow-x-auto">
                   <table className="min-w-full border border-gray-200">
                     <thead>
                       <tr className="bg-gray-100">
-                        <th className="px-4 py-2 border">Tên ca</th>
-                        <th className="px-4 py-2 border">Thời gian</th>
-                        <th className="px-4 py-2 border">Mô tả</th>
+                        <th className="px-4 py-2 border">Shift Name</th>
+                        <th className="px-4 py-2 border">Time</th>
+                        <th className="px-4 py-2 border">Description</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -324,14 +325,14 @@ const AdminPage = () => {
                         </tr>
                       ))}
                       {workShifts.length === 0 && (
-                        <tr><td colSpan={3} className="text-center py-4 text-gray-400">Không có ca làm việc nào.</td></tr>
+                        <tr><td colSpan={3} className="text-center py-4 text-gray-400">No work shifts available.</td></tr>
                       )}
                     </tbody>
                   </table>
                 </div>
               </motion.div>
 
-              {/* Bảng nhân viên */}
+              {/* Staff Tables */}
               <motion.div 
                 initial={{ opacity: 0, y: -40}}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -345,8 +346,8 @@ const AdminPage = () => {
                       <thead>
                         <tr className="bg-gray-100">
                           <th className="px-4 py-2 border">ID</th>
-                          <th className="px-4 py-2 border">Tên</th>
-                          <th className="px-4 py-2 border">Vai trò</th>
+                          <th className="px-4 py-2 border">Name</th>
+                          <th className="px-4 py-2 border">Role</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -358,7 +359,7 @@ const AdminPage = () => {
                           </tr>
                         ))}
                         {medicalStaffs.length === 0 && (
-                          <tr><td colSpan={3} className="text-center py-4 text-gray-400">Không có medical staff nào.</td></tr>
+                          <tr><td colSpan={3} className="text-center py-4 text-gray-400">No medical staff available.</td></tr>
                         )}
                       </tbody>
                     </table>
@@ -371,8 +372,8 @@ const AdminPage = () => {
                       <thead>
                         <tr className="bg-gray-100">
                           <th className="px-4 py-2 border">ID</th>
-                          <th className="px-4 py-2 border">Tên</th>
-                          <th className="px-4 py-2 border">Vai trò</th>
+                          <th className="px-4 py-2 border">Name</th>
+                          <th className="px-4 py-2 border">Role</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -384,7 +385,7 @@ const AdminPage = () => {
                           </tr>
                         ))}
                         {staffs.length === 0 && (
-                          <tr><td colSpan={3} className="text-center py-4 text-gray-400">Không có staff nào.</td></tr>
+                          <tr><td colSpan={3} className="text-center py-4 text-gray-400">No staff available.</td></tr>
                         )}
                       </tbody>
                     </table>
@@ -392,7 +393,7 @@ const AdminPage = () => {
                 </div>
               </motion.div>
 
-              {/* Bộ lọc tháng/năm và LineChart tăng trưởng */}
+              {/* Month/Year Filter and Growth LineChart */}
               <motion.div 
                 initial={{ opacity: 0, y: -40}}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -400,10 +401,10 @@ const AdminPage = () => {
                 viewport={{ once: true }}
                 className="bg-white rounded-xl shadow p-6 mb-10">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
-                  <h2 className="text-xl font-bold text-blue-700">Thống kê tăng trưởng theo ngày</h2>
+                  <h2 className="text-xl font-bold text-blue-700">Daily Growth Statistics</h2>
                   <div className="flex gap-2">
                     <select value={selectedMonth} onChange={e => setSelectedMonth(Number(e.target.value))} className="border rounded px-2 py-1">
-                      {Array.from({ length: 12 }, (_, i) => <option key={i} value={i}>{`Tháng ${i + 1}`}</option>)}
+                      {Array.from({ length: 12 }, (_, i) => <option key={i} value={i}>{`Month ${i + 1}`}</option>)}
                     </select>
                     <select value={selectedYear} onChange={e => setSelectedYear(Number(e.target.value))} className="border rounded px-2 py-1">
                       {Array.from({ length: 5 }, (_, i) => today.getFullYear() - 2 + i).map(y => <option key={y} value={y}>{y}</option>)}
@@ -411,51 +412,51 @@ const AdminPage = () => {
                   </div>
                 </div>
                 {loadingStats ? (
-                  <div className="text-center py-8 text-gray-500">Đang tải thống kê...</div>
+                  <div className="text-center py-8 text-gray-500">Loading statistics...</div>
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {/* Tổng doanh thu */}
+                    {/* Total Revenue */}
                     <div>
-                      <h3 className="font-semibold text-red-600 mb-2">Tổng doanh thu</h3>
+                      <h3 className="font-semibold text-red-600 mb-2">Total Revenue</h3>
                       <ResponsiveContainer width="100%" height={180}>
                         <LineChart data={revenueData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="day" tickFormatter={d => `Ngày ${d}`} />
+                          <XAxis dataKey="day" tickFormatter={d => `Day ${d}`} />
                           <YAxis allowDecimals={false} />
                           <Tooltip />
                           <Line type="monotone" dataKey="value" stroke="#ef4444" strokeWidth={2} dot={{ r: 2 }} />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
-                    {/* Tổng đơn hàng */}
+                    {/* Total Orders */}
                     <div>
-                      <h3 className="font-semibold text-red-600 mb-2">Tổng đơn hàng</h3>
+                      <h3 className="font-semibold text-red-600 mb-2">Total Orders</h3>
                       <ResponsiveContainer width="100%" height={180}>
                         <LineChart data={ordersData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="day" tickFormatter={d => `Ngày ${d}`} />
+                          <XAxis dataKey="day" tickFormatter={d => `Day ${d}`} />
                           <YAxis allowDecimals={false} />
                           <Tooltip />
                           <Line type="monotone" dataKey="value" stroke="#ef4444" strokeWidth={2} dot={{ r: 2 }} />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
-                    {/* Mức độ hài lòng trung bình */}
+                    {/* Average Satisfaction */}
                     <div>
-                      <h3 className="font-semibold text-red-600 mb-2">Mức độ hài lòng trung bình</h3>
+                      <h3 className="font-semibold text-red-600 mb-2">Average Satisfaction</h3>
                       <ResponsiveContainer width="100%" height={180}>
                         <LineChart data={satisfactionData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" />
-                          <XAxis dataKey="day" tickFormatter={d => `Ngày ${d}`} />
+                          <XAxis dataKey="day" tickFormatter={d => `Day ${d}`} />
                           <YAxis allowDecimals={true} />
                           <Tooltip />
                           <Line type="monotone" dataKey="value" stroke="#ef4444" strokeWidth={2} dot={{ r: 2 }} />
                         </LineChart>
                       </ResponsiveContainer>
                     </div>
-                    {/* Dịch vụ được dùng nhiều nhất - Bar chart */}
+                    {/* Most Used Service - Bar chart */}
                     <div>
-                      <h3 className="font-semibold text-red-600 mb-2">Dịch vụ được dùng nhiều nhất trong tháng</h3>
+                      <h3 className="font-semibold text-red-600 mb-2">Most Used Service This Month</h3>
                       <ResponsiveContainer width="100%" height={180}>
                         <BarChart data={serviceFrequencyArr} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
                           <CartesianGrid strokeDasharray="3 3" />

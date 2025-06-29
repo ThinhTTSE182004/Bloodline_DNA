@@ -8,6 +8,7 @@ const RegisterMedicalStaff = () => {
   const [medicalForm, setMedicalForm] = useState({ username: '', password: '', email: '', phone: '', yoe: '', specialization: '' });
   const [medicalMsg, setMedicalMsg] = useState('');
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   React.useEffect(() => {
     const token = localStorage.getItem('token');
@@ -44,24 +45,24 @@ const RegisterMedicalStaff = () => {
         body: JSON.stringify({ ...medicalForm, yoe: Number(medicalForm.yoe) })
       });
       if (res.ok) {
-        setMedicalMsg('Tạo tài khoản medical staff thành công!');
+        setMedicalMsg('Medical staff account created successfully!');
         setMedicalForm({ username: '', password: '', email: '', phone: '', yoe: '', specialization: '' });
       } else {
         const err = await res.text();
-        setMedicalMsg('Lỗi: ' + err);
+        setMedicalMsg('Error: ' + err);
       }
     } catch (err) {
-      setMedicalMsg('Lỗi: ' + err.message);
+      setMedicalMsg('Error: ' + err.message);
     }
   };
 
   return (
     <>
-      <AdminNavbar />
-      <AdminSidebar />
-      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 md:ml-64 transition-all duration-300">
+      <AdminNavbar onSidebarToggle={() => setSidebarOpen(true)} />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8 space-y-10">
-          <h1 className="text-2xl font-bold text-center mb-6">Tạo tài khoản Medical Staff</h1>
+          <h1 className="text-2xl font-bold text-center mb-6">Create Medical Staff Account</h1>
           <form onSubmit={handleMedicalSubmit} className="space-y-4">
             <input name="username" value={medicalForm.username} onChange={handleMedicalChange} placeholder="Username" className="w-full border p-2 rounded" required />
             <input name="password" type="password" value={medicalForm.password} onChange={handleMedicalChange} placeholder="Password" className="w-full border p-2 rounded" required />
@@ -69,7 +70,7 @@ const RegisterMedicalStaff = () => {
             <input name="phone" value={medicalForm.phone} onChange={handleMedicalChange} placeholder="Phone" className="w-full border p-2 rounded" required />
             <input name="yoe" type="number" value={medicalForm.yoe} onChange={handleMedicalChange} placeholder="Years of Experience" className="w-full border p-2 rounded" required />
             <input name="specialization" value={medicalForm.specialization} onChange={handleMedicalChange} placeholder="Specialization" className="w-full border p-2 rounded" required />
-            <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Tạo Medical Staff</button>
+            <button type="submit" className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Create Medical Staff</button>
           </form>
           {medicalMsg && <div className="mt-2 text-center text-red-600">{medicalMsg}</div>}
         </div>
