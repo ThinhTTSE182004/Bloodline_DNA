@@ -35,6 +35,7 @@ const CreateWorkShift = () => {
   const [description, setDescription] = useState(shiftOptions[0].description);
   const [msg, setMsg] = useState('');
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   React.useEffect(() => {
     const token = localStorage.getItem('token');
@@ -127,9 +128,9 @@ const CreateWorkShift = () => {
 
   return (
     <>
-      <AdminNavbar />
-      <AdminSidebar />
-      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 md:ml-64 transition-all duration-300">
+      <AdminNavbar onSidebarToggle={() => setSidebarOpen(true)} />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8 space-y-10">
           <h1 className="text-2xl font-bold text-center mb-6">Create Work Shift</h1>
           <form onSubmit={handleSubmit} className="space-y-4">
