@@ -172,7 +172,7 @@ const AdminPage = () => {
                 className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-10">
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 1 }}
+                  animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
                   className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-green-400">
                   <span className="text-2xl font-bold text-green-700">{totalMedicalStaff}</span>
@@ -180,40 +180,40 @@ const AdminPage = () => {
                 </motion.div>
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 1 }}
-                  transition={{ duration: 0.8, delay: 0.4 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
                   className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-blue-400">
                   <span className="text-2xl font-bold text-blue-700">{totalStaff}</span>
                   <span className="text-gray-600 mt-2">Staff</span>
                 </motion.div>
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 1 }}
-                  transition={{ duration: 0.8, delay: 0.6 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
                   className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-yellow-400">
                   <span className="text-2xl font-bold text-yellow-600">{totalWorkShifts}</span>
                   <span className="text-gray-600 mt-2">Work Shifts</span>
                 </motion.div>
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 1 }}
-                  transition={{ duration: 0.8, delay: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
                   className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-purple-400">
                   <span className="text-2xl font-bold text-purple-700">{totalServices}</span>
                   <span className="text-gray-600 mt-2">Services</span>
                 </motion.div>
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 1 }}
-                  transition={{ duration: 0.8, delay: 1 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
                   className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-pink-400">
                   <span className="text-2xl font-bold text-pink-700">{totalServiceValue.toLocaleString()} VND</span>
                   <span className="text-gray-600 mt-2">Total Service Value</span>
                 </motion.div>
                 <motion.div 
                   initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, x: 1 }}
-                  transition={{ duration: 0.8, delay: 1.2 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}
                   className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-gray-400">
                   <span className="text-2xl font-bold text-gray-700">{Object.keys(serviceByCategory).length}</span>
                   <span className="text-gray-600 mt-2">Service Categories</span>
@@ -225,7 +225,7 @@ const AdminPage = () => {
                 <motion.div 
                   initial={{ opacity: 0, x: -40}}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 1.4}}
+                  transition={{ duration: 0.8, delay: 0.9}}
                   className="bg-white rounded-xl shadow p-6 flex flex-col items-center w-full max-w-xs">
                   <span className="font-bold text-lg mb-2 text-green-700">Medical Staff / Staff Ratio</span>
                   <ResponsiveContainer width={180} height={180}>
@@ -251,7 +251,7 @@ const AdminPage = () => {
                 <motion.div 
                   initial={{ opacity: 0, x: 40}}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.8, delay: 1.4}}
+                  transition={{ duration: 0.8, delay: 1.1}}
                   className="bg-white rounded-xl shadow p-6 flex-1">
                   <span className="font-bold text-lg mb-2 text-purple-700 block">Services by Category</span>
                   <ul className="mt-2 space-y-1">
@@ -267,9 +267,9 @@ const AdminPage = () => {
 
               {/* Services Table */}
               <motion.div 
-                initial={{ opacity: 0, y: -40}}
+                initial={{ opacity: 0, y: 40}}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 1.6}}
+                transition={{ duration: 0.8, delay: 1.3}}
                 className="bg-white rounded-xl shadow p-6 mb-10">
                 <h2 className="text-xl font-bold text-purple-700 mb-4">Service List</h2>
                 <div className="overflow-x-auto">
@@ -301,7 +301,7 @@ const AdminPage = () => {
 
               {/* Work Shifts Table */}
               <motion.div 
-                initial={{ opacity: 0, y: -40}}
+                initial={{ opacity: 0, y: 40}}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8}}
                 viewport={{ once: true }}
@@ -334,7 +334,7 @@ const AdminPage = () => {
 
               {/* Staff Tables */}
               <motion.div 
-                initial={{ opacity: 0, y: -40}}
+                initial={{ opacity: 0, y: 40}}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8}}
                 viewport={{ once: true }}
@@ -395,7 +395,7 @@ const AdminPage = () => {
 
               {/* Month/Year Filter and Growth LineChart */}
               <motion.div 
-                initial={{ opacity: 0, y: -40}}
+                initial={{ opacity: 0, y: 40}}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8}}
                 viewport={{ once: true }}

@@ -133,9 +133,17 @@ const CreateWorkShift = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8 space-y-10">
-          <h1 className="text-2xl font-bold text-center mb-6">Create Work Shift</h1>
+          <motion.h1 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0 }}
+            className="text-2xl font-bold text-center mb-6">Create Work Shift
+          </motion.h1>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.1 }}>
               <label className="block mb-1 font-medium">Shift Name</label>
               <select name="shiftName" value={shiftName} onChange={handleShiftChange} className="w-full border p-2 rounded" required>
                 {shiftOptions.map(opt => (
@@ -153,8 +161,11 @@ const CreateWorkShift = () => {
                   required
                 />
               )}
-            </div>
-            <div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}>
               <label className="block mb-1 font-medium">Start Time</label>
               <input
                 name="startTime"
@@ -164,8 +175,11 @@ const CreateWorkShift = () => {
                 className="w-full border p-2 rounded"
                 required
               />
-            </div>
-            <div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.5 }}>
               <label className="block mb-1 font-medium">End Time</label>
               <input
                 name="endTime"
@@ -175,12 +189,19 @@ const CreateWorkShift = () => {
                 className="w-full border p-2 rounded"
                 required
               />
-            </div>
-            <div>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}>
               <label className="block mb-1 font-medium">Description</label>
               <textarea name="description" value={description} onChange={handleDescriptionChange} className="w-full border p-2 rounded" rows={2} />
-            </div>
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Create Shift</button>
+            </motion.div>
+            <motion.button 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.7 }}
+              type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Create Shift</motion.button>
           </form>
           {msg && <div className="mt-2 text-center text-red-600">{msg}</div>}
         </div>

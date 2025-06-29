@@ -4,6 +4,7 @@ import AdminNavbar from '../../components/AdminNavbar';
 import AdminSidebar from '../../components/AdminSidebar';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { FaUsers, FaUserMd, FaUserTie, FaChartBar, FaSearch, FaFilter } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const StaffManagement = () => {
   const [medicalStaffs, setMedicalStaffs] = useState([]);
@@ -126,9 +127,13 @@ const StaffManagement = () => {
       <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
           {/* Header */}
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">Staff Management</h1>
-            <p className="text-gray-600">Comprehensive overview of all employees and their statistics</p>
+          <div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, delay: 0 }}
+            className="mb-8">
+            <h1 className="flex justify-center text-3xl font-bold text-gray-900 mb-2">Staff Management</h1>
+            <p className="flex justify-center text-gray-600">Comprehensive overview of all employees and their statistics</p>
           </div>
 
           {error && (
@@ -139,7 +144,11 @@ const StaffManagement = () => {
 
           {/* Statistics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-blue-100">
                   <FaUsers className="h-6 w-6 text-blue-600" />
@@ -149,9 +158,13 @@ const StaffManagement = () => {
                   <p className="text-2xl font-bold text-gray-900">{totalEmployees}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-green-100">
                   <FaUserMd className="h-6 w-6 text-green-600" />
@@ -161,9 +174,13 @@ const StaffManagement = () => {
                   <p className="text-2xl font-bold text-gray-900">{totalMedicalStaff}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-purple-100">
                   <FaUserTie className="h-6 w-6 text-purple-600" />
@@ -173,9 +190,13 @@ const StaffManagement = () => {
                   <p className="text-2xl font-bold text-gray-900">{totalStaff}</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
 
-            <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-orange-100">
                   <FaChartBar className="h-6 w-6 text-orange-600" />
@@ -185,13 +206,17 @@ const StaffManagement = () => {
                   <p className="text-2xl font-bold text-gray-900">{avgExperience.toFixed(1)}y</p>
                 </div>
               </div>
-            </div>
+            </motion.div>
           </div>
 
           {/* Charts Section */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
             {/* Role Distribution Pie Chart */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <motion.div 
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Role Distribution</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -212,10 +237,14 @@ const StaffManagement = () => {
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
+            </motion.div>
 
             {/* Experience Distribution Bar Chart */}
-            <div className="bg-white rounded-xl shadow-lg p-6">
+            <motion.div 
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+              className="bg-white rounded-xl shadow-lg p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Medical Staff Experience Distribution</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={experienceData}>
@@ -226,11 +255,16 @@ const StaffManagement = () => {
                   <Bar dataKey="count" fill="#10B981" />
                 </BarChart>
               </ResponsiveContainer>
-            </div>
+            </motion.div>
           </div>
 
           {/* Search and Filter */}
-          <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+          <motion.div 
+            initial={{ opacity: 0, y: 40}}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8}}
+            viewport={{ once: true }}
+            className="bg-white rounded-xl shadow-lg p-6 mb-8">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
                 <div className="relative">
@@ -257,10 +291,15 @@ const StaffManagement = () => {
                 </select>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Staff List */}
-          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 40}}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8}}
+            viewport={{ once: true }}
+            className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
               <h3 className="text-lg font-semibold text-gray-900">Employee List</h3>
               <p className="text-sm text-gray-600">Showing {allStaff.length} of {totalEmployees} employees</p>
@@ -316,7 +355,7 @@ const StaffManagement = () => {
                 </div>
               )}
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </>
