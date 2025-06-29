@@ -30,6 +30,9 @@ const StaffNavbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('userName');
+    localStorage.removeItem('userRole');
+    window.dispatchEvent(new CustomEvent('userLogout'));
     navigate('/login');
   };
 

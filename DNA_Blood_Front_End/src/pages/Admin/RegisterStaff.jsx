@@ -7,6 +7,7 @@ const RegisterStaff = () => {
   const [staffForm, setStaffForm] = useState({ username: '', password: '', email: '', phone: '' });
   const [staffMsg, setStaffMsg] = useState('');
   const navigate = useNavigate();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   React.useEffect(() => {
     const token = localStorage.getItem('token');
@@ -43,30 +44,30 @@ const RegisterStaff = () => {
         body: JSON.stringify(staffForm)
       });
       if (res.ok) {
-        setStaffMsg('Tạo tài khoản staff thành công!');
+        setStaffMsg('Staff account created successfully!');
         setStaffForm({ username: '', password: '', email: '', phone: '' });
       } else {
         const err = await res.text();
-        setStaffMsg('Lỗi: ' + err);
+        setStaffMsg('Error: ' + err);
       }
     } catch (err) {
-      setStaffMsg('Lỗi: ' + err.message);
+      setStaffMsg('Error: ' + err.message);
     }
   };
 
   return (
     <>
-      <AdminNavbar />
-      <AdminSidebar />
-      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 md:ml-64 transition-all duration-300">
+      <AdminNavbar onSidebarToggle={() => setSidebarOpen(true)} />
+      <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8 space-y-10">
-          <h1 className="text-2xl font-bold text-center mb-6">Tạo tài khoản Staff</h1>
+          <h1 className="text-2xl font-bold text-center mb-6">Create Staff Account</h1>
           <form onSubmit={handleStaffSubmit} className="space-y-4">
             <input name="username" value={staffForm.username} onChange={handleStaffChange} placeholder="Username" className="w-full border p-2 rounded" required />
             <input name="password" type="password" value={staffForm.password} onChange={handleStaffChange} placeholder="Password" className="w-full border p-2 rounded" required />
             <input name="email" value={staffForm.email} onChange={handleStaffChange} placeholder="Email" className="w-full border p-2 rounded" required />
             <input name="phone" value={staffForm.phone} onChange={handleStaffChange} placeholder="Phone" className="w-full border p-2 rounded" required />
-            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Tạo Staff</button>
+            <button type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Create Staff</button>
           </form>
           {staffMsg && <div className="mt-2 text-center text-red-600">{staffMsg}</div>}
         </div>

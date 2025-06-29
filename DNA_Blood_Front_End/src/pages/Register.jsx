@@ -66,9 +66,6 @@ const Register = () => {
         const errorText = await response.text();
         throw new Error(errorText);
       }
-      const token = await response.text();
-
-      alert('Registration successful! Please login.');
       navigate('/login');
     } catch (error) {
       console.error('Error during registration:', error);
