@@ -41,6 +41,7 @@ import WorkShiftList from './pages/Admin/WorkShiftList';
 import StaffFeedback from './pages/Staff/StaffFeedback';
 import WorkAssignment from './pages/Admin/WorkAssignment';
 import ServiceManager from './pages/Admin/ServiceManager';
+import CustomerLayout from './pages/Customer/CustomerLayout';
 
 const HomePage = () => (
     <>
@@ -64,17 +65,17 @@ const App = () => {
                         <main className="flex-grow">
                             <Routes>
                                 {/* Customer Routes */}
-                                <Route path="/" element={<HomePage />} />
-                                <Route path="/services" element={<ServicePage />} />
-                                <Route path="/service/:id" element={<ServiceDetail />} />
-                                <Route path="/cart" element={<Cart />} />
-                                <Route path="/fill-booking" element={<FillBookingForm />} />
-                                <Route path="/payment" element={<Payment />} />
-                                <Route path="/payment-success" element={<PaymentSuccess />} />
-                                <Route path="/profile" element={<Profile />} />
-                                <Route path="/account-setting" element={<AccountSetting />} />
-                                <Route path="/login" element={<Login />} />
-                                <Route path="/register" element={<Register />} />
+                                <Route path="/" element={<CustomerLayout><HomePage /></CustomerLayout>} />
+                                <Route path="/services" element={<CustomerLayout><ServicePage /></CustomerLayout>} />
+                                <Route path="/service/:id" element={<CustomerLayout><ServiceDetail /></CustomerLayout>} />
+                                <Route path="/cart" element={<CustomerLayout><Cart /></CustomerLayout>} />
+                                <Route path="/fill-booking" element={<CustomerLayout><FillBookingForm /></CustomerLayout>} />
+                                <Route path="/payment" element={<CustomerLayout><Payment /></CustomerLayout>} />
+                                <Route path="/payment-success" element={<CustomerLayout><PaymentSuccess /></CustomerLayout>} />
+                                <Route path="/profile" element={<CustomerLayout><Profile /></CustomerLayout>} />
+                                <Route path="/account-setting" element={<CustomerLayout><AccountSetting /></CustomerLayout>} />
+                                <Route path="/login" element={<CustomerLayout><Login /></CustomerLayout>} />
+                                <Route path="/register" element={<CustomerLayout><Register /></CustomerLayout>} />
 
                                 {/* Staff Routes */}
                                 <Route path="/staff" element={<Staff />} />
@@ -102,7 +103,6 @@ const App = () => {
                                 <Route path="*" element={<Navigate to="/" />} />
                             </Routes>
                         </main>
-                        <Footer />
                     </CartProvider>
                 </ServiceProvider>
             </NotificationProvider>

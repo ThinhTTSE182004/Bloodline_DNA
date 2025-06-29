@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import AdminNavbar from '../../components/AdminNavbar';
 import AdminSidebar from '../../components/AdminSidebar';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from 'recharts';
+import { motion } from 'framer-motion';
 
 const AdminPage = () => {
   const [medicalStaffs, setMedicalStaffs] = useState([]);
@@ -154,42 +155,77 @@ const AdminPage = () => {
       <AdminSidebar />
       <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 md:ml-64 transition-all duration-300">
         <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold text-green-700 mb-8 text-center">Admin Dashboard</h1>
+          <motion.h1
+            initial={{ opacity: 0, scale: 0.8}}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8}}
+            className="text-3xl font-bold text-green-700 mb-8 text-center">Admin Dashboard
+          </motion.h1>
           {loading ? (
             <div className="text-center py-20 text-lg text-gray-500">Đang tải dữ liệu...</div>
           ) : (
             <>
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-10">
-                <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-green-400">
+              <div
+                
+                className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-6 mb-10">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 1 }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-green-400">
                   <span className="text-2xl font-bold text-green-700">{totalMedicalStaff}</span>
                   <span className="text-gray-600 mt-2">Medical Staff</span>
-                </div>
-                <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-blue-400">
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 1 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-blue-400">
                   <span className="text-2xl font-bold text-blue-700">{totalStaff}</span>
                   <span className="text-gray-600 mt-2">Staff</span>
-                </div>
-                <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-yellow-400">
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 1 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-yellow-400">
                   <span className="text-2xl font-bold text-yellow-600">{totalWorkShifts}</span>
                   <span className="text-gray-600 mt-2">Work Shifts</span>
-                </div>
-                <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-purple-400">
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 1 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                  className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-purple-400">
                   <span className="text-2xl font-bold text-purple-700">{totalServices}</span>
                   <span className="text-gray-600 mt-2">Services</span>
-                </div>
-                <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-pink-400">
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 1 }}
+                  transition={{ duration: 0.8, delay: 1 }}
+                  className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-pink-400">
                   <span className="text-2xl font-bold text-pink-700">{totalServiceValue.toLocaleString()} đ</span>
                   <span className="text-gray-600 mt-2">Total Service Value</span>
-                </div>
-                <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-gray-400">
+                </motion.div>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, x: 1 }}
+                  transition={{ duration: 0.8, delay: 1.2 }}
+                  className="bg-white rounded-xl shadow p-6 flex flex-col items-center border-t-4 border-gray-400">
                   <span className="text-2xl font-bold text-gray-700">{Object.keys(serviceByCategory).length}</span>
                   <span className="text-gray-600 mt-2">Service Categories</span>
-                </div>
+                </motion.div>
               </div>
 
-              {/* Pie Chart Staff vs Medical Staff */}
               <div className="flex flex-col md:flex-row gap-8 mb-10 items-center justify-center">
-                <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center w-full max-w-xs">
+                {/* Pie Chart Staff vs Medical Staff */}
+                <motion.div 
+                  initial={{ opacity: 0, x: -40}}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 1.4}}
+                  className="bg-white rounded-xl shadow p-6 flex flex-col items-center w-full max-w-xs">
                   <span className="font-bold text-lg mb-2 text-green-700">Tỷ lệ Medical Staff / Staff</span>
                   <ResponsiveContainer width={180} height={180}>
                     <PieChart>
@@ -209,9 +245,13 @@ const AdminPage = () => {
                       <Legend />
                     </PieChart>
                   </ResponsiveContainer>
-                </div>
+                </motion.div>
                 {/* Service by Category */}
-                <div className="bg-white rounded-xl shadow p-6 flex-1">
+                <motion.div 
+                  initial={{ opacity: 0, x: 40}}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.8, delay: 1.4}}
+                  className="bg-white rounded-xl shadow p-6 flex-1">
                   <span className="font-bold text-lg mb-2 text-purple-700 block">Dịch vụ theo loại</span>
                   <ul className="mt-2 space-y-1">
                     {Object.entries(serviceByCategory).map(([cat, count]) => (
@@ -221,11 +261,15 @@ const AdminPage = () => {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </motion.div>
               </div>
 
               {/* Bảng dịch vụ */}
-              <div className="bg-white rounded-xl shadow p-6 mb-10">
+              <motion.div 
+                initial={{ opacity: 0, y: -40}}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8, delay: 1.6}}
+                className="bg-white rounded-xl shadow p-6 mb-10">
                 <h2 className="text-xl font-bold text-purple-700 mb-4">Danh sách dịch vụ</h2>
                 <div className="overflow-x-auto">
                   <table className="min-w-full border border-gray-200">
@@ -252,10 +296,15 @@ const AdminPage = () => {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Bảng ca làm việc */}
-              <div className="bg-white rounded-xl shadow p-6 mb-10">
+              <motion.div 
+                initial={{ opacity: 0, y: -40}}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8}}
+                viewport={{ once: true }}
+                className="bg-white rounded-xl shadow p-6 mb-10">
                 <h2 className="text-xl font-bold text-yellow-700 mb-4">Danh sách ca làm việc</h2>
                 <div className="overflow-x-auto">
                   <table className="min-w-full border border-gray-200">
@@ -280,10 +329,15 @@ const AdminPage = () => {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Bảng nhân viên */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+              <motion.div 
+                initial={{ opacity: 0, y: -40}}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8}}
+                viewport={{ once: true }}
+                className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
                 <div className="bg-white rounded-xl shadow p-6">
                   <h2 className="text-xl font-bold text-green-700 mb-4">Medical Staffs</h2>
                   <div className="overflow-x-auto">
@@ -336,10 +390,15 @@ const AdminPage = () => {
                     </table>
                   </div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* Bộ lọc tháng/năm và LineChart tăng trưởng */}
-              <div className="bg-white rounded-xl shadow p-6 mb-10">
+              <motion.div 
+                initial={{ opacity: 0, y: -40}}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8}}
+                viewport={{ once: true }}
+                className="bg-white rounded-xl shadow p-6 mb-10">
                 <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-4 gap-4">
                   <h2 className="text-xl font-bold text-blue-700">Thống kê tăng trưởng theo ngày</h2>
                   <div className="flex gap-2">
@@ -409,7 +468,7 @@ const AdminPage = () => {
                     </div>
                   </div>
                 )}
-              </div>
+              </motion.div>
             </>
           )}
         </div>

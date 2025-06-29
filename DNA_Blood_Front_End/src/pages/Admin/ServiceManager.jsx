@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import AdminNavbar from '../../components/AdminNavbar';
 import AdminSidebar from '../../components/AdminSidebar';
+import { motion } from 'framer-motion';
 
 const ServiceManager = () => {
   const [services, setServices] = useState([]);
