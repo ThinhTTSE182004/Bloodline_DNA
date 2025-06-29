@@ -2,12 +2,14 @@ Vui Lòng Đọc Hướng Dẫn Trước Khi Sử Dụng Repo này
 
 Bộ Dữ liệu mẫu cho Staff
 [
+
   {
     "username": "Nguyễn Văn An",
     "password": "12345678",
     "email": "nguyenvanan@gmail.com",
     "phone": "0912345678"
   }
+  
   {
     "username": "Trần Thị Thùy",
     "password": "password123",
