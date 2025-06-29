@@ -73,6 +73,14 @@ const FillBookingForm = () => {
 
     const total = selectedServices.reduce((total, service) => total + (service.price || 0), 0);
 
+    // Kiểm tra giờ
+    const selectedDate = new Date(formData.bookingDate);
+    const hour = selectedDate.getHours();
+    if (hour < 9 || hour >= 17) {
+      alert("Vui lòng chọn giờ từ 9:00 đến 17:00.");
+      return;
+    }
+
     const bookingData = {
       bookingDate: formData.bookingDate + ':00',
       email: formData.email,
@@ -325,6 +333,7 @@ const FillBookingForm = () => {
                     className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     value={formData.bookingDate}
                     onChange={handleChange}
+                    min={new Date().toISOString().slice(0, 16)}
                   />
                 </div>
 

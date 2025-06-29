@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import AdminNavbar from '../../components/AdminNavbar';
 import AdminSidebar from '../../components/AdminSidebar';
 import { FaBars } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const WorkShiftList = () => {
   const [shifts, setShifts] = useState([]);

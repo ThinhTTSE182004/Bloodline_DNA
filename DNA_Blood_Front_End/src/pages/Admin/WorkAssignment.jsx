@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { FaRegCalendarAlt } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const daysInMonth = (month, year) => {
   return new Date(year, month + 1, 0).getDate();

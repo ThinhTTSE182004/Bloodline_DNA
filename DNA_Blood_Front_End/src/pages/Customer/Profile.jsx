@@ -2,6 +2,8 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import signalRService from '../../services/signalRService.js';
+import { motion } from 'framer-motion';
+
 
 const Profile = () => {
   const [userProfile, setUserProfile] = useState(null);
