@@ -37,9 +37,6 @@ jobs:
         run: |
           echo "ConnectionStrings__Default=Server=localhost,1433;Database=Bloodline_DNA;User Id=sa;Password=Your_password123;" >> $GITHUB_ENV
 
-      - name: Run migrations (nếu có dùng EF Core)
-        run: dotnet ef database update --project ./DNA_Blood_API/DNA_API1.csproj
-
       - name: Run backend (background)
         run: dotnet run --project ./DNA_Blood_API/DNA_API1.csproj &
 
