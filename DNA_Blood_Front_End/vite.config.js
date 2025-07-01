@@ -7,7 +7,11 @@ export default defineConfig({
     port: 3000,
     host: true,
     strictPort: true,
-    allowedHosts: 'all',
+    allowedHosts: [
+      'all',
+      'broadband-powerseller-swim-floors.trycloudflare.com',
+      '.trycloudflare.com',
+    ],
   },
   define: {
     global: 'window',
