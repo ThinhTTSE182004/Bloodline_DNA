@@ -1,4 +1,3 @@
-
 on:
   push:
     branches: [ master ]
@@ -41,5 +40,8 @@ jobs:
         run: sleep 15
 
       # Chạy test backend
+      - name: Build backend tests
+        run: dotnet build --no-restore ./DNA_Blood_API/DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj
+
       - name: Run backend tests
-        run: dotnet test ./DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj --logger trx
+        run: dotnet test ./DNA_Blood_API/DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj --logger trx
