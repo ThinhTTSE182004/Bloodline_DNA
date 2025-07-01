@@ -92,24 +92,38 @@ jobs:
           wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
           sudo dpkg -i cloudflared-linux-amd64.deb
 
-      - name: Start Cloudflare Tunnel
+      - name: Start Cloudflare Tunnel for frontend
         run: |
-          cloudflared tunnel --url http://localhost:3000 --no-autoupdate > cloudflared.log 2>&1 &
+          cloudflared tunnel --url http://localhost:3000 --no-autoupdate > cloudflared-frontend.log 2>&1 &
           sleep 5
 
-      - name: Get Cloudflare Tunnel public URL
+      - name: Start Cloudflare Tunnel for backend
+        run: |
+          cloudflared tunnel --url http://localhost:7113 --no-autoupdate > cloudflared-backend.log 2>&1 &
+          sleep 5
+
+      - name: Get Cloudflare Tunnel public URLs
         id: cftunnel
         run: |
-          TUNNEL_URL=$(grep -o 'https://[-a-zA-Z0-9.]*trycloudflare.com' cloudflared.log | head -n 1)
-          echo "TUNNEL_URL=$TUNNEL_URL" >> $GITHUB_ENV
-          echo "Cloudflare Tunnel public URL: $TUNNEL_URL"
+          FRONTEND_URL=$(grep -o 'https://[-a-zA-Z0-9.]*trycloudflare.com' cloudflared-frontend.log | head -n 1)
+          BACKEND_URL=$(grep -o 'https://[-a-zA-Z0-9.]*trycloudflare.com' cloudflared-backend.log | head -n 1)
+          echo "FRONTEND_URL=$FRONTEND_URL" >> $GITHUB_ENV
+          echo "BACKEND_URL=$BACKEND_URL" >> $GITHUB_ENV
+          echo "Frontend: $FRONTEND_URL"
+          echo "Backend: $BACKEND_URL"
+
+      - name: Update API URL in frontend (auto-replace localhost)
+        working-directory: ./DNA_Blood_Front_End
+        run: |
+          sed -i "s|https://localhost:7113|${{ env.BACKEND_URL }}|g" src/pages/Login.jsx
+          sed -i "s|https://localhost:7113|${{ env.BACKEND_URL }}|g" src/context/ServiceContext.jsx
 
       - name: Install Testim CLI and run tests
         run: |
           npm install -g @testim/testim-cli
           testim --token "MUqxr856TYHkd5h8sBwVfE0AWkqAkqffYDAYr5gkWDM6WJWzVO" \
             --project "usw2Hv47iAP5a1HTHAIn9tCa" \
-            --base-url ${{ env.TUNNEL_URL }} \
+            --base-url ${{ env.FRONTEND_URL }} \
             --grid "Testim-Grid" \
             --mode "extension" \
             --branch "master"
