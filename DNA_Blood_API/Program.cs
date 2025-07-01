@@ -138,7 +138,11 @@ namespace DNA_API1
                 {
                     policy.WithOrigins(
                         "http://localhost:5173",
-                        "http://localhost:5174"
+                        "http://localhost:5174",
+                        "http://localhost:3000",
+                        "https://localhost:3000",
+                        "http://127.0.0.1:3000",
+                        "https://127.0.0.1:3000"
                     )
                     .AllowCredentials()
                     .AllowAnyHeader()
