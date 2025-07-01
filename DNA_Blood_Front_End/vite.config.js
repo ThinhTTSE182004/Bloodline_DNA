@@ -11,6 +11,7 @@ export default defineConfig({
       'all',
       'broadband-powerseller-swim-floors.trycloudflare.com',
       '.trycloudflare.com',
+      'bloodline-dna.onrender.com',
     ],
   },
   define: {
