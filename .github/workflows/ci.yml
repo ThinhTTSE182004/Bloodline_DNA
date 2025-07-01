@@ -64,3 +64,14 @@ jobs:
 
       # - name: Run backend tests
       #   run: dotnet test ./DNA_Blood_API/DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj --logger trx
+
+      # Install Newman
+      - name: Install Newman
+        run: npm install -g newman
+
+      # Run Postman API tests with Newman
+      - name: Run API tests with Newman
+        run: |
+          newman run ./DNA_Blood_API/tests/dna_api_collection.json \
+            --environment ./DNA_Blood_API/tests/dna_api_env.json \
+            --insecure

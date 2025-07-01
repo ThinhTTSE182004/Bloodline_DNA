@@ -1,0 +1,108 @@
+{
+	"info": {
+		"_postman_id": "55ef9e01-3737-47e4-aac8-222a0896e14a",
+		"name": "DNA_API_Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "42768041"
+	},
+	"item": [
+		{
+			"name": "https://localhost:7113/api/Auth/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"  pm.environment.set(\"jwt_token\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"thaithinh9595@gmail.com\",\r\n  \"password\": \"123456\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7113/api/Auth/login",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7113",
+					"path": [
+						"api",
+						"Auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://localhost:7113/api/Auth/login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"  pm.environment.set(\"jwt_token\", pm.response.text());"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{jwt_token}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "graphql",
+					"graphql": {
+						"query": "",
+						"variables": ""
+					}
+				},
+				"url": {
+					"raw": "https://localhost:7113/api/UserProfile/GetUserProfile",
+					"protocol": "https",
+					"host": [
+						"localhost"
+					],
+					"port": "7113",
+					"path": [
+						"api",
+						"UserProfile",
+						"GetUserProfile"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
