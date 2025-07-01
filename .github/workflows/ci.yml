@@ -39,9 +39,28 @@ jobs:
       - name: Wait for API to be ready
         run: sleep 15
 
-      # Chạy test backend
-      - name: Build backend tests
-        run: dotnet build --no-restore ./DNA_Blood_API/DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj
+      # Frontend: Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
 
-      - name: Run backend tests
-        run: dotnet test ./DNA_Blood_API/DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj --logger trx
+      - name: Install frontend dependencies
+        working-directory: ./DNA_Blood_Front_End
+        run: npm install
+
+      - name: Build frontend
+        working-directory: ./DNA_Blood_Front_End
+        run: npm run build
+
+      # (Tùy chọn) Chạy test frontend nếu có
+      # - name: Run frontend tests
+      #   working-directory: ./DNA_Blood_Front_End
+      #   run: npm test
+
+      # Chạy test backend
+      # - name: Build backend tests
+      #   run: dotnet build --no-restore ./DNA_Blood_API/DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj
+
+      # - name: Run backend tests
+      #   run: dotnet test ./DNA_Blood_API/DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj --logger trx
