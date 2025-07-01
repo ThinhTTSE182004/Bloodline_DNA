@@ -8,7 +8,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -17,7 +16,6 @@ jobs:
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433
-
     steps:
       - uses: actions/checkout@v3
 
@@ -25,7 +23,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v3
         with:
-          dotnet-version: '8.0.x' # hoặc version bạn dùng
+          dotnet-version: '8.0.x'
 
       - name: Restore dependencies
         run: dotnet restore ./DNA_Blood_API/DNA_API1.csproj
@@ -37,90 +35,12 @@ jobs:
         run: |
           echo "ConnectionStrings__Default=Server=localhost,1433;Database=Bloodline_DNA;User Id=sa;Password=Your_password123;" >> $GITHUB_ENV
 
-
       - name: Run backend (background)
         run: dotnet run --project ./DNA_Blood_API/DNA_API1.csproj &
 
       - name: Wait for API to be ready
         run: sleep 15
 
-      # Frontend: React
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18'
-
-      - name: Install frontend dependencies
-        working-directory: ./DNA_Blood_Front_End
-        run: npm install
-
-      - name: Build frontend
-        working-directory: ./DNA_Blood_Front_End
-        run: npm run build
-
-      # (Tùy chọn) Chạy test backend (nếu có)
-      # - name: Run backend tests
-      #   run: dotnet test ./DNA_Blood_API/DNA_API1.csproj
-
-      # (Tùy chọn) Chạy test frontend (nếu có)
-      # - name: Run frontend tests
-      #   working-directory: ./DNA_Blood_Front_End
-      #   run: npm test -- --watchAll=false
-
-name: Testim E2E with ngrok
-on: [push]
-
-jobs:
-  run-testimio-cli:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install frontend dependencies
-        working-directory: ./DNA_Blood_Front_End
-        run: npm install
-
-      - name: Run frontend (background)
-        working-directory: ./DNA_Blood_Front_End
-        run: npm run dev &
-
-      - name: Wait for frontend to be ready
-        run: sleep 10
-
-      - name: Install jq
-        run: sudo apt-get update && sudo apt-get install -y jq
-
-      - name: Download ngrok
-        run: |
-          wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-          tar -xvzf ngrok-v3-stable-linux-amd64.tgz
-
-      - name: Auth ngrok
-        run: ./ngrok config add-authtoken <YOUR_NGROK_AUTH_TOKEN>
-        # Nếu không có authtoken thì có thể bỏ qua bước này
-
-      - name: Start ngrok
-        run: |
-          ./ngrok http 3000 --log=stdout > ngrok.log &
-          sleep 5
-
-      - name: Get ngrok public URL
-        id: ngrok
-        run: |
-          NGROK_URL=$(curl --silent http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-          echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
-          echo "Ngrok public URL: $NGROK_URL"
-
-      - name: Install Testim CLI and run tests
-        run: |
-          npm install -g @testim/testim-cli
-          testim --token "MUqxr856TYHkd5h8sBwVfE0AWkqAkqffYDAYr5gkWDM6WJWzVO" \
-            --project "usw2Hv47iAP5a1HTHAIn9tCa" \
-            --base-url ${{ env.NGROK_URL }} \
-            --grid "Testim-Grid" \
-            --mode "extension" \
-            --branch "master"
+      # Chạy test backend
+      - name: Run backend tests
+        run: dotnet test ./DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj --logger trx
