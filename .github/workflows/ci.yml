@@ -44,7 +44,8 @@ jobs:
       - name: Wait for API to be ready
         run: |
           npm install -g wait-on
-          wait-on http://localhost:5000/api/Auth/login
+          wait-on http://localhost:5000/health
+
 
       # Frontend: Node.js
       - name: Setup Node.js
