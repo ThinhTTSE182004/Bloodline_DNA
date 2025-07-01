@@ -75,7 +75,7 @@ jobs:
 
       - name: Install frontend dependencies
         working-directory: ./DNA_Blood_Front_End
-        run: npm install
+        run: npm ci
 
       - name: Run frontend (background)
         working-directory: ./DNA_Blood_Front_End
