@@ -1,3 +1,5 @@
+name: CI Pipeline
+
 on:
   push:
     branches: [ master ]
@@ -6,6 +8,7 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
+
     services:
       sqlserver:
         image: mcr.microsoft.com/mssql/server:2019-latest
@@ -14,6 +17,7 @@ jobs:
           ACCEPT_EULA: "Y"
         ports:
           - 1433:1433
+
     steps:
       - uses: actions/checkout@v3
 
@@ -33,17 +37,23 @@ jobs:
         run: |
           echo "ConnectionStrings__Default=Server=localhost,1433;Database=Bloodline_DNA;User Id=sa;Password=Your_password123;" >> $GITHUB_ENV
 
-      - name: Run backend (background)
-        run: dotnet run --project ./DNA_Blood_API/DNA_API1.csproj &
-
+      - name: Run backend (on HTTP 5000)
+        run: |
+          dotnet run --project ./DNA_Blood_API/DNA_API1.csproj --urls=http://0.0.0.0:5000 &
+      
       - name: Wait for API to be ready
-        run: sleep 15
+        run: |
+          npm install -g wait-on
+          wait-on http://localhost:5000/api/Auth/login
 
       # Frontend: Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20.x'
+
+      - name: Set API base URL for frontend
+        run: echo "VITE_API_BASE_URL=http://localhost:5000" >> $GITHUB_ENV
 
       - name: Install frontend dependencies
         working-directory: ./DNA_Blood_Front_End
@@ -53,17 +63,10 @@ jobs:
         working-directory: ./DNA_Blood_Front_End
         run: npm run build
 
-      # (Tùy chọn) Chạy test frontend nếu có
+      # (Optional) Run frontend tests
       # - name: Run frontend tests
       #   working-directory: ./DNA_Blood_Front_End
       #   run: npm test
-
-      # Chạy test backend
-      # - name: Build backend tests
-      #   run: dotnet build --no-restore ./DNA_Blood_API/DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj
-
-      # - name: Run backend tests
-      #   run: dotnet test ./DNA_Blood_API/DNA_Blood_API.Tests/DNA_Blood_API.Tests.csproj --logger trx
 
       # Install Newman
       - name: Install Newman
