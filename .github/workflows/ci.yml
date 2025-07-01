@@ -87,32 +87,29 @@ jobs:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Download ngrok
+      - name: Download cloudflared
         run: |
-          wget https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz
-          tar -xvzf ngrok-v3-stable-linux-amd64.tgz
+          wget -q https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64.deb
+          sudo dpkg -i cloudflared-linux-amd64.deb
 
-      - name: Auth ngrok
-        run: ./ngrok config add-authtoken 2zGdaedw3W2tX7pqaTcmhd3Brzk_3ewqVbnw3dDewgxPrydhm
-
-      - name: Start ngrok
+      - name: Start Cloudflare Tunnel
         run: |
-          ./ngrok http 3000 --request-header-add="ngrok-skip-browser-warning: anyvalue" --log=stdout > ngrok.log &
+          cloudflared tunnel --url http://localhost:3000 --no-autoupdate > cloudflared.log 2>&1 &
           sleep 5
 
-      - name: Get ngrok public URL
-        id: ngrok
+      - name: Get Cloudflare Tunnel public URL
+        id: cftunnel
         run: |
-          NGROK_URL=$(curl --silent http://localhost:4040/api/tunnels | jq -r '.tunnels[0].public_url')
-          echo "NGROK_URL=$NGROK_URL" >> $GITHUB_ENV
-          echo "Ngrok public URL: $NGROK_URL"
+          TUNNEL_URL=$(grep -o 'https://[-a-zA-Z0-9.]*trycloudflare.com' cloudflared.log | head -n 1)
+          echo "TUNNEL_URL=$TUNNEL_URL" >> $GITHUB_ENV
+          echo "Cloudflare Tunnel public URL: $TUNNEL_URL"
 
       - name: Install Testim CLI and run tests
         run: |
           npm install -g @testim/testim-cli
           testim --token "MUqxr856TYHkd5h8sBwVfE0AWkqAkqffYDAYr5gkWDM6WJWzVO" \
             --project "usw2Hv47iAP5a1HTHAIn9tCa" \
-            --base-url ${{ env.NGROK_URL }} \
+            --base-url ${{ env.TUNNEL_URL }} \
             --grid "Testim-Grid" \
             --mode "extension" \
             --branch "master"
