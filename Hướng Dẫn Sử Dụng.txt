@@ -3,3 +3,5 @@
 3. Giải nén file zip trong api 
 4. Chạy https 
 5. Chạy Front_End
+
+6
