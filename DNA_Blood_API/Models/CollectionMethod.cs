@@ -15,19 +15,19 @@ public partial class CollectionMethod
 
     [Column("method_name")]
     [StringLength(20)]
-    public string? MethodName { get; set; }
+    public string MethodName { get; set; }
 
     [Column("TestTypeID")]
     public int TestTypeId { get; set; }
 
     [Column("description")]
     [StringLength(1000)]
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     [InverseProperty("CollectionMethod")]
     public virtual ICollection<Order> Orders { get; set; } = new List<Order>();
 
     [ForeignKey("TestTypeId")]
     [InverseProperty("CollectionMethods")]
-    public virtual TestType TestType { get; set; } = null!;
+    public virtual TestType TestType { get; set; }
 }

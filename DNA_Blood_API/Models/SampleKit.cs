@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Sample_kit")]
-[Index("KitCode", Name = "UQ__Sample_k__24769816C9764DD0", IsUnique = true)]
+[Index("KitCode", Name = "UQ__Sample_k__2476981613A02CB9", IsUnique = true)]
 public partial class SampleKit
 {
     [Key]
@@ -20,17 +20,19 @@ public partial class SampleKit
     [Column("staff_id")]
     public int StaffId { get; set; }
 
+    [Required]
     [Column("name")]
     [StringLength(50)]
-    public string Name { get; set; } = null!;
+    public string Name { get; set; }
 
     [Column("intruction_url")]
-    public string? IntructionUrl { get; set; }
+    public string IntructionUrl { get; set; }
 
+    [Required]
     [Column("kit_code")]
     [StringLength(20)]
     [Unicode(false)]
-    public string KitCode { get; set; } = null!;
+    public string KitCode { get; set; }
 
     [Column("create_at", TypeName = "datetime")]
     public DateTime? CreateAt { get; set; }
@@ -46,9 +48,9 @@ public partial class SampleKit
 
     [ForeignKey("OrderDetailId")]
     [InverseProperty("SampleKits")]
-    public virtual OrderDetail OrderDetail { get; set; } = null!;
+    public virtual OrderDetail OrderDetail { get; set; }
 
     [ForeignKey("StaffId")]
     [InverseProperty("SampleKits")]
-    public virtual User Staff { get; set; } = null!;
+    public virtual User Staff { get; set; }
 }

@@ -16,9 +16,10 @@ public partial class PasswordResetToken
     [Column("user_id")]
     public int UserId { get; set; }
 
+    [Required]
     [Column("token")]
     [StringLength(256)]
-    public string Token { get; set; } = null!;
+    public string Token { get; set; }
 
     [Column("expiry", TypeName = "datetime")]
     public DateTime Expiry { get; set; }
@@ -28,5 +29,5 @@ public partial class PasswordResetToken
 
     [ForeignKey("UserId")]
     [InverseProperty("PasswordResetTokens")]
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

@@ -24,9 +24,9 @@ public partial class ShiftAssignment
 
     [ForeignKey("ShiftId")]
     [InverseProperty("ShiftAssignments")]
-    public virtual WorkShift Shift { get; set; } = null!;
+    public virtual WorkShift Shift { get; set; }
 
     [ForeignKey("UserId")]
     [InverseProperty("ShiftAssignments")]
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

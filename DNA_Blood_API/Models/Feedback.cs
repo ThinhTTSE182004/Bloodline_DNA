@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Feedback")]
-[Index("OrderId", Name = "UQ__Feedback__465962289D8A2C30", IsUnique = true)]
+[Index("OrderId", Name = "UQ__Feedback__46596228D5DF02E8", IsUnique = true)]
 public partial class Feedback
 {
     [Key]
@@ -17,16 +17,17 @@ public partial class Feedback
     [Column("order_id")]
     public int OrderId { get; set; }
 
+    [Required]
     [Column("name")]
     [StringLength(100)]
-    public string Name { get; set; } = null!;
+    public string Name { get; set; }
 
     [Column("rating", TypeName = "decimal(2, 1)")]
     public decimal Rating { get; set; }
 
     [Column("comment")]
     [StringLength(1000)]
-    public string? Comment { get; set; }
+    public string Comment { get; set; }
 
     [Column("create_at", TypeName = "datetime")]
     public DateTime? CreateAt { get; set; }
@@ -39,5 +40,5 @@ public partial class Feedback
 
     [ForeignKey("OrderId")]
     [InverseProperty("Feedback")]
-    public virtual Order Order { get; set; } = null!;
+    public virtual Order Order { get; set; }
 }

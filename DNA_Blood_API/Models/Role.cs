@@ -6,17 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DNA_API1.Models;
 
-[Index("RoleName", Name = "UQ__Roles__783254B170D4FE2D", IsUnique = true)]
+[Index("RoleName", Name = "UQ__Roles__783254B1BC6D0A69", IsUnique = true)]
 public partial class Role
 {
     [Key]
     [Column("role_id")]
     public int RoleId { get; set; }
 
+    [Required]
     [Column("role_name")]
     [StringLength(50)]
     [Unicode(false)]
-    public string RoleName { get; set; } = null!;
+    public string RoleName { get; set; }
 
     [InverseProperty("Role")]
     public virtual ICollection<User> Users { get; set; } = new List<User>();

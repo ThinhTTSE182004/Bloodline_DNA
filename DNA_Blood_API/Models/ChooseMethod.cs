@@ -17,8 +17,8 @@ public partial class ChooseMethod
     public int? CollectionMethodId { get; set; }
 
     [ForeignKey("CollectionMethodId")]
-    public virtual CollectionMethod? CollectionMethod { get; set; }
+    public virtual CollectionMethod CollectionMethod { get; set; }
 
     [ForeignKey("ServicePackageId")]
-    public virtual ServicePackage? ServicePackage { get; set; }
+    public virtual ServicePackage ServicePackage { get; set; }
 }
