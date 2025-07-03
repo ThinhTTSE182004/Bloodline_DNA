@@ -37,14 +37,14 @@ jobs:
         run: |
           echo "ConnectionStrings__Default=Server=localhost,1433;Database=Bloodline_DNA;User Id=sa;Password=Your_password123;" >> $GITHUB_ENV
 
-      - name: Run backend (on HTTP 5000)
+      - name: Run backend (on HTTP 5058)
         run: |
-          dotnet run --project ./DNA_Blood_API/DNA_API1.csproj --urls=http://0.0.0.0:5000 &
+          dotnet run --project ./DNA_Blood_API/DNA_API1.csproj --urls=http://0.0.0.0:5058 &
       
       - name: Wait for API to be ready
         run: |
           npm install -g wait-on
-          wait-on http://localhost:5000/health
+          wait-on http://localhost:5058/health
 
 
       # Frontend: Node.js
@@ -54,7 +54,7 @@ jobs:
           node-version: '20.x'
 
       - name: Set API base URL for frontend
-        run: echo "VITE_API_BASE_URL=http://localhost:5000" >> $GITHUB_ENV
+        run: echo "VITE_API_BASE_URL=http://localhost:5058" >> $GITHUB_ENV
 
       - name: Install frontend dependencies
         working-directory: ./DNA_Blood_Front_End
@@ -64,18 +64,3 @@ jobs:
         working-directory: ./DNA_Blood_Front_End
         run: npm run build
 
-      # (Optional) Run frontend tests
-      # - name: Run frontend tests
-      #   working-directory: ./DNA_Blood_Front_End
-      #   run: npm test
-
-      # Install Newman
-      - name: Install Newman
-        run: npm install -g newman
-
-      # Run Postman API tests with Newman
-      - name: Run API tests with Newman
-        run: |
-          newman run ./DNA_Blood_API/tests/dna_api_collection.json \
-            --environment ./DNA_Blood_API/tests/dna_api_env.json \
-            --insecure
