@@ -235,18 +235,31 @@ A comprehensive platform for managing DNA testing services, including user manag
 ```
 SWP/
 ├── DNA_Blood_API/           # .NET 8 Web API backend
+
 │   ├── Controllers/         # API controllers
+
 │   ├── Models/              # Entity models
+
 │   ├── Repository/          # Data access layer
+
 │   ├── Services/            # Business logic
+
 │   ├── ViewModels/          # DTOs and view models
+
 │   ├── Hubs/                # SignalR hubs
+
 │   ├── tests/               # Postman collections & environments
+
 │   └── ...                  # Configs, Program.cs, etc.
+
 ├── DNA_Blood_Front_End/     # React frontend
+
 │   ├── src/                 # Source code
+
 │   ├── public/              # Static assets
+
 │   └── ...                  # Configs, package.json, etc.
+
 └── .github/workflows/       # CI/CD pipelines
 ```
 
