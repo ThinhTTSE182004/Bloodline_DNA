@@ -21,7 +21,7 @@ public partial class FeedbackResponse
 
     [Column("content_response")]
     [StringLength(1000)]
-    public string? ContentResponse { get; set; }
+    public string ContentResponse { get; set; }
 
     [Column("create_at", TypeName = "datetime")]
     public DateTime? CreateAt { get; set; }
@@ -31,9 +31,9 @@ public partial class FeedbackResponse
 
     [ForeignKey("FeedbackId")]
     [InverseProperty("FeedbackResponses")]
-    public virtual Feedback Feedback { get; set; } = null!;
+    public virtual Feedback Feedback { get; set; }
 
     [ForeignKey("StaffId")]
     [InverseProperty("FeedbackResponses")]
-    public virtual User Staff { get; set; } = null!;
+    public virtual User Staff { get; set; }
 }

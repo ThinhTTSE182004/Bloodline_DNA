@@ -21,5 +21,5 @@ public partial class ServicePrice
 
     [ForeignKey("ServicePackageId")]
     [InverseProperty("ServicePrices")]
-    public virtual ServicePackage ServicePackage { get; set; } = null!;
+    public virtual ServicePackage ServicePackage { get; set; }
 }

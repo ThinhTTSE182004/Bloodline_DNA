@@ -31,30 +31,31 @@ public partial class Sample
     [Column("received_date")]
     public DateOnly? ReceivedDate { get; set; }
 
+    [Required]
     [Column("sample_status")]
     [StringLength(50)]
-    public string SampleStatus { get; set; } = null!;
+    public string SampleStatus { get; set; }
 
     [Column("note")]
     [StringLength(500)]
-    public string? Note { get; set; }
+    public string Note { get; set; }
 
     [ForeignKey("OrderDetailId")]
     [InverseProperty("Samples")]
-    public virtual OrderDetail OrderDetail { get; set; } = null!;
+    public virtual OrderDetail OrderDetail { get; set; }
 
     [ForeignKey("ParticipantId")]
     [InverseProperty("Samples")]
-    public virtual Participant? Participant { get; set; }
+    public virtual Participant Participant { get; set; }
 
     [InverseProperty("Sample")]
     public virtual ICollection<SampleTransfer> SampleTransfers { get; set; } = new List<SampleTransfer>();
 
     [ForeignKey("SampleTypeId")]
     [InverseProperty("Samples")]
-    public virtual SampleType SampleType { get; set; } = null!;
+    public virtual SampleType SampleType { get; set; }
 
     [ForeignKey("StaffId")]
     [InverseProperty("Samples")]
-    public virtual User Staff { get; set; } = null!;
+    public virtual User Staff { get; set; }
 }

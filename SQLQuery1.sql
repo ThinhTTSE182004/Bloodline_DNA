@@ -4,6 +4,7 @@ DROP DATABASE Bloodline_DNA;
 CREATE DATABASE Bloodline_DNA;
 
 ALTER DATABASE Bloodline_DNA SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
+CREATE DATABASE Bloodline_DNA
 
 CREATE TABLE Roles (
     role_id INT IDENTITY(1,1) PRIMARY KEY,
@@ -222,7 +223,11 @@ update_at DATETIME DEFAULT GETDATE(),
 FOREIGN KEY (feedback_id) REFERENCES Feedback(feedback_id),
 FOREIGN KEY (staff_id) REFERENCES USERS(user_id)
 )
-
+CREATE TABLE Locus (
+    locus_id INT IDENTITY(1,1) PRIMARY KEY,
+    locus_name NVARCHAR(50) NOT NULL UNIQUE,
+    description NVARCHAR(255)
+)
 create table Result (
 result_id INT IDENTITY(1,1) PRIMARY KEY,
 order_detail_id int unique not null,
@@ -235,7 +240,16 @@ create_at DATETIME DEFAULT GETDATE(),
 update_at DATETIME DEFAULT GETDATE(),
 FOREIGN KEY (order_detail_id) REFERENCES Order_detail(order_detail_id)
 )
-
+CREATE TABLE Test_Locus_Result (
+    test_locus_id INT IDENTITY(1,1) PRIMARY KEY,
+    result_id INT NOT NULL,
+    locus_id INT NOT NULL,
+    person_a_alleles NVARCHAR(20), -- Ví dụ: "16,17"
+    person_b_alleles NVARCHAR(20), -- Ví dụ: "17,18"
+    is_match BIT,
+    FOREIGN KEY (result_id) REFERENCES Result(result_id),
+    FOREIGN KEY (locus_id) REFERENCES Locus(locus_id)
+)
 create table Delivery_task (
 task_id INT IDENTITY(1,1) PRIMARY KEY,
 order_detail_id int not null,
@@ -327,5 +341,17 @@ VALUES (N'Staff', 'thinhttse182004@gmail.com', N'0944404161', N'AQAAAAIAAYagAAAA
 
 INSERT INTO USERS (name, email, phone, password, role_id)
 VALUES (N'Customer', 'thaithinh9595@gmail.com', N'0944404161', N'AQAAAAIAAYagAAAAEAaft1D4glAiGYpAVCgj1Ut6lXdGe2mMxD+63GzUDnP8y26zeorQYnj7sGC1MqE7Pg==', 3);
+
+INSERT INTO Locus (locus_name, description) VALUES
+('D3S1358', 'STR on chromosome 3'),
+('D21S11', 'STR on chromosome 21'),
+('D7S820', 'STR on chromosome 7'),
+('CSF1PO', 'STR for human ID'),
+('TH01', 'STR on chromosome 11'),
+('TPOX', 'STR on chromosome 2'),
+('FGA', 'Fibrinogen alpha chain gene'),
+('D8S1179', 'STR on chromosome 8'),
+('D13S317', 'STR on chromosome 13'),
+('D5S818', 'STR on chromosome 5');
 
 
