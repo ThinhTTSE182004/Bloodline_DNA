@@ -7,17 +7,18 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Permission")]
-[Index("PermissionName", Name = "UQ__Permissi__81C0F5A259DF50A1", IsUnique = true)]
+[Index("PermissionName", Name = "UQ__Permissi__81C0F5A2D5E1DE6E", IsUnique = true)]
 public partial class Permission
 {
     [Key]
     [Column("permission_id")]
     public int PermissionId { get; set; }
 
+    [Required]
     [Column("permission_name")]
     [StringLength(100)]
     [Unicode(false)]
-    public string PermissionName { get; set; } = null!;
+    public string PermissionName { get; set; }
 
     [ForeignKey("PermissionId")]
     [InverseProperty("Permissions")]

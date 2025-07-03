@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Payment")]
-[Index("OrderId", Name = "UQ__Payment__465962285D382C8F", IsUnique = true)]
+[Index("OrderId", Name = "UQ__Payment__465962289A993F4D", IsUnique = true)]
 public partial class Payment
 {
     [Key]
@@ -17,13 +17,15 @@ public partial class Payment
     [Column("order_id")]
     public int OrderId { get; set; }
 
+    [Required]
     [Column("payment_method")]
     [StringLength(20)]
-    public string PaymentMethod { get; set; } = null!;
+    public string PaymentMethod { get; set; }
 
+    [Required]
     [Column("payment_status")]
     [StringLength(50)]
-    public string PaymentStatus { get; set; } = null!;
+    public string PaymentStatus { get; set; }
 
     [Column("payment_date", TypeName = "datetime")]
     public DateTime? PaymentDate { get; set; }
@@ -33,5 +35,5 @@ public partial class Payment
 
     [ForeignKey("OrderId")]
     [InverseProperty("Payment")]
-    public virtual Order Order { get; set; } = null!;
+    public virtual Order Order { get; set; }
 }

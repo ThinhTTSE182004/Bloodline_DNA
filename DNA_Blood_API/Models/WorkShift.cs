@@ -10,13 +10,13 @@ namespace DNA_API1.Models;
 public partial class WorkShift
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
     [Column("shift_id")]
     public int ShiftId { get; set; }
 
+    [Required]
     [Column("shift_name")]
     [StringLength(50)]
-    public string ShiftName { get; set; } = null!;
+    public string ShiftName { get; set; }
 
     [Column("start_time")]
     public TimeOnly StartTime { get; set; }
@@ -26,7 +26,7 @@ public partial class WorkShift
 
     [Column("description")]
     [StringLength(255)]
-    public string? Description { get; set; }
+    public string Description { get; set; }
 
     [InverseProperty("Shift")]
     public virtual ICollection<ShiftAssignment> ShiftAssignments { get; set; } = new List<ShiftAssignment>();
