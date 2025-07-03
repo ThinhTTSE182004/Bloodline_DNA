@@ -39,12 +39,7 @@ jobs:
 
       - name: Run backend (on HTTP 5058)
         run: |
-          dotnet run --project ./DNA_Blood_API/DNA_API1.csproj --urls=http://0.0.0.0:5058 &
-      
-      - name: Wait for API to be ready
-        run: |
-          npm install -g wait-on
-          wait-on http://localhost:5058/health
+          dotnet run --project ./DNA_Blood_API/DNA_API1.csproj --urls=http://0.0.0.0:5058 
 
 
       # Frontend: Node.js
