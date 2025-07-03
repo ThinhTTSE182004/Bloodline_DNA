@@ -18,9 +18,10 @@ public partial class Order
     [Column("collection_method_id")]
     public int CollectionMethodId { get; set; }
 
+    [Required]
     [Column("order_status")]
     [StringLength(50)]
-    public string OrderStatus { get; set; } = null!;
+    public string OrderStatus { get; set; }
 
     [Column("create_at", TypeName = "datetime")]
     public DateTime? CreateAt { get; set; }
@@ -30,21 +31,21 @@ public partial class Order
 
     [ForeignKey("CollectionMethodId")]
     [InverseProperty("Orders")]
-    public virtual CollectionMethod CollectionMethod { get; set; } = null!;
+    public virtual CollectionMethod CollectionMethod { get; set; }
 
     [ForeignKey("CustomerId")]
     [InverseProperty("Orders")]
-    public virtual User Customer { get; set; } = null!;
+    public virtual User Customer { get; set; }
 
     [InverseProperty("Order")]
-    public virtual Delivery? Delivery { get; set; }
+    public virtual Delivery Delivery { get; set; }
 
     [InverseProperty("Order")]
-    public virtual Feedback? Feedback { get; set; }
+    public virtual Feedback Feedback { get; set; }
 
     [InverseProperty("Order")]
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     [InverseProperty("Order")]
-    public virtual Payment? Payment { get; set; }
+    public virtual Payment Payment { get; set; }
 }

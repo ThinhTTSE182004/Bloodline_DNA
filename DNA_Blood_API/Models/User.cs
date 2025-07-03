@@ -7,28 +7,31 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("USERS")]
-[Index("Email", Name = "UQ__USERS__AB6E6164FAEFA0AE", IsUnique = true)]
+[Index("Email", Name = "UQ__USERS__AB6E616400A0BA15", IsUnique = true)]
 public partial class User
 {
     [Key]
     [Column("user_id")]
     public int UserId { get; set; }
 
+    [Required]
     [Column("name")]
     [StringLength(100)]
-    public string Name { get; set; } = null!;
+    public string Name { get; set; }
 
+    [Required]
     [Column("email")]
     [StringLength(100)]
-    public string Email { get; set; } = null!;
+    public string Email { get; set; }
 
     [Column("phone")]
     [StringLength(20)]
-    public string? Phone { get; set; }
+    public string Phone { get; set; }
 
+    [Required]
     [Column("password")]
     [StringLength(255)]
-    public string Password { get; set; } = null!;
+    public string Password { get; set; }
 
     [Column("role_id")]
     public int? RoleId { get; set; }
@@ -59,7 +62,7 @@ public partial class User
 
     [ForeignKey("RoleId")]
     [InverseProperty("Users")]
-    public virtual Role? Role { get; set; }
+    public virtual Role Role { get; set; }
 
     [InverseProperty("Staff")]
     public virtual ICollection<SampleKit> SampleKits { get; set; } = new List<SampleKit>();
@@ -77,5 +80,5 @@ public partial class User
     public virtual ICollection<ShiftAssignment> ShiftAssignments { get; set; } = new List<ShiftAssignment>();
 
     [InverseProperty("User")]
-    public virtual UserProfile? UserProfile { get; set; }
+    public virtual UserProfile UserProfile { get; set; }
 }

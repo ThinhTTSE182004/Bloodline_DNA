@@ -24,21 +24,21 @@ public partial class OrderDetail
 
     [Column("status")]
     [StringLength(50)]
-    public string? Status { get; set; }
+    public string Status { get; set; }
 
     [InverseProperty("OrderDetail")]
     public virtual ICollection<DeliveryTask> DeliveryTasks { get; set; } = new List<DeliveryTask>();
 
     [ForeignKey("MedicalStaffId")]
     [InverseProperty("OrderDetails")]
-    public virtual User MedicalStaff { get; set; } = null!;
+    public virtual User MedicalStaff { get; set; }
 
     [ForeignKey("OrderId")]
     [InverseProperty("OrderDetails")]
-    public virtual Order Order { get; set; } = null!;
+    public virtual Order Order { get; set; }
 
     [InverseProperty("OrderDetail")]
-    public virtual Result? Result { get; set; }
+    public virtual Result Result { get; set; }
 
     [InverseProperty("OrderDetail")]
     public virtual ICollection<SampleKit> SampleKits { get; set; } = new List<SampleKit>();
@@ -48,5 +48,5 @@ public partial class OrderDetail
 
     [ForeignKey("ServicePackageId")]
     [InverseProperty("OrderDetails")]
-    public virtual ServicePackage ServicePackage { get; set; } = null!;
+    public virtual ServicePackage ServicePackage { get; set; }
 }

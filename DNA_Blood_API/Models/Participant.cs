@@ -15,26 +15,26 @@ public partial class Participant
 
     [Column("full_name")]
     [StringLength(100)]
-    public string? FullName { get; set; }
+    public string FullName { get; set; }
 
     [Column("sex")]
     [StringLength(10)]
-    public string? Sex { get; set; }
+    public string Sex { get; set; }
 
     [Column("birth_date")]
     public DateOnly BirthDate { get; set; }
 
     [Column("phone")]
     [StringLength(12)]
-    public string? Phone { get; set; }
+    public string Phone { get; set; }
 
     [Column("relationship")]
     [StringLength(30)]
-    public string? Relationship { get; set; }
+    public string Relationship { get; set; }
 
     [Column("name_relation")]
     [StringLength(30)]
-    public string? NameRelation { get; set; }
+    public string NameRelation { get; set; }
 
     [InverseProperty("Participant")]
     public virtual ICollection<Sample> Samples { get; set; } = new List<Sample>();
