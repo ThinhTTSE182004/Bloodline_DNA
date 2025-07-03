@@ -7,8 +7,8 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("User_profile")]
-[Index("Email", Name = "UQ__User_pro__AB6E6164257358ED", IsUnique = true)]
-[Index("UserId", Name = "UQ__User_pro__B9BE370E32CDC06F", IsUnique = true)]
+[Index("Email", Name = "UQ__User_pro__AB6E6164D192F0FC", IsUnique = true)]
+[Index("UserId", Name = "UQ__User_pro__B9BE370EFF6E16EB", IsUnique = true)]
 public partial class UserProfile
 {
     [Key]
@@ -18,20 +18,22 @@ public partial class UserProfile
     [Column("user_id")]
     public int UserId { get; set; }
 
+    [Required]
     [Column("name")]
     [StringLength(100)]
-    public string Name { get; set; } = null!;
+    public string Name { get; set; }
 
+    [Required]
     [Column("email")]
     [StringLength(100)]
-    public string Email { get; set; } = null!;
+    public string Email { get; set; }
 
     [Column("phone")]
     [StringLength(20)]
-    public string? Phone { get; set; }
+    public string Phone { get; set; }
 
     [StringLength(100)]
-    public string? Specialization { get; set; }
+    public string Specialization { get; set; }
 
     public int? YearsOfExperience { get; set; }
 
@@ -43,5 +45,5 @@ public partial class UserProfile
 
     [ForeignKey("UserId")]
     [InverseProperty("UserProfile")]
-    public virtual User User { get; set; } = null!;
+    public virtual User User { get; set; }
 }

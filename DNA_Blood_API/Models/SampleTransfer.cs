@@ -25,19 +25,20 @@ public partial class SampleTransfer
     [Column("transfer_date", TypeName = "datetime")]
     public DateTime? TransferDate { get; set; }
 
+    [Required]
     [Column("sample_transfer_status")]
     [StringLength(50)]
-    public string SampleTransferStatus { get; set; } = null!;
+    public string SampleTransferStatus { get; set; }
 
     [ForeignKey("MedicalStaffId")]
     [InverseProperty("SampleTransferMedicalStaffs")]
-    public virtual User MedicalStaff { get; set; } = null!;
+    public virtual User MedicalStaff { get; set; }
 
     [ForeignKey("SampleId")]
     [InverseProperty("SampleTransfers")]
-    public virtual Sample Sample { get; set; } = null!;
+    public virtual Sample Sample { get; set; }
 
     [ForeignKey("StaffId")]
     [InverseProperty("SampleTransferStaffs")]
-    public virtual User Staff { get; set; } = null!;
+    public virtual User Staff { get; set; }
 }

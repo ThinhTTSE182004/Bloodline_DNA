@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Result")]
-[Index("OrderDetailId", Name = "UQ__Result__3C5A4081C0206C03", IsUnique = true)]
+[Index("OrderDetailId", Name = "UQ__Result__3C5A4081956B94C9", IsUnique = true)]
 public partial class Result
 {
     [Key]
@@ -21,19 +21,20 @@ public partial class Result
     public DateTime? ReportDate { get; set; }
 
     [Column("test_summary", TypeName = "text")]
-    public string? TestSummary { get; set; }
+    public string TestSummary { get; set; }
 
     [Column("raw_data_path")]
     [StringLength(255)]
     [Unicode(false)]
-    public string? RawDataPath { get; set; }
+    public string RawDataPath { get; set; }
 
     [Column("report_url")]
-    public string? ReportUrl { get; set; }
+    public string ReportUrl { get; set; }
 
+    [Required]
     [Column("result_status")]
     [StringLength(50)]
-    public string ResultStatus { get; set; } = null!;
+    public string ResultStatus { get; set; }
 
     [Column("create_at", TypeName = "datetime")]
     public DateTime? CreateAt { get; set; }
@@ -43,5 +44,8 @@ public partial class Result
 
     [ForeignKey("OrderDetailId")]
     [InverseProperty("Result")]
-    public virtual OrderDetail OrderDetail { get; set; } = null!;
+    public virtual OrderDetail OrderDetail { get; set; }
+
+    [InverseProperty("Result")]
+    public virtual ICollection<TestLocusResult> TestLocusResults { get; set; } = new List<TestLocusResult>();
 }

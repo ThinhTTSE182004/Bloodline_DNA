@@ -26,24 +26,25 @@ public partial class DeliveryTask
     public DateTime? AssignedAt { get; set; }
 
     [Column("note")]
-    public string? Note { get; set; }
+    public string Note { get; set; }
 
+    [Required]
     [Column("delivery_task_status")]
     [StringLength(50)]
-    public string DeliveryTaskStatus { get; set; } = null!;
+    public string DeliveryTaskStatus { get; set; }
 
     [Column("complete_at")]
     public DateOnly? CompleteAt { get; set; }
 
     [ForeignKey("ManagerId")]
     [InverseProperty("DeliveryTaskManagers")]
-    public virtual User Manager { get; set; } = null!;
+    public virtual User Manager { get; set; }
 
     [ForeignKey("OrderDetailId")]
     [InverseProperty("DeliveryTasks")]
-    public virtual OrderDetail OrderDetail { get; set; } = null!;
+    public virtual OrderDetail OrderDetail { get; set; }
 
     [ForeignKey("StaffId")]
     [InverseProperty("DeliveryTaskStaffs")]
-    public virtual User Staff { get; set; } = null!;
+    public virtual User Staff { get; set; }
 }
