@@ -132,7 +132,7 @@ const StaffManagement = () => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0 }}
             className="mb-8">
-            <h1 className="flex justify-center text-3xl font-bold text-gray-900 mb-2">Staff Management</h1>
+            <h1 className="flex justify-center text-3xl font-bold text-gray-900 mb-2 hover:text-blue-500 transition-all duration-300">Staff Management</h1>
             <p className="flex justify-center text-gray-600">Comprehensive overview of all employees and their statistics</p>
           </div>
 
@@ -148,7 +148,7 @@ const StaffManagement = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500">
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-blue-500 hover:shadow-2xl hover:bg-blue-50 transition-all duration-300">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-blue-100">
                   <FaUsers className="h-6 w-6 text-blue-600" />
@@ -164,7 +164,7 @@ const StaffManagement = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500">
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-500 hover:shadow-2xl hover:bg-green-50 transition-all duration-300">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-green-100">
                   <FaUserMd className="h-6 w-6 text-green-600" />
@@ -180,7 +180,7 @@ const StaffManagement = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500">
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-purple-500 hover:shadow-2xl hover:bg-purple-50 transition-all duration-300">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-purple-100">
                   <FaUserTie className="h-6 w-6 text-purple-600" />
@@ -196,7 +196,7 @@ const StaffManagement = () => {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500">
+              className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-orange-500 hover:shadow-2xl hover:bg-orange-50 transition-all duration-300">
               <div className="flex items-center">
                 <div className="p-3 rounded-full bg-orange-100">
                   <FaChartBar className="h-6 w-6 text-orange-600" />
@@ -217,7 +217,7 @@ const StaffManagement = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
               className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Role Distribution</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 hover:text-blue-500 transition-all duration-300">Role Distribution</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -245,7 +245,7 @@ const StaffManagement = () => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
               className="bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Medical Staff Experience Distribution</h3>
+              <h3 className="text-lg font-semibold text-gray-900 mb-4 hover:text-blue-500 transition-all duration-300">Medical Staff Experience Distribution</h3>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={experienceData}>
                   <CartesianGrid strokeDasharray="3 3" />
@@ -267,8 +267,8 @@ const StaffManagement = () => {
             className="bg-white rounded-xl shadow-lg p-6 mb-8">
             <div className="flex flex-col md:flex-row gap-4">
               <div className="flex-1">
-                <div className="relative">
-                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                <div className="relative group">
+                  <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 group-hover:text-blue-500 transition-all duration-300" />
                   <input
                     type="text"
                     placeholder="Search by name or ID..."
@@ -279,7 +279,7 @@ const StaffManagement = () => {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <FaFilter className="text-gray-400" />
+                <FaFilter className="text-gray-400 hover:text-blue-500 transition-all duration-300" />
                 <select
                   value={filterRole}
                   onChange={(e) => setFilterRole(e.target.value)}
@@ -301,7 +301,7 @@ const StaffManagement = () => {
             viewport={{ once: true }}
             className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Employee List</h3>
+              <h3 className="text-lg font-semibold text-gray-900 hover:text-blue-500 transition-all duration-300">Employee List</h3>
               <p className="text-sm text-gray-600">Showing {allStaff.length} of {totalEmployees} employees</p>
             </div>
             

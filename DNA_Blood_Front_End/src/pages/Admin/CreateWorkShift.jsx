@@ -143,7 +143,7 @@ const CreateWorkShift = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.1 }}>
+              transition={{ duration: 0.8, delay: 0.2 }}>
               <label className="block mb-1 font-medium">Shift Name</label>
               <select name="shiftName" value={shiftName} onChange={handleShiftChange} className="w-full border p-2 rounded" required>
                 {shiftOptions.map(opt => (
@@ -165,7 +165,7 @@ const CreateWorkShift = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}>
+              transition={{ duration: 0.8, delay: 0.3 }}>
               <label className="block mb-1 font-medium">Start Time</label>
               <input
                 name="startTime"
@@ -179,7 +179,7 @@ const CreateWorkShift = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}>
+              transition={{ duration: 0.8, delay: 0.4 }}>
               <label className="block mb-1 font-medium">End Time</label>
               <input
                 name="endTime"
@@ -193,14 +193,14 @@ const CreateWorkShift = () => {
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}>
+              transition={{ duration: 0.8, delay: 0.5 }}>
               <label className="block mb-1 font-medium">Description</label>
               <textarea name="description" value={description} onChange={handleDescriptionChange} className="w-full border p-2 rounded" rows={2} />
             </motion.div>
             <motion.button 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
               type="submit" className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Create Shift</motion.button>
           </form>
           {msg && <div className="mt-2 text-center text-red-600">{msg}</div>}

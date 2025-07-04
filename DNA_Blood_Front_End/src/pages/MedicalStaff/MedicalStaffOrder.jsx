@@ -25,6 +25,13 @@ const MedicalStaffOrder = () => {
   });
   const [resultError, setResultError] = useState('');
 
+  // 1. State cho filter
+  const [transferStatusFilter, setTransferStatusFilter] = useState('all');
+  const [sampleTypeFilter, setSampleTypeFilter] = useState('all');
+  const [sampleStatusFilter, setSampleStatusFilter] = useState('all');
+  const [orderServiceFilter, setOrderServiceFilter] = useState('all');
+  const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+
   const navigate = useNavigate();
 
   const fetchAllData = async () => {
@@ -173,6 +180,19 @@ const MedicalStaffOrder = () => {
     }
   };
 
+  // 2. Filtered data
+  const filteredSampleTransfers = sampleTransfers.filter(t =>
+    transferStatusFilter === 'all' || t.sampleTransferStatus === transferStatusFilter
+  );
+  const filteredSamples = samples.filter(s =>
+    (sampleTypeFilter === 'all' || s.sampleTypeName === sampleTypeFilter) &&
+    (sampleStatusFilter === 'all' || s.sampleStatus === sampleStatusFilter)
+  );
+  const filteredOrderDetails = orderDetails.filter(o =>
+    (orderServiceFilter === 'all' || o.serviceName === orderServiceFilter) &&
+    (orderStatusFilter === 'all' || o.status === orderStatusFilter)
+  );
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-100">
@@ -198,8 +218,17 @@ const MedicalStaffOrder = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay:0}}
             className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="px-6 py-5 bg-gradient-to-r from-blue-600 to-blue-700">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-6 py-5 bg-gradient-to-r from-blue-600 to-blue-700">
               <h2 className="text-xl font-bold text-white flex items-center"><FaClipboardList className="mr-2" /> Sample Transfers</h2>
+              <div className="flex items-center gap-2 mt-2 sm:mt-0">
+                <label className="text-white font-medium">Status:</label>
+                <select value={transferStatusFilter} onChange={e => setTransferStatusFilter(e.target.value)} className="rounded px-2 py-1">
+                  <option value="all">All</option>
+                  {[...new Set(sampleTransfers.map(t => t.sampleTransferStatus))].map(status => (
+                    <option key={status} value={status}>{status}</option>
+                  ))}
+                </select>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -212,7 +241,7 @@ const MedicalStaffOrder = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {sampleTransfers.map((transfer) => (
+                  {filteredSampleTransfers.map((transfer) => (
                     <tr key={transfer.sampleTransferId} className="hover:bg-gray-50">
                       <td className="px-8 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{transfer.sampleTransferId}</td>
                       <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">{transfer.staffName}</td>
@@ -247,8 +276,28 @@ const MedicalStaffOrder = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay:0.2}}
             className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="px-6 py-5 bg-gradient-to-r from-teal-600 to-teal-700">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-6 py-5 bg-gradient-to-r from-teal-600 to-teal-700">
               <h2 className="text-xl font-bold text-white flex items-center"><FaFlask className="mr-2" /> Sample Processing</h2>
+              <div className="flex flex-wrap gap-2 mt-2 sm:mt-0">
+                <div className="flex items-center gap-1">
+                  <label className="text-white font-medium">Type:</label>
+                  <select value={sampleTypeFilter} onChange={e => setSampleTypeFilter(e.target.value)} className="rounded px-2 py-1">
+                    <option value="all">All</option>
+                    {[...new Set(samples.map(s => s.sampleTypeName))].map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-1">
+                  <label className="text-white font-medium">Status:</label>
+                  <select value={sampleStatusFilter} onChange={e => setSampleStatusFilter(e.target.value)} className="rounded px-2 py-1">
+                    <option value="all">All</option>
+                    {[...new Set(samples.map(s => s.sampleStatus))].map(status => (
+                      <option key={status} value={status}>{status}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -261,7 +310,7 @@ const MedicalStaffOrder = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {samples.map((sample) => (
+                  {filteredSamples.map((sample) => (
                     <tr key={sample.sampleId} className="hover:bg-gray-50">
                       <td className="px-8 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{sample.sampleId}</td>
                       <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">{sample.sampleTypeName}</td>
@@ -309,8 +358,28 @@ const MedicalStaffOrder = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay:0.4}}
             className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="px-6 py-5 bg-gradient-to-r from-green-600 to-green-700">
-                <h2 className="text-xl font-bold text-white flex items-center"><FaClipboardList className="mr-2" /> Order Details</h2>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between px-6 py-5 bg-gradient-to-r from-green-600 to-green-700">
+              <h2 className="text-xl font-bold text-white flex items-center"><FaClipboardList className="mr-2" /> Order Details</h2>
+              <div className="flex flex-wrap gap-2 mt-2 sm:mt-0">
+                <div className="flex items-center gap-1">
+                  <label className="text-white font-medium">Service:</label>
+                  <select value={orderServiceFilter} onChange={e => setOrderServiceFilter(e.target.value)} className="rounded px-2 py-1">
+                    <option value="all">All</option>
+                    {[...new Set(orderDetails.map(o => o.serviceName))].map(service => (
+                      <option key={service} value={service}>{service}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex items-center gap-1">
+                  <label className="text-white font-medium">Status:</label>
+                  <select value={orderStatusFilter} onChange={e => setOrderStatusFilter(e.target.value)} className="rounded px-2 py-1">
+                    <option value="all">All</option>
+                    {[...new Set(orderDetails.map(o => o.status))].map(status => (
+                      <option key={status} value={status}>{status}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
             <div className="overflow-x-auto">
                 <table className="min-w-full divide-y divide-gray-200">
@@ -324,7 +393,7 @@ const MedicalStaffOrder = () => {
                         </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
-                        {orderDetails.map((order) => (
+                        {filteredOrderDetails.map((order) => (
                             <tr key={order.orderDetailId} className="hover:bg-gray-50">
                                 <td className="px-8 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{order.orderDetailId}</td>
                                 <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">{order.customerName}</td>

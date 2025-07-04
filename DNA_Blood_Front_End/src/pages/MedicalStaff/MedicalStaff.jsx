@@ -96,8 +96,8 @@ const MedicalStaff = () => {
   const stats = calculateStats();
   const chartData = getChartData();
 
-  const StatCard = ({ icon, title, value, color }) => (
-    <div className={`bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4 transform transition-all duration-300 hover:scale-105 ${color}`}>
+  const StatCard = ({ icon, title, value, color, hoverBg }) => (
+    <div className={`bg-white shadow-lg rounded-lg p-6 flex items-center space-x-4 transform transition-all duration-300 hover:scale-105 ${hoverBg} hover:shadow-2xl cursor-pointer group ${color}`}>
       {icon}
       <div>
         <p className="text-sm font-medium text-gray-500">{title}</p>
@@ -115,7 +115,7 @@ const MedicalStaff = () => {
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="flex justify-center text-3xl font-bold text-gray-800 mb-8 cursor-default">
+            className="flex justify-center text-3xl font-bold text-gray-800 mb-8 cursor-default hover:text-teal-500 transition-all duration-300">
             Medical Staff Dashboard
           </motion.h1>
           {error && <div className="bg-red-50 border-l-4 border-red-400 p-4 mb-4"><p className="text-sm text-red-700">{error}</p></div>}
@@ -125,18 +125,18 @@ const MedicalStaff = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay:0}}
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <StatCard icon={<FaTags className="w-8 h-8 text-yellow-500" />} title="Total Samples Assigned" value={stats.totalSamples} color="border-l-4 border-yellow-500" />
-            <StatCard icon={<FaVials className="w-8 h-8 text-blue-500" />} title="Processing Samples" value={stats.processingSamples} color="border-l-4 border-blue-500" />
-            <StatCard icon={<FaCheckCircle className="w-8 h-8 text-green-500" />} title="Completed Samples" value={stats.completedSamples} color="border-l-4 border-green-500" />
-            <StatCard icon={<FaCheckCircle className="w-8 h-8 text-indigo-500" />} title="Transfers Received" value={stats.receivedTransfers} color="border-l-4 border-indigo-500" />
+            <StatCard icon={<FaTags className="w-8 h-8 text-yellow-500" />} title="Total Samples Assigned" value={stats.totalSamples} color="border-l-4 border-yellow-500" hoverBg="hover:bg-yellow-50" />
+            <StatCard icon={<FaVials className="w-8 h-8 text-blue-500" />} title="Processing Samples" value={stats.processingSamples} color="border-l-4 border-blue-500" hoverBg="hover:bg-blue-50" />
+            <StatCard icon={<FaCheckCircle className="w-8 h-8 text-green-500" />} title="Completed Samples" value={stats.completedSamples} color="border-l-4 border-green-500" hoverBg="hover:bg-green-50" />
+            <StatCard icon={<FaCheckCircle className="w-8 h-8 text-indigo-500" />} title="Transfers Received" value={stats.receivedTransfers} color="border-l-4 border-indigo-500" hoverBg="hover:bg-indigo-50" />
           </motion.div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay:0.2}}
-              className="lg:col-span-1 bg-white shadow-lg rounded-lg p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center cursor-default"><FaChartPie className="mr-2 text-gray-600" />Sample Status Distribution</h2>
+              className="lg:col-span-1 bg-white shadow-lg rounded-lg p-6 group">
+              <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center cursor-default group-hover:text-teal-500 transition-all duration-300"><FaChartPie className="mr-2 text-gray-600 group-hover:text-teal-500 transition-all duration-300" />Sample Status Distribution</h2>
               <div className="h-80 flex items-center justify-center">
                 <Pie data={chartData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'top' } } }} />
               </div>
@@ -153,9 +153,9 @@ const MedicalStaff = () => {
                 <table className="min-w-full divide-y divide-gray-200 border border-gray-300">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sample ID</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sample Type</th>
-                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-default hover:text-gray-900 transition-all duration-300">Sample ID</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-default hover:text-gray-900 transition-all duration-300">Sample Type</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-default hover:text-gray-900 transition-all duration-300">Status</th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">

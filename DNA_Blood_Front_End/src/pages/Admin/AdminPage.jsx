@@ -341,7 +341,7 @@ const AdminPage = () => {
                 className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
                 <div className="bg-white rounded-xl shadow p-6">
                   <h2 className="text-xl font-bold text-green-700 mb-4">Medical Staffs</h2>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto max-h-96 overflow-y-auto">
                     <table className="min-w-full border border-gray-200">
                       <thead>
                         <tr className="bg-gray-100">
@@ -367,7 +367,7 @@ const AdminPage = () => {
                 </div>
                 <div className="bg-white rounded-xl shadow p-6">
                   <h2 className="text-xl font-bold text-blue-700 mb-4">Staffs</h2>
-                  <div className="overflow-x-auto">
+                  <div className="overflow-x-auto max-h-96 overflow-y-auto">
                     <table className="min-w-full border border-gray-200">
                       <thead>
                         <tr className="bg-gray-100">

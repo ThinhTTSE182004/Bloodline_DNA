@@ -73,7 +73,7 @@ const RegisterStaff = () => {
             <motion.input 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               name="username" 
               value={staffForm.username} 
               onChange={handleStaffChange} 
@@ -83,7 +83,7 @@ const RegisterStaff = () => {
             <motion.input 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
               name="password" 
               type="password" 
               value={staffForm.password} 
@@ -94,7 +94,7 @@ const RegisterStaff = () => {
             <motion.input 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
               name="email" 
               value={staffForm.email} 
               onChange={handleStaffChange} 
@@ -104,7 +104,7 @@ const RegisterStaff = () => {
             <motion.input 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
               name="phone" 
               value={staffForm.phone} 
               onChange={handleStaffChange} 
@@ -114,7 +114,7 @@ const RegisterStaff = () => {
             <motion.button 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
               type="submit" 
               className="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
               Create Staff
