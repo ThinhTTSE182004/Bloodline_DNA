@@ -448,8 +448,8 @@ const WorkAssignment = () => {
           <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
             <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl relative">
               <button className="absolute top-2 right-4 text-2xl text-gray-400 hover:text-gray-700" onClick={() => setShowPopup(false)}>&times;</button>
-              <h2 className="text-xl font-bold mb-4 text-green-700 text-center">Shift Assignment for {selectedDate.split('-').reverse().join('/')}</h2>
-              <div className="overflow-x-auto">
+              <h2 className="text-xl font-bold mb-4 text-green-700 text-center hover:text-green-600 transition-all duration-300">Shift Assignment for {selectedDate.split('-').reverse().join('/')}</h2>
+              <div className="overflow-x-auto max-h-96 overflow-y-auto">
                 <table className="min-w-full border border-green-200">
                   <thead>
                     <tr className="bg-green-50">
