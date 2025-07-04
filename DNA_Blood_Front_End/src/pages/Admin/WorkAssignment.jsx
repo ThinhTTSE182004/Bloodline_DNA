@@ -43,6 +43,8 @@ const WorkAssignment = () => {
   const [loadingAutoAssign, setLoadingAutoAssign] = useState(false);
   const [loadingAcceptAll, setLoadingAcceptAll] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedWeek, setSelectedWeek] = useState(0);
+  const [selectedShiftType, setSelectedShiftType] = useState('all');
 
   // Hỗ trợ chọn tháng/năm
   const monthSelectRef = useRef();
@@ -319,7 +321,7 @@ const WorkAssignment = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8}}
             viewport={{ once: true }}
-            className="flex-1 bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+            className="flex-1 bg-white rounded-xl shadow-lg p-6 max-h-96 overflow-y-auto border border-blue-100">
             <h2 className="font-semibold mb-2 text-blue-700">Medical Staffs</h2>
             <table className="w-full text-left">
               <thead>
@@ -345,7 +347,7 @@ const WorkAssignment = () => {
             whileInView={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.8}}
             viewport={{ once: true }}
-            className="flex-1 bg-white rounded-xl shadow-lg p-6 border border-blue-100">
+            className="flex-1 bg-white rounded-xl shadow-lg p-6 max-h-96 overflow-y-auto border border-blue-100">
             <h2 className="font-semibold mb-2 text-blue-700">Staffs</h2>
             <table className="w-full text-left">
               <thead>
@@ -367,81 +369,115 @@ const WorkAssignment = () => {
             </table>
           </motion.div>
         </div>
+        {/* Filter + Auto Assignment and Accept Assignment All buttons for shift assignment table by week */}
+        <div className="flex flex-wrap gap-4 mb-4 items-center justify-end">
+          <div className="flex items-center gap-2">
+            <label className="font-semibold text-blue-700">Filter by week:</label>
+            <select
+              className="border rounded px-2 py-1"
+              value={selectedWeek}
+              onChange={e => setSelectedWeek(Number(e.target.value))}
+            >
+              <option value={0}>All weeks</option>
+              {weeks.map((_, idx) => (
+                <option key={idx + 1} value={idx + 1}>Week {idx + 1}</option>
+              ))}
+            </select>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="font-semibold text-blue-700">Filter by shift:</label>
+            <select
+              className="border rounded px-2 py-1"
+              value={selectedShiftType}
+              onChange={e => setSelectedShiftType(e.target.value)}
+            >
+              <option value="all">All</option>
+              <option value="morning">Morning</option>
+              <option value="afternoon">Afternoon</option>
+            </select>
+          </div>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8}}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8}}
+            viewport={{ once: true }}
+            className="px-4 py-2 bg-blue-600 text-white rounded font-bold shadow hover:bg-blue-700 transition"
+            onClick={fetchSuggestedAssignments}
+            disabled={loadingAutoAssign}
+          >
+            {loadingAutoAssign ? 'Auto-suggesting...' : 'Auto Assignment for Employee'}
+          </motion.button>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8}}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8}}
+            viewport={{ once: true }}
+            className="px-4 py-2 bg-green-600 text-white rounded font-bold shadow hover:bg-green-700 transition"
+            onClick={handleAcceptAll}
+            disabled={loadingAcceptAll}
+          >
+            {loadingAcceptAll ? 'Confirming all...' : 'Accept Assignment All'}
+          </motion.button>
+        </div>
         {/* Shift assignment table by week */}
         <div className="mt-4">
-          {/* Auto Assignment and Accept Assignment All buttons */}
-          <div className="flex gap-4 mb-4 justify-end">
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8}}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8}}
-              viewport={{ once: true }}
-              className="px-4 py-2 bg-blue-600 text-white rounded font-bold shadow hover:bg-blue-700 transition"
-              onClick={fetchSuggestedAssignments}
-              disabled={loadingAutoAssign}
-            >
-              {loadingAutoAssign ? 'Auto-suggesting...' : 'Auto Assignment for Employee'}
-            </motion.button>
-            <motion.button
-              initial={{ opacity: 0, scale: 0.8}}
-              whileInView={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8}}
-              viewport={{ once: true }}
-              className="px-4 py-2 bg-green-600 text-white rounded font-bold shadow hover:bg-green-700 transition"
-              onClick={handleAcceptAll}
-              disabled={loadingAcceptAll}
-            >
-              {loadingAcceptAll ? 'Confirming all...' : 'Accept Assignment All'}
-            </motion.button>
-          </div>
-          {weeks.map((weekDates, weekIdx) => (
-            <motion.div 
-              initial={{ opacity: 0, y: 40}}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8}}
-              viewport={{ once: true }}
-              key={weekIdx} className="mb-10 bg-white rounded-2xl shadow-xl border border-blue-100 p-6 transition hover:shadow-2xl">
-              <h3 className="font-semibold mb-4 text-blue-700 text-lg">Week {weekIdx + 1}</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full w-full border border-blue-200 text-sm">
-                  <thead>
-                    <tr>
-                      <th className="border px-2 py-2 bg-blue-50 text-blue-700">Shift / Day</th>
-                      {weekDates.map(date => (
-                        <th key={date} className="border px-2 py-2 bg-blue-50 text-blue-700">{date.slice(-2)}/{date.slice(5,7)}</th>
-                      ))}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {shifts.map(shift => (
-                      <tr key={shift.shiftId}>
-                        <td className="border px-2 py-2 font-semibold bg-blue-50 text-blue-800">{shift.shiftName}</td>
+          {weeks
+            .map((weekDates, weekIdx) => ({ weekDates, weekIdx }))
+            .filter(({ weekIdx }) => selectedWeek === 0 || selectedWeek === weekIdx + 1)
+            .map(({ weekDates, weekIdx }) => (
+              <motion.div 
+                initial={{ opacity: 0, y: 40}}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8}}
+                viewport={{ once: true }}
+                key={`${weekIdx}-${selectedWeek}-${selectedShiftType}`} className="mb-10 bg-white rounded-2xl shadow-xl border border-blue-100 p-6 transition hover:shadow-2xl">
+                <h3 className="font-semibold mb-4 text-blue-700 text-lg">Week {weekIdx + 1}</h3>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full w-full border border-blue-200 text-sm">
+                    <thead>
+                      <tr>
+                        <th className="border px-2 py-2 bg-blue-50 text-blue-700">Shift / Day</th>
                         {weekDates.map(date => (
-                          <td key={date} className="border px-1 py-1 align-top min-w-[140px] bg-white hover:bg-blue-50 transition">
-                            {suggestedAssignments
-                              .filter(a => a.shiftId === shift.shiftId && a.assignmentDate === date)
-                              .map(assignment => (
-                                <div key={assignment.userId} className="mb-2 p-2 rounded-xl bg-white shadow flex flex-col gap-1 group transition">
-                                  <span className="truncate font-medium text-blue-900 group-hover:text-blue-700 text-base">{assignment.userName}</span>
-                                  <span className="text-xs text-blue-500 mb-1">{assignment.roleName}</span>
-                                  <span className="text-xs text-green-700 mb-1">Assignment count: {getAssignedCount(assignment.userId)}</span>
-                                  <div className="flex justify-end">
-                                    <button className="px-2 py-1 bg-green-500 text-white rounded-full text-xs font-bold shadow hover:bg-green-600 transition flex items-center gap-1" onClick={() => handleAccept(assignment)} title="Accept shift assignment">
-                                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                      Accept
-                                    </button>
-                                  </div>
-                                </div>
-                              ))}
-                          </td>
+                          <th key={date} className="border px-2 py-2 bg-blue-50 text-blue-700">{date.slice(-2)}/{date.slice(5,7)}</th>
                         ))}
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </motion.div>
-          ))}
+                    </thead>
+                    <tbody>
+                      {shifts
+                        .filter(shift => {
+                          if (selectedShiftType === 'morning') return shift.shiftName && shift.shiftName.toLowerCase().includes('morning');
+                          if (selectedShiftType === 'afternoon') return shift.shiftName && shift.shiftName.toLowerCase().includes('afternoon');
+                          return true;
+                        })
+                        .map(shift => (
+                        <tr key={shift.shiftId}>
+                          <td className="border px-2 py-2 font-semibold bg-blue-50 text-blue-800">{shift.shiftName}</td>
+                          {weekDates.map(date => (
+                            <td key={date} className="border px-1 py-1 align-top min-w-[140px] bg-white hover:bg-blue-50 transition">
+                              {suggestedAssignments
+                                .filter(a => a.shiftId === shift.shiftId && a.assignmentDate === date)
+                                .map(assignment => (
+                                  <div key={assignment.userId} className="mb-2 p-2 rounded-xl bg-white shadow flex flex-col gap-1 group transition">
+                                    <span className="truncate font-medium text-blue-900 group-hover:text-blue-700 text-base">{assignment.userName}</span>
+                                    <span className="text-xs text-blue-500 mb-1">{assignment.roleName}</span>
+                                    <span className="text-xs text-green-700 mb-1">Assignment count: {getAssignedCount(assignment.userId)}</span>
+                                    <div className="flex justify-end">
+                                      <button className="px-2 py-1 bg-green-500 text-white rounded-full text-xs font-bold shadow hover:bg-green-600 transition flex items-center gap-1" onClick={() => handleAccept(assignment)} title="Accept shift assignment">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+                                        Accept
+                                      </button>
+                                    </div>
+                                  </div>
+                                ))}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </motion.div>
+            ))}
         </div>
         {/* Shift assignment popup */}
         {showPopup && selectedDate && (
