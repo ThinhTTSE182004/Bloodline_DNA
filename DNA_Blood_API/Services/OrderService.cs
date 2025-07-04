@@ -233,22 +233,6 @@ namespace DNA_API1.Services
                     collectionMethod.MethodName == "At Home" ? deliveryTasks : null
                 );
 
-                // 7. Create sample transfers after samples are saved
-                for (int i = 0; i < samples.Count; i++)
-                {
-                    var sample = samples[i];
-                    var (staffId, medicalStaffId) = sampleTransferInfos[i];
-                    var sampleTransfer = new SampleTransfer
-                    {
-                        SampleId = sample.SampleId,
-                        StaffId = staffId,
-                        MedicalStaffId = medicalStaffId,
-                        TransferDate = DateTime.Now,
-                        SampleTransferStatus = "Pending"
-                    };
-                    await _sampleTransferService.CreateSampleTransferAsync(sampleTransfer);
-                }
-
                 return orderId;
             }
             catch (Exception)

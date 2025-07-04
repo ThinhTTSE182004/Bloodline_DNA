@@ -141,8 +141,9 @@ namespace DNA_API1
                         "http://localhost:5174",
                         "http://localhost:3000",
                         "https://localhost:3000",
-                        "http://127.0.0.1:3000",
-                        "https://127.0.0.1:3000"
+                        "http://localhost:5058"
+                    //"http://127.0.0.1:3000",
+                    //"https://127.0.0.1:3000"
                     )
                     .AllowCredentials()
                     .AllowAnyHeader()
