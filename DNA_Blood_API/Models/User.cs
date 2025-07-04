@@ -81,4 +81,6 @@ public partial class User
 
     [InverseProperty("User")]
     public virtual UserProfile UserProfile { get; set; }
+    [InverseProperty("User")]
+    public virtual ICollection<Blog> Blogs { get; set; } = new List<Blog>();
 }

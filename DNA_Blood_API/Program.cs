@@ -105,6 +105,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IFeedbackRepository, FeedbackRepository>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
+            builder.Services.AddScoped<IBlogRepository, BlogRepository>();
 
             // Service Registration
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -127,30 +128,41 @@ namespace DNA_API1
             builder.Services.AddScoped<IFeedbackService, FeedbackService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
+            builder.Services.AddScoped<IBlogService, BlogService>();
 
             // Add SignalR
             builder.Services.AddSignalR();
 
             // CORS
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddDefaultPolicy(policy =>
+            //    {
+            //        policy.WithOrigins(
+            //            "http://localhost:5173",
+            //            "http://localhost:5174",
+            //            "http://localhost:3000",
+            //            "https://localhost:3000"
+            //        //"http://127.0.0.1:3000",
+            //        //"https://127.0.0.1:3000"
+            //        )
+            //        .AllowCredentials()
+            //        .AllowAnyHeader()
+            //        .AllowAnyMethod();
+            //    });
+            //});
+
             builder.Services.AddCors(options =>
             {
                 options.AddDefaultPolicy(policy =>
                 {
-                    policy.WithOrigins(
-                        "http://localhost:5173",
-                        "http://localhost:5174",
-                        "http://localhost:3000",
-                        "https://localhost:3000",
-                        "http://localhost:5058"
-                    //"http://127.0.0.1:3000",
-                    //"https://127.0.0.1:3000"
-                    )
-                    .AllowCredentials()
-                    .AllowAnyHeader()
-                    .AllowAnyMethod();
+                    policy
+                        .AllowAnyOrigin()      // Cho phép tất cả các origin
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                    // Không dùng .AllowCredentials() với .AllowAnyOrigin()
                 });
             });
-
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.

@@ -69,6 +69,8 @@ public partial class BloodlineDnaContext : DbContext
 
     public virtual DbSet<WorkShift> WorkShifts { get; set; }
 
+    public virtual DbSet<Blog> Blogs { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("name=Default");
 
@@ -387,6 +389,17 @@ public partial class BloodlineDnaContext : DbContext
         modelBuilder.Entity<WorkShift>(entity =>
         {
             entity.HasKey(e => e.ShiftId).HasName("PK__WorkShif__7B267220E12C8F89");
+        });
+
+        modelBuilder.Entity<Blog>(entity =>
+        {
+            entity.HasKey(e => e.BlogId).HasName("PK_Blog");
+
+            entity.HasOne(d => d.User)
+                .WithMany(p => p.Blogs)
+                .HasForeignKey(d => d.AuthorId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Blog_User");
         });
 
         OnModelCreatingPartial(modelBuilder);

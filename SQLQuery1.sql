@@ -279,6 +279,14 @@ FOREIGN KEY (medical_staff_id) REFERENCES USERS(user_id),
 FOREIGN KEY (sample_id) REFERENCES samples(sample_id)
 )
 
+CREATE TABLE Blog (
+    blog_id INT IDENTITY(1,1) PRIMARY KEY,
+    title NVARCHAR(255) NOT NULL,
+    content NVARCHAR(MAX) NOT NULL,
+    author_id INT NOT NULL,
+    created_at DATETIME DEFAULT GETDATE(),
+    FOREIGN KEY (author_id) REFERENCES USERS(user_id)
+);
 
 INSERT INTO [Bloodline_DNA].[dbo].[Roles] ([role_name]) VALUES
 ('Admin'),

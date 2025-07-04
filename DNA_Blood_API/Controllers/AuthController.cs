@@ -17,6 +17,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authentication.Google;
 using System.Web;
 using DNA_API1.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace LoginAPI.Controllers
 {
@@ -110,7 +111,7 @@ namespace LoginAPI.Controllers
             }
             return Ok(token);
         }
-        [Authorize(Roles ="Admin")]
+        [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpGet("admin-auth")]
         public IActionResult Authentication()
         {
