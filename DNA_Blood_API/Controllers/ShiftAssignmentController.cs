@@ -73,33 +73,14 @@ namespace DNA_Blood_API.Controllers
         [HttpGet("medical-staffs")]
         public async Task<IActionResult> GetMedicalStaffs()
         {
-            var medicalStaffs = await _userRepository.FindAsync(u => u.RoleId == 4);
-            var result = new List<DNA_Blood_API.ViewModels.MedicalStaffSimpleDTO>();
-            foreach (var u in medicalStaffs)
-            {
-                var profile = await _userProfileRepository.GetByUserIdAsync(u.UserId);
-                result.Add(new DNA_Blood_API.ViewModels.MedicalStaffSimpleDTO
-                {
-                    UserId = u.UserId,
-                    Name = u.Name,
-                    RoleId = u.RoleId ?? 0,
-                    YearsOfExperience = profile?.YearsOfExperience
-                });
-            }
+            var result = await _shiftAssignmentService.GetMedicalStaffsAsync();
             return Ok(result);
         }
 
-        // Lấy danh sách staff
         [HttpGet("staffs")]
         public async Task<IActionResult> GetStaffs()
         {
-            var staffs = await _userRepository.FindAsync(u => u.RoleId == 2);
-            var result = staffs.Select(u => new DNA_Blood_API.ViewModels.UserSimpleDTO
-            {
-                UserId = u.UserId,
-                Name = u.Name,
-                RoleId = u.RoleId ?? 0
-            }).ToList();
+            var result = await _shiftAssignmentService.GetStaffsAsync();
             return Ok(result);
         }
     }

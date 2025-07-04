@@ -10,9 +10,16 @@ namespace DNA_Blood_API.Services
     public class ShiftAssignmentService : IShiftAssignmentService
     {
         private readonly IRepository<ShiftAssignment> _shiftAssignmentRepository;
-        public ShiftAssignmentService(IRepository<ShiftAssignment> shiftAssignmentRepository)
+        private readonly IUserRepository _userRepository;
+        private readonly IUserProfileRepository _userProfileRepository;
+        public ShiftAssignmentService(
+            IRepository<ShiftAssignment> shiftAssignmentRepository,
+            IUserRepository userRepository,
+            IUserProfileRepository userProfileRepository)
         {
             _shiftAssignmentRepository = shiftAssignmentRepository;
+            _userRepository = userRepository;
+            _userProfileRepository = userProfileRepository;
         }
         public async Task<IEnumerable<ShiftAssignment>> GetAllAsync()
         {
@@ -208,6 +215,35 @@ namespace DNA_Blood_API.Services
                 .First();
 
             return selectedStaff;
+        }
+
+        public async Task<List<MedicalStaffSimpleDTO>> GetMedicalStaffsAsync()
+        {
+            var medicalStaffs = await _userRepository.FindAsync(u => u.RoleId == 4);
+            var result = new List<MedicalStaffSimpleDTO>();
+            foreach (var u in medicalStaffs)
+            {
+                var profile = await _userProfileRepository.GetByUserIdAsync(u.UserId);
+                result.Add(new MedicalStaffSimpleDTO
+                {
+                    UserId = u.UserId,
+                    Name = u.Name,
+                    RoleId = u.RoleId ?? 0,
+                    YearsOfExperience = profile?.YearsOfExperience
+                });
+            }
+            return result;
+        }
+
+        public async Task<List<UserSimpleDTO>> GetStaffsAsync()
+        {
+            var staffs = await _userRepository.FindAsync(u => u.RoleId == 2);
+            return staffs.Select(u => new UserSimpleDTO
+            {
+                UserId = u.UserId,
+                Name = u.Name,
+                RoleId = u.RoleId ?? 0
+            }).ToList();
         }
     }
 } 

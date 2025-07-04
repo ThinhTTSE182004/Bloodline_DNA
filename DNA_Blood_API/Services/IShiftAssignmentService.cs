@@ -14,6 +14,9 @@ namespace DNA_Blood_API.Services
         Task DeleteAsync(int id);
         Task<int> CountAssignedByRoleAsync(int shiftId, System.DateOnly date, int roleId);
         Task<List<ShiftAssignmentSuggestionDTO>> SuggestAssignments(List<ShiftSimpleDTO> shifts, List<UserSimpleDTO> users, List<System.DateOnly> dates);
+
+        Task<List<MedicalStaffSimpleDTO>> GetMedicalStaffsAsync();
+        Task<List<UserSimpleDTO>> GetStaffsAsync();
     }
 
     public class ShiftAssignmentCreateOrUpdateDTO
