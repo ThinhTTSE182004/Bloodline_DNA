@@ -1,7 +1,0 @@
-1. Chạy File SQL 
-2. Kết Nối SQL với Visual 
-3. Giải nén file zip trong api 
-4. Chạy https 
-5. Chạy Front_End
-
-6

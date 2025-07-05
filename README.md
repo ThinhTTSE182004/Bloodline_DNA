@@ -1,177 +1,136 @@
-Vui Lòng Đọc Hướng Dẫn Trước Khi Sử Dụng Repo này
-
-Video Hướng Dẫn Setup Sử Dụng Project SWP: 
+Video How To Set Up Project SWP: 
 =>   https://drive.google.com/file/d/1G_SkxpiZNnr7HCBDZPsjY_3uH2WL7Y_L/view?usp=sharing
 
+# BloodLine DNA
+---
 
-Bộ Dữ liệu mẫu cho Staff
-[
+## 🧬 Introduction
 
-  {
-    "username": "Nguyễn Văn An",
-    "password": "12345678",
-    "email": "nguyenvanan@gmail.com",
-    "phone": "0912345678"
-  }
-  
-  {
-    "username": "Trần Thị Thùy",
-    "password": "password123",
-    "email": "tranthithuy@yahoo.com",
-    "phone": "0908765432"
-  }
-  
-  {
-    "username": "Lê Minh Thư",
-    "password": "thu12345",
-    "email": "leminhthu@hotmail.com",
-    "phone": "0987654321"
-  }
-  
-  {
-    "username": "Phạm Thanh Sơn",
-    "password": "son12345",
-    "email": "phamthanhson@outlook.com",
-    "phone": "0923456789"
-  }
-  
-  {
-    "username": "Hoàng Thị Ma",
-    "password": "ma123456",
-    "email": "hoangthima@gmail.com",
-    "phone": "0965432109"
-  }
-  
-  {
-    "username": "Đoàn Văn Khánh",
-    "password": "khanhpassword",
-    "email": "doanvankhanh@mail.com",
-    "phone": "0901234567"
-  }
-  
-  {
-    "username": "Ngô Thị Thảo",
-    "password": "password2023",
-    "email": "ngothithao@outlook.com",
-    "phone": "0912349876"
-  }
-  
-  {
-    "username": "Vương Thanh Hà",
-    "password": "thanhha123",
-    "email": "vuongthanhha@yahoo.com",
-    "phone": "0923456789"
-  }
-  
-  {
-    "username": "Trần Như Quyền",
-    "password": "quyenpassword",
-    "email": "trannhuquyen@gmail.com",
-    "phone": "0945678901"
-  }
-  
-  {
-    "username": "Phan Thị Thùy",
-    "password": "thuy56789",
-    "email": "phanthithuy@hotmail.com",
-    "phone": "0981234567"
-  }
-  
-]
+**BloodLine DNA** is a modern platform for managing and analyzing genetic data. It provides a robust backend API (ASP.NET Core) and a fast, user-friendly frontend (Vite + Node.js). The system supports user management, DNA test processing, and seamless integration with external applications.
 
-Bộ Dữ Liệu Cho Medical Staff
-[
-  
-  {
-    "username": "Nguyễn Thị Lan",
-    "password": "12345678",
-    "email": "nguyenthilan@gmail.com",
-    "phone": "0912345678",
-    "yoe": 5,
-    "specialization": "Software Development"
-  }
-  
-  {
-    "username": "Trần Minh Tú",
-    "password": "password123",
-    "email": "tranminhtu@yahoo.com",
-    "phone": "0908765432",
-    "yoe": 3,
-    "specialization": "Data Analysis"
-  }
-  
-  {
-    "username": "Lê Thị Hương",
-    "password": "thu12345",
-    "email": "lethihuong@hotmail.com",
-    "phone": "0987654321",
-    "yoe": 2,
-    "specialization": "UI/UX Design"
-  }
-  
-  {
-    "username": "Phạm Quang Huy",
-    "password": "son12345",
-    "email": "phamquanghuy@outlook.com",
-    "phone": "0923456789",
-    "yoe": 8,
-    "specialization": "Machine Learning"
-  }
-  
-  {
-    "username": "Hoàng Thanh Mai",
-    "password": "ma123456",
-    "email": "hoangthanhmai@gmail.com",
-    "phone": "0965432109",
-    "yoe": 6,
-    "specialization": "Cybersecurity"
-  }
-  
-  {
-    "username": "Đoàn Bích Liên",
-    "password": "khanhpassword",
-    "email": "doanbichlien@mail.com",
-    "phone": "0901234567",
-    "yoe": 4,
-    "specialization": "Cloud Computing"
-  }
-  
-  {
-    "username": "Ngô Thiên Kim",
-    "password": "password2023",
-    "email": "ngothienkim@outlook.com",
-    "phone": "0912349876",
-    "yoe": 7,
-    "specialization": "Software Testing"
-  }
-  
-  {
-    "username": "Vương Hồng Hà",
-    "password": "thanhha123",
-    "email": "vuonghongha@yahoo.com",
-    "phone": "0923456789",
-    "yoe": 9,
-    "specialization": "Project Management"
-  }
-  
-  {
-    "username": "Trần Quang Hạ",
-    "password": "quyenpassword",
-    "email": "tranquangha@gmail.com",
-    "phone": "0945678901",
-    "yoe": 1,
-    "specialization": "Frontend Development"
-  }
-  
-  {
-    "username": "Phan Thị Yến",
-    "password": "thuy56789",
-    "email": "phanthiyen@hotmail.com",
-    "phone": "0981234567",
-    "yoe": 3,
-    "specialization": "Mobile App Development"
-  }
-  
-]
+---
 
+## 🚀 Features
 
+- User registration, login, JWT authentication, Google OAuth
+- User, DNA test, and result management
+- Email verification and password recovery
+- Integrated Swagger/OpenAPI documentation
+- CI/CD with GitHub Actions
+- SQL Server database support
+
+---
+
+## 📁 Project Structure
+
+```
+.
+├── DNA_Blood_API/           # Backend: ASP.NET Core Web API
+│   ├── Controllers/         # API controllers
+│   ├── Models/              # Data models
+│   ├── Repository/          # Data access layer
+│   ├── Services/            # Business logic services
+│   ├── ViewModels/          # View models for API responses
+│   ├── Hubs/                # SignalR hubs (if any)
+│   ├── Program.cs           # Application entry point
+│   ├── appsettings.json     # Application configuration
+│   └── DNA_API1.csproj      # .NET project file
+├── DNA_Blood_Front_End/     # Frontend: Vite/React/Angular/etc.
+│   ├── public/              # Static assets
+│   ├── src/                 # Source code
+│   ├── package.json         # Node.js project file
+│   └── vite.config.js       # Vite configuration
+├── .github/
+│   └── workflows/
+│       └── ci.yml           # GitHub Actions CI/CD pipeline
+├── README.md                # Project documentation
+└── ...                      # Other configuration files
+```
+
+---
+
+## ⚙️ Requirements
+
+- .NET 8.0 SDK
+- Node.js 20.x
+- SQL Server 2019 or newer
+- Docker (optional, for containerized setup)
+- Git
+
+---
+
+## 🛠️ Installation
+
+### 1. Clone the repository
+
+```sh
+git clone https://github.com/your-org/bloodline-dna.git
+cd bloodline-dna
+```
+
+### 2. Backend setup
+
+```sh
+cd DNA_Blood_API
+dotnet restore
+dotnet build
+dotnet run
+```
+
+### 3. Frontend setup
+
+```sh
+cd ../DNA_Blood_Front_End
+npm install
+npm run dev
+```
+
+### 4. Database connection configuration
+
+Edit `appsettings.json` in `DNA_Blood_API`:
+
+```json
+"ConnectionStrings": {
+  "Default": "Server=localhost,1433;Database=Bloodline_DNA;User Id=sa;Password=Your_password;"
+}
+```
+
+---
+
+## 💡 Usage
+
+- API documentation: [http://localhost:5058/swagger](http://localhost:5058/swagger)
+- Frontend interface: [http://localhost:5173](http://localhost:5173) (or your configured port)
+
+---
+
+## 🔄 CI/CD
+
+This project uses GitHub Actions ([.github/workflows/ci.yml](.github/workflows/ci.yml)) for automated build, test, and deployment.
+
+---
+
+## 🤝 Contribution
+
+Contributions are welcome!  
+To contribute:
+
+1. Fork the repository and create a new branch
+2. Commit your changes and push to your fork
+3. Open a pull request with a clear description of your changes
+
+Please follow the [Code of Conduct](CODE_OF_CONDUCT.md) and our [Contributing Guidelines](CONTRIBUTING.md) (if available).
+
+---
+
+## 📄 License
+
+MIT License. See the [LICENSE](LICENSE) file for details.
+
+---
+
+## 📬 Contact
+
+- Project Lead: [Rebuilt]
+- Email: [rebuiltteam@gmail.com]
+---
