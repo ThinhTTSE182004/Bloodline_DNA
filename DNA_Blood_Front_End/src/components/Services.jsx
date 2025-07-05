@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FaDna, FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/fa';
 import { useServices } from '../context/ServiceContext';
 import { useCart } from '../context/CartContext';
+import { motion } from 'framer-motion';
 
 const Services = () => {
   const { services, loading, error } = useServices();
@@ -64,16 +65,32 @@ const Services = () => {
     <section id="services" className="py-16 bg-gray-50 w-full">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center cursor-default">
+          <motion.h2 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-3xl font-bold text-gray-900 mb-4 flex items-center justify-center cursor-default">
             <FaDna className="w-8 h-8 mr-3 text-blue-600" />
             Our Services
-          </h2>
-          <p className="text-lg text-gray-600">
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="text-lg text-gray-600"
+          >
             Discover our comprehensive DNA testing services
-          </p>
+          </motion.p>
         </div>
 
-        <div className="relative w-full">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.1 }}
+          className="relative w-full">
           {/* Navigation Buttons */}
           <button
             onClick={prevSlide}
@@ -137,7 +154,13 @@ const Services = () => {
           </div>
 
           {/* More Services Button */}
-          <div className="text-center mt-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.5 }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="text-center mt-12"
+          >
             <Link
               to="/services"
               className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-blue-600 hover:bg-blue-700 transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
@@ -145,8 +168,8 @@ const Services = () => {
               View All Services
               <FaArrowRight className="ml-2 w-4 h-4" />
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

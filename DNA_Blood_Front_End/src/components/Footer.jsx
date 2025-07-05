@@ -15,15 +15,15 @@ const Footer = () => {
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                 <span className="sr-only">Facebook</span>
-                <FaFacebook className="h-6 w-6" />
+                <FaFacebook className="h-6 w-6 hover:text-blue-600 transition-colors duration-300" />
               </a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                 <span className="sr-only">Twitter</span>
-                <FaTwitter className="h-6 w-6" />
+                <FaTwitter className="h-6 w-6 hover:text-blue-400 transition-colors duration-300" />
               </a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                 <span className="sr-only">LinkedIn</span>
-                <FaLinkedinIn className="h-6 w-6" />
+                <FaLinkedinIn className="h-6 w-6 hover:text-blue-500 transition-colors duration-300" />
               </a>
             </div>
           </div>

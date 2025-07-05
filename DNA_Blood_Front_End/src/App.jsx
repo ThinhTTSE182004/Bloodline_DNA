@@ -51,8 +51,14 @@ const HomePage = () => (
         <Features />
         <Services />
         <Testimonials />
-        <Blog />
-        <FAQ />
+        <div className="grid grid-cols-1 lg:grid-cols-7 gap-8 px-4 sm:px-6 lg:px-8">
+            <div className="lg:col-span-5">
+                <Blog />
+            </div>
+            <div className="lg:col-span-2">
+                <FAQ />
+            </div>
+        </div>
         <Contact />
     </>
 );
