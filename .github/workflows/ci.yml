@@ -37,11 +37,6 @@ jobs:
         run: |
           echo "ConnectionStrings__Default=Server=localhost,1433;Database=Bloodline_DNA;User Id=sa;Password=Your_password123;" >> $GITHUB_ENV
 
-      - name: Run backend (on HTTP 5058)
-        run: |
-          dotnet run --project ./DNA_Blood_API/DNA_API1.csproj --urls=http://0.0.0.0:5058 
-
-
       # Frontend: Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
