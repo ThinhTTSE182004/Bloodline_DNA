@@ -20,7 +20,7 @@ const MedicalStaff = () => {
     setError(null);
     try {
       const fetchAPI = async (url) => {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
         if (!token) {
           navigate('/login');
           throw new Error('Unauthorized');

@@ -21,7 +21,7 @@ const ServiceManager = () => {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch('https://localhost:7113/api/Service/GetAllServiceWithPrice', {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
@@ -41,7 +41,7 @@ const ServiceManager = () => {
   const handleDelete = async (id) => {
     setError('');
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch(`https://localhost:7113/api/Service/DeleteServicePackage?id=${id}`, {
         method: 'DELETE',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
@@ -59,7 +59,7 @@ const ServiceManager = () => {
     setUpdateLoading(true);
     setUpdateError('');
     const { servicePackageId, serviceName, category, description, duration, processingTimeMinutes, price } = showUpdate.data;
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     try {
       await Promise.all([
         fetch(`https://localhost:7113/api/ServicePackage/UpdateServicePackage?id=${servicePackageId}`, {
@@ -85,7 +85,7 @@ const ServiceManager = () => {
   const handleCreate = async () => {
     setCreateLoading(true);
     setCreateError('');
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     try {
       const res = await fetch('https://localhost:7113/api/ServicePackage/CreateServicePackage', {
         method: 'POST',

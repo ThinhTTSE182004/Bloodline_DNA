@@ -39,7 +39,7 @@ const CreateWorkShift = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   React.useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     if (token) {
       try {
         const tokenData = JSON.parse(atob(token.split('.')[1]));
@@ -102,7 +102,7 @@ const CreateWorkShift = () => {
       return;
     }
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch('https://localhost:7113/api/WorkShift/CreateWorkShift', {
         method: 'POST',
         headers: {

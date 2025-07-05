@@ -20,7 +20,7 @@ const PaymentSuccess = () => {
     }
 
     // Nếu không có trong sessionStorage, thử lấy từ localStorage
-    const booking = JSON.parse(localStorage.getItem('bookingFormData'));
+    const booking = JSON.parse(sessionStorage.getItem('bookingFormData'));
     if (booking) {
       setUserDetails(booking);
       setServices(booking.selectedServices || []);

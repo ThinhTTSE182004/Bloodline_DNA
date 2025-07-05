@@ -26,7 +26,7 @@ const StaffOrder = () => {
     setError(null);
     try {
       const fetchAPI = async (url) => {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
         if (!token) {
           navigate('/login');
           throw new Error('Unauthorized');
@@ -76,7 +76,7 @@ const StaffOrder = () => {
 
     setError(null);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
@@ -112,7 +112,7 @@ const StaffOrder = () => {
   const handleUpdateSample = async (sampleId) => {
     setUpdateError(null);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;

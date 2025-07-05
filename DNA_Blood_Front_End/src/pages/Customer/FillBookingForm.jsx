@@ -43,7 +43,7 @@ const FillBookingForm = () => {
       }
     }
     // Nếu không có serviceId, lấy từ localStorage
-    const saved = localStorage.getItem('selectedServices');
+    const saved = sessionStorage.getItem('selectedServices');
     if (saved) {
       try {
         const arr = JSON.parse(saved);
@@ -103,7 +103,7 @@ const FillBookingForm = () => {
       deliveryAddress: formData.sampleCollectionMethod === 'At Home' ? formData.address : ''
     };
 
-    localStorage.setItem('bookingFormData', JSON.stringify(bookingData));
+    sessionStorage.setItem('bookingFormData', JSON.stringify(bookingData));
     navigate('/payment');
   };
 

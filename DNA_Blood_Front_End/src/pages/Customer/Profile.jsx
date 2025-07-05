@@ -24,7 +24,7 @@ const Profile = () => {
 
   const fetchProfile = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       
       if (!token) {
         console.log('No token found');
@@ -49,7 +49,8 @@ const Profile = () => {
 
       if (response.status === 401) {
         console.log('Token expired or invalid');
-        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        sessionStorage.removeItem('token');
         navigate('/login');
         return;
       }
@@ -102,7 +103,7 @@ const Profile = () => {
 
   const fetchOrderHistory = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
 
       const response = await fetch('https://localhost:7113/api/UserProfile/GetOrderHistory', {
@@ -132,7 +133,7 @@ const Profile = () => {
 
   const fetchResults = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
       const response = await fetch('https://localhost:7113/api/UserProfile/Results', {
         headers: {
@@ -152,7 +153,7 @@ const Profile = () => {
 
   const fetchOrderDetail = async (orderId) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
       const response = await fetch(`https://localhost:7113/api/UserProfile/GetOrderDetail?orderId=${orderId}`, {
         headers: {
@@ -172,7 +173,7 @@ const Profile = () => {
 
   const fetchFeedbackList = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
       const res = await fetch('https://localhost:7113/api/UserProfile/feedback-list', {
         headers: {
@@ -208,7 +209,8 @@ const Profile = () => {
       await signalRService.startConnection();
       
       // Join user group
-      const tokenData = JSON.parse(atob(localStorage.getItem('token').split('.')[1]));
+      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
+      const tokenData = JSON.parse(atob(token.split('.')[1]));
       await signalRService.joinUserGroup(tokenData.nameid);
       
       // Listen for profile updates
@@ -421,7 +423,7 @@ const Profile = () => {
                               e.stopPropagation();
                               setShareStatus(s => ({ ...s, [orderResults[0].resultId]: { loading: true, message: '' } }));
                               try {
-                                const token = localStorage.getItem('token');
+                                const token = sessionStorage.getItem('token') || localStorage.getItem('token');
                                 const res = await fetch('https://localhost:7113/api/UserProfile/ShareResult', {
                                   method: 'POST',
                                   headers: {
@@ -607,7 +609,7 @@ const Profile = () => {
                   setFeedbackLoading(true);
                   setFeedbackMsg('');
                   try {
-                    const token = localStorage.getItem('token');
+                    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
                     const res = await fetch('https://localhost:7113/api/UserProfile/Feedback', {
                       method: 'POST',
                       headers: {

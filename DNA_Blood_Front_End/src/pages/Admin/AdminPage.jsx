@@ -24,7 +24,7 @@ const AdminPage = () => {
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       try {
         // Medical Staffs
         const medRes = await fetch('https://localhost:7113/api/ShiftAssignment/medical-staffs', {
@@ -98,7 +98,7 @@ const AdminPage = () => {
       const ordersArr = [];
       const satisfactionArr = [];
       const mostUsedArr = [];
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       for (let day of daysArray) {
         const fromDate = new Date(selectedYear, selectedMonth, day, 0, 0, 0).toISOString();
         const toDate = new Date(selectedYear, selectedMonth, day, 23, 59, 59).toISOString();

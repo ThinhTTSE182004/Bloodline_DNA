@@ -15,7 +15,7 @@ const Payment = () => {
   const { services } = useServices();
 
   useEffect(() => {
-    const storedBookingData = JSON.parse(localStorage.getItem('bookingFormData'));
+          const storedBookingData = JSON.parse(sessionStorage.getItem('bookingFormData'));
 
     if (!storedBookingData || !storedBookingData.details || storedBookingData.details.length === 0) {
       alert('No booking information found. Redirecting...');
@@ -40,7 +40,7 @@ const Payment = () => {
 
   const handleConfirmPayment = async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) {
         alert('Please login to continue');
         navigate('/login');
@@ -90,9 +90,9 @@ const Payment = () => {
       console.log('API Success Response:', responseData);
 
       const paidIds = orderSummary.map(item => item.servicePackageId);
-      const allCart = JSON.parse(localStorage.getItem('cart')) || [];
+      const allCart = JSON.parse(sessionStorage.getItem('cart')) || [];
       const newCart = allCart.filter(item => !paidIds.includes(item.servicePackageId));
-      localStorage.setItem('cart', JSON.stringify(newCart));
+      sessionStorage.setItem('cart', JSON.stringify(newCart));
       refreshCart();
       
       sessionStorage.setItem('lastPaidBooking', JSON.stringify({

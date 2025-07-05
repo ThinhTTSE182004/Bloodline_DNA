@@ -19,7 +19,7 @@ const AccountSetting = () => {
 
   const fetchProfileData = useCallback(async () => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
@@ -36,9 +36,13 @@ const AccountSetting = () => {
       });
 
       if (response.status === 401) {
+        sessionStorage.removeItem('token');
         localStorage.removeItem('token');
+        sessionStorage.removeItem('isLoggedIn');
         localStorage.removeItem('isLoggedIn');
+        sessionStorage.removeItem('userName');
         localStorage.removeItem('userName');
+        sessionStorage.removeItem('userRole');
         localStorage.removeItem('userRole');
         navigate('/login');
         return;
@@ -111,7 +115,7 @@ const AccountSetting = () => {
     setSuccessMessage('');
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;

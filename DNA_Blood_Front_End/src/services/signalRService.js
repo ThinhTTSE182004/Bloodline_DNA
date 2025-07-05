@@ -3,7 +3,7 @@ import * as signalR from '@microsoft/signalr';
 class SignalRService {
     constructor() {
         this.connection = null;
-        this.hubUrl = 'https://localhost:7113/userHub';
+        this.hubUrl = 'https://localhost:7113/notificationHub';
         this.isConnecting = false;
         this.profileUpdateCallback = null;
     }
@@ -23,7 +23,7 @@ class SignalRService {
             this.isConnecting = true;
             this.connection = new signalR.HubConnectionBuilder()
                 .withUrl(this.hubUrl, {
-                    accessTokenFactory: () => localStorage.getItem('token'),
+                    accessTokenFactory: () => sessionStorage.getItem('token') || localStorage.getItem('token'),
                     skipNegotiation: true,
                     transport: signalR.HttpTransportType.WebSockets
                 })
@@ -71,7 +71,7 @@ class SignalRService {
         }
 
         try {
-            const token = localStorage.getItem('token');
+            const token = sessionStorage.getItem('token') || localStorage.getItem('token');
             if (token) {
                 const tokenData = JSON.parse(atob(token.split('.')[1]));
                 const userId = tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
@@ -93,7 +93,7 @@ class SignalRService {
 
         try {
             if (this.connection.state === signalR.HubConnectionState.Connected) {
-                const token = localStorage.getItem('token');
+                const token = sessionStorage.getItem('token') || localStorage.getItem('token');
                 if (token) {
                     const tokenData = JSON.parse(atob(token.split('.')[1]));
                     const userId = tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];

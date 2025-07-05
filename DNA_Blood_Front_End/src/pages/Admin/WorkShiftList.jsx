@@ -17,7 +17,7 @@ const WorkShiftList = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     if (token) {
       try {
         const tokenData = JSON.parse(atob(token.split('.')[1]));
@@ -37,7 +37,7 @@ const WorkShiftList = () => {
     setLoading(true);
     setError('');
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch('https://localhost:7113/api/WorkShift/WorkShift', {
         headers: {
           'Authorization': `Bearer ${token}`
@@ -84,7 +84,7 @@ const WorkShiftList = () => {
     e.preventDefault();
     setModalMsg('');
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch(`https://localhost:7113/api/WorkShift/UpdateWorkShift?id=${modalData.shiftId}`, {
         method: 'PUT',
         headers: {
@@ -114,7 +114,7 @@ const WorkShiftList = () => {
   const handleDelete = async (shiftId) => {
     setError('');
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch(`https://localhost:7113/api/WorkShift/DeleteWorkShift?id=${shiftId}`, {
         method: 'DELETE',
         headers: {

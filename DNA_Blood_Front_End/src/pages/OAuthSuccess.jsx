@@ -5,8 +5,8 @@ const OAuthSuccess = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Nếu đã có token trong localStorage, không cần xử lý lại
-    if (localStorage.getItem('token')) {
+    // Nếu đã có token trong sessionStorage, không cần xử lý lại
+    if (sessionStorage.getItem('token')) {
       navigate('/');
       return;
     }
@@ -17,8 +17,8 @@ const OAuthSuccess = () => {
 
     if (token) {
       window.history.replaceState({}, document.title, "/oauth-success");
-      localStorage.setItem('token', token);
-      localStorage.setItem('isLoggedIn', 'true');
+      sessionStorage.setItem('token', token);
+      sessionStorage.setItem('isLoggedIn', 'true');
       try {
         const tokenParts = token.split('.');
         const payload = JSON.parse(atob(tokenParts[1]));
@@ -30,8 +30,8 @@ const OAuthSuccess = () => {
 const userRole =
   payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
   payload['role'];
-        localStorage.setItem('userName', userName);
-        localStorage.setItem('userRole', userRole);
+        sessionStorage.setItem('userName', userName);
+        sessionStorage.setItem('userRole', userRole);
 
         // Dispatch custom event để thông báo đăng nhập thành công
         const loginEvent = new CustomEvent('userLogin', {
@@ -45,7 +45,7 @@ const userRole =
         } else {
           navigate('/');
         }
-      } catch (e) {
+      } catch {
         alert('Token không hợp lệ!');
         navigate('/login');
       }

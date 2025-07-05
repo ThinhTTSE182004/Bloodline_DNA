@@ -24,9 +24,9 @@ const Login = () => {
       if (response.ok) {
         const token = await response.text();
         
-        // Lưu token vào localStorage
-        localStorage.setItem('token', token);
-        localStorage.setItem('isLoggedIn', 'true');
+        // Lưu token vào sessionStorage
+        sessionStorage.setItem('token', token);
+        sessionStorage.setItem('isLoggedIn', 'true');
         
         // Phân tích token để lấy thông tin người dùng
         const tokenParts = token.split('.');
@@ -34,9 +34,9 @@ const Login = () => {
         const userName = payload.name || email.split('@')[0];
         const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
         
-        // Lưu thông tin người dùng
-        localStorage.setItem('userName', userName);
-        localStorage.setItem('userRole', userRole);
+        // Lưu thông tin người dùng vào sessionStorage
+        sessionStorage.setItem('userName', userName);
+        sessionStorage.setItem('userRole', userRole);
 
         // Dispatch custom event để thông báo đăng nhập thành công
         const loginEvent = new CustomEvent('userLogin', {
@@ -56,16 +56,11 @@ const Login = () => {
         }
       } else {
         const errorText = await response.text();
-        try {
-          const errorData = JSON.parse(errorText);
-          alert(`Đăng nhập thất bại: ${errorData.message || 'Sai email hoặc mật khẩu'}`);
-        } catch {
-          alert(`Đăng nhập thất bại: ${errorText || 'Sai email hoặc mật khẩu'}`);
-        }
+        alert(errorText);
       }
     } catch (error) {
-      console.error('Lỗi khi login:', error);
-      alert('Lỗi hệ thống khi đăng nhập');
+      console.error('Login error:', error);
+      alert('An error occurred during login. Please try again.');
     }
   };
 

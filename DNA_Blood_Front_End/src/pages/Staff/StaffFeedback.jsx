@@ -26,7 +26,7 @@ const StaffFeedback = () => {
       setLoading(true);
       setError('');
       try {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
         const res = await fetch('https://localhost:7113/api/Staff/feedback-list', {
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -62,7 +62,7 @@ const StaffFeedback = () => {
     setResponseLoading(true);
     setResponseMsg('');
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch('https://localhost:7113/api/Staff/feedback-response', {
         method: 'POST',
         headers: {

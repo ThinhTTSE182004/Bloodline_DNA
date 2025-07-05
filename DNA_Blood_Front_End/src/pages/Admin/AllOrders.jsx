@@ -17,7 +17,7 @@ const AllOrders = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     if (token) {
       try {
         const tokenData = JSON.parse(atob(token.split('.')[1]));
@@ -40,7 +40,7 @@ const AllOrders = () => {
   const fetchOrders = async () => {
     setLoading(true);
     setError('');
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     
     try {
       const response = await fetch('https://localhost:7113/api/Order/all-orders', {
@@ -63,7 +63,7 @@ const AllOrders = () => {
 
   const handleAcceptPayment = async (orderId) => {
     setUpdatingPayment(orderId);
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     
     try {
       const response = await fetch('https://localhost:7113/api/Order/update-payment-status', {

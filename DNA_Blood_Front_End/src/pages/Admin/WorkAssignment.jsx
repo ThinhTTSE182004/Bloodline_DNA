@@ -59,7 +59,7 @@ const WorkAssignment = () => {
   const todayStr = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     // Medical Staffs
     fetch('https://localhost:7113/api/ShiftAssignment/medical-staffs', {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
@@ -91,7 +91,7 @@ const WorkAssignment = () => {
   }, []);
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     fetch('https://localhost:7113/api/WorkShift/WorkShift', {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
@@ -142,7 +142,7 @@ const WorkAssignment = () => {
       maxShiftPerMonth
     };
     console.log('SuggestAssignments body:', body);
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     fetch('https://localhost:7113/api/ShiftAssignment/SuggestAssignments', {
       method: 'POST',
       headers: {
@@ -170,7 +170,7 @@ const WorkAssignment = () => {
 
   const handleAccept = async (assignment) => {
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch('https://localhost:7113/api/ShiftAssignment', {
         method: 'POST',
         headers: {
@@ -209,7 +209,7 @@ const WorkAssignment = () => {
         dates,
         maxShiftPerMonth
       };
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch('https://localhost:7113/api/ShiftAssignment/SuggestAssignments', {
         method: 'POST',
         headers: {
@@ -232,7 +232,7 @@ const WorkAssignment = () => {
   const handleAcceptAll = async () => {
     setLoadingAcceptAll(true);
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       for (const a of suggestedAssignments) {
         await fetch('https://localhost:7113/api/ShiftAssignment', {
           method: 'POST',

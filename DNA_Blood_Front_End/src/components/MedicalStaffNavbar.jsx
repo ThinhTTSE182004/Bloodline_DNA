@@ -9,7 +9,21 @@ const MedicalStaffNavbar = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const sessionToken = sessionStorage.getItem('token');
+    const localToken = localStorage.getItem('token');
+    
+    // Check if user should be logged out (sessionStorage token missing but localStorage token exists)
+    if (localToken && !sessionToken) {
+      // Auto logout - clear localStorage
+      localStorage.removeItem('token');
+      localStorage.removeItem('isLoggedIn');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('userRole');
+      navigate('/login');
+      return;
+    }
+    
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     if (token) {
       try {
         const base64Url = token.split('.')[1];
@@ -25,12 +39,15 @@ const MedicalStaffNavbar = () => {
         setUserName('Medical Staff');
       }
     }
-  }, []);
+  }, [navigate]);
 
   const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userRole');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('userRole');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('userRole');
     window.dispatchEvent(new CustomEvent('userLogout'));
     navigate('/login');
   };

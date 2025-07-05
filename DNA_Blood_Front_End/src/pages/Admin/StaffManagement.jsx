@@ -17,7 +17,7 @@ const StaffManagement = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     if (token) {
       try {
         const tokenData = JSON.parse(atob(token.split('.')[1]));
@@ -37,7 +37,7 @@ const StaffManagement = () => {
     const fetchStaffData = async () => {
       setLoading(true);
       setError('');
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       
       try {
         // Fetch Medical Staffs

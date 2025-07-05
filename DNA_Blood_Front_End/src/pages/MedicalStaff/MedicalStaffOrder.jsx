@@ -40,7 +40,7 @@ const MedicalStaffOrder = () => {
     setActionError('');
     try {
       const fetchAPI = async (url) => {
-        const token = localStorage.getItem('token');
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
         if (!token) {
           navigate('/login');
           throw new Error('Unauthorized');
@@ -91,7 +91,7 @@ const MedicalStaffOrder = () => {
 
     setActionError('');
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) {
         navigate('/login');
         return;
@@ -150,7 +150,7 @@ const MedicalStaffOrder = () => {
     };
 
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const response = await fetch('https://localhost:7113/api/MedicalStaff/add-result', {
         method: 'POST',
         headers: {

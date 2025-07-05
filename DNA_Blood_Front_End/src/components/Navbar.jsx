@@ -18,9 +18,25 @@ const Navbar = () => {
   useEffect(() => {
     // Kiểm tra trạng thái đăng nhập ban đầu
     const checkLoginStatus = () => {
-      const token = localStorage.getItem('token');
-      const storedUserName = localStorage.getItem('userName');
-      const storedUserRole = localStorage.getItem('userRole');
+      const sessionToken = sessionStorage.getItem('token');
+      const localToken = localStorage.getItem('token');
+      
+      // Check if user should be logged out (sessionStorage token missing but localStorage token exists)
+      if (localToken && !sessionToken) {
+        // Auto logout - clear localStorage
+        localStorage.removeItem('token');
+        localStorage.removeItem('isLoggedIn');
+        localStorage.removeItem('userName');
+        localStorage.removeItem('userRole');
+        setIsLoggedIn(false);
+        setUserName('');
+        setUserRole(null);
+        return;
+      }
+      
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      const storedUserName = sessionStorage.getItem('userName') || localStorage.getItem('userName');
+      const storedUserRole = sessionStorage.getItem('userRole') || localStorage.getItem('userRole');
       setIsLoggedIn(!!token);
       setUserName(storedUserName || '');
       setUserRole(storedUserRole || null);
@@ -56,10 +72,14 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = async () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('isLoggedIn');
-    localStorage.removeItem('userName');
-    localStorage.removeItem('userRole');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('userRole');
+    sessionStorage.removeItem('token');
+    sessionStorage.removeItem('isLoggedIn');
+    sessionStorage.removeItem('userName');
+    sessionStorage.removeItem('userRole');
     setIsLoggedIn(false);
     setUserName('');
     setUserRole(null);

@@ -11,7 +11,7 @@ const RegisterStaff = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   React.useEffect(() => {
-    const token = localStorage.getItem('token');
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     if (token) {
       try {
         const tokenData = JSON.parse(atob(token.split('.')[1]));
@@ -35,7 +35,7 @@ const RegisterStaff = () => {
     e.preventDefault();
     setStaffMsg('');
     try {
-      const token = localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch('https://localhost:7113/api/Auth/registerForStaff', {
         method: 'POST',
         headers: {
