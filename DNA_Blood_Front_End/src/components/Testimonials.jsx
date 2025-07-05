@@ -1,5 +1,6 @@
 import React from 'react';
 import { FaQuoteLeft } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const Testimonials = () => {
   const testimonials = [
@@ -27,15 +28,30 @@ const Testimonials = () => {
     <div id="testimonials" className="py-20 bg-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center">
-          <h2 className="text-3xl font-bold text-gray-800 sm:text-4xl hover:text-black transition-colors duration-200 cursor-default">
+          <motion.h2 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-3xl font-bold text-gray-800 sm:text-4xl hover:text-black transition-colors duration-200 cursor-default">
             What Our Customers Say
-          </h2>
-          <p className="mt-4 text-lg text-gray-700 hover:text-gray-800 transition-colors duration-200 cursor-default">
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.1 }}
+            className="mt-4 text-lg text-gray-700 hover:text-gray-800 transition-colors duration-200 cursor-default">
             Trusted by thousands of customers worldwide
-          </p>
+          </motion.p>
         </div>
 
-        <div className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+        <motion.div 
+          initial={{ opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, amount: 0.5 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+          className="mt-20 grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
           {testimonials.map((testimonial, index) => (
             <div
               key={index}
@@ -70,27 +86,47 @@ const Testimonials = () => {
               </div>
             </div>
           ))}
-        </div>
+        </motion.div>
 
         {/* Trust Indicators */}
         <div className="mt-20">
           <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
-            <div className="text-center transition-all duration-300 hover:scale-105">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.3 }}
+              className="text-center">
               <div className="text-4xl font-bold text-primary-600 hover:text-primary-700 transition-colors duration-200 cursor-default">98%</div>
               <p className="mt-2 text-primary-700 hover:text-primary-800 transition-colors duration-200 cursor-default">Customer Satisfaction</p>
-            </div>
-            <div className="text-center transition-all duration-300 hover:scale-105">
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.4 }}
+              className="text-center">
               <div className="text-4xl font-bold text-primary-600 hover:text-primary-700 transition-colors duration-200 cursor-default">50K+</div>
               <p className="mt-2 text-primary-700 hover:text-primary-800 transition-colors duration-200 cursor-default">Tests Completed</p>
-            </div>
-            <div className="text-center transition-all duration-300 hover:scale-105">
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.5 }}
+              className="text-center">
               <div className="text-4xl font-bold text-primary-600 hover:text-primary-700 transition-colors duration-200 cursor-default">24/7</div>
               <p className="mt-2 text-primary-700 hover:text-primary-800 transition-colors duration-200 cursor-default">Support Available</p>
-            </div>
-            <div className="text-center transition-all duration-300 hover:scale-105">
+            </motion.div>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true, amount: 0.5 }}
+              transition={{ duration: 0.5, delay: 0.6 }}
+              className="text-center">
               <div className="text-4xl font-bold text-primary-600 hover:text-primary-700 transition-colors duration-200 cursor-default">99.9%</div>
               <p className="mt-2 text-primary-700 hover:text-primary-800 transition-colors duration-200 cursor-default">Accuracy Rate</p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </div>

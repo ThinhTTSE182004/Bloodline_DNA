@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaChevronDown, FaChevronUp, FaQuestionCircle } from 'react-icons/fa';
+import { motion } from 'framer-motion';
 
 const FAQ = () => {
   const [openIndex, setOpenIndex] = useState(null);
@@ -24,14 +25,32 @@ const FAQ = () => {
   };
 
   return (
-    <section id="FAQ" className="py-16 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto">
-          <div className="mb-12">
-            <h4 className="text-blue-600 font-semibold mb-4 hover:text-blue-700 transition-colors duration-200 cursor-default">Some Important FAQ's</h4>
-            <h1 className="text-3xl font-bold text-gray-900 hover:text-black transition-colors duration-200 cursor-default">Common Questions</h1>
-          </div>
-          <div className="space-y-4 bg-gray-50 p-6 rounded-xl shadow-md">
+    <section id="FAQ" className="py-16 bg-gray-50 h-full">
+      <div className="h-full flex flex-col">
+        <div className="mb-8">
+          <motion.h4 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-blue-600 font-semibold mb-4 hover:text-blue-700 transition-colors duration-200 cursor-default">
+              Some Important FAQ's
+          </motion.h4>
+          <motion.h1 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            className="text-3xl font-bold text-gray-900 hover:text-black transition-colors duration-200 cursor-default">
+              Common Questions
+          </motion.h1>
+        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 40 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+          className="space-y-4 bg-gray-200 p-6 rounded-xl shadow-md flex-1">
             {faqs.map((faq, index) => (
               <div 
                 key={index} 
@@ -44,7 +63,7 @@ const FAQ = () => {
                 <button
                   onClick={() => toggleAccordion(index)}
                   className={`group w-full p-6 text-left flex justify-between items-center transition-colors duration-200 ${
-                    openIndex === index ? 'bg-blue-50' : 'hover:bg-gray-50'
+                    openIndex === index ? 'bg-blue-50' : 'bg-gray-100 hover:bg-blue-50'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -72,8 +91,7 @@ const FAQ = () => {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );
