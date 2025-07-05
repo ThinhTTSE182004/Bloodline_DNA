@@ -6,6 +6,7 @@ import { CartProvider } from './context/CartContext';
 import { NotificationProvider } from './context/NotificationContext';
 import { ServiceProvider } from './context/ServiceContext';
 import Navbar from './components/Navbar';
+import PageWrapper from './components/PageWrapper';
 import Hero from './components/Hero';
 import Features from './components/Features';
 import Services from './components/Services';
@@ -71,47 +72,49 @@ const App = () => {
                     <CartProvider>
                         <Navbar />
                         <main className="flex-grow">
-                            <Routes>
-                                {/* Customer Routes */}
-                                <Route path="/" element={<CustomerLayout><HomePage /></CustomerLayout>} />
-                                <Route path="/services" element={<CustomerLayout><ServicePage /></CustomerLayout>} />
-                                <Route path="/service/:id" element={<CustomerLayout><ServiceDetail /></CustomerLayout>} />
-                                <Route path="/cart" element={<CustomerLayout><Cart /></CustomerLayout>} />
-                                <Route path="/fill-booking" element={<CustomerLayout><FillBookingForm /></CustomerLayout>} />
-                                <Route path="/payment" element={<CustomerLayout><Payment /></CustomerLayout>} />
-                                <Route path="/payment-success" element={<CustomerLayout><PaymentSuccess /></CustomerLayout>} />
-                                <Route path="/profile" element={<CustomerLayout><Profile /></CustomerLayout>} />
-                                <Route path="/account-setting" element={<CustomerLayout><AccountSetting /></CustomerLayout>} />
-                                <Route path="/login" element={<CustomerLayout><Login /></CustomerLayout>} />
-                                <Route path="/register" element={<CustomerLayout><Register /></CustomerLayout>} />
+                            <PageWrapper>
+                                <Routes>
+                                    {/* Customer Routes */}
+                                    <Route path="/" element={<CustomerLayout><HomePage /></CustomerLayout>} />
+                                    <Route path="/services" element={<CustomerLayout><ServicePage /></CustomerLayout>} />
+                                    <Route path="/service/:id" element={<CustomerLayout><ServiceDetail /></CustomerLayout>} />
+                                    <Route path="/cart" element={<CustomerLayout><Cart /></CustomerLayout>} />
+                                    <Route path="/fill-booking" element={<CustomerLayout><FillBookingForm /></CustomerLayout>} />
+                                    <Route path="/payment" element={<CustomerLayout><Payment /></CustomerLayout>} />
+                                    <Route path="/payment-success" element={<CustomerLayout><PaymentSuccess /></CustomerLayout>} />
+                                    <Route path="/profile" element={<CustomerLayout><Profile /></CustomerLayout>} />
+                                    <Route path="/account-setting" element={<CustomerLayout><AccountSetting /></CustomerLayout>} />
+                                    <Route path="/login" element={<CustomerLayout><Login /></CustomerLayout>} />
+                                    <Route path="/register" element={<CustomerLayout><Register /></CustomerLayout>} />
 
-                                {/* Staff Routes */}
-                                <Route path="/staff" element={<Staff />} />
-                                <Route path="/staff/orders" element={<StaffOrder />} />
-                                <Route path="/staff/profile" element={<StaffProfile />} />
-                                <Route path="/staff/feedback" element={<StaffFeedback />} />
+                                    {/* Staff Routes */}
+                                    <Route path="/staff" element={<Staff />} />
+                                    <Route path="/staff/orders" element={<StaffOrder />} />
+                                    <Route path="/staff/profile" element={<StaffProfile />} />
+                                    <Route path="/staff/feedback" element={<StaffFeedback />} />
 
-                                {/* Medical Staff Routes */}
-                                <Route path="/medical-staff" element={<MedicalStaff />} />
-                                <Route path="/medical-staff/orders" element={<MedicalStaffOrder />} />
+                                    {/* Medical Staff Routes */}
+                                    <Route path="/medical-staff" element={<MedicalStaff />} />
+                                    <Route path="/medical-staff/orders" element={<MedicalStaffOrder />} />
 
-                                {/* Admin Routes */}
-                                <Route path="/admin" element={<AdminPage />} />
-                                <Route path="/admin/register-staff" element={<RegisterStaff />} />
-                                <Route path="/admin/register-medical-staff" element={<RegisterMedicalStaff />} />
-                                <Route path="/admin/create-workshift" element={<CreateWorkShift />} />
-                                <Route path="/admin/workshift-list" element={<WorkShiftList />} />
-                                <Route path="/admin/work-assignment" element={<WorkAssignment />} />
-                                <Route path="/admin/services" element={<ServiceManager />} />
-                                <Route path="/admin/staff-management" element={<StaffManagement />} />
-                                <Route path="/admin/all-orders" element={<AllOrders />} />
+                                    {/* Admin Routes */}
+                                    <Route path="/admin" element={<AdminPage />} />
+                                    <Route path="/admin/register-staff" element={<RegisterStaff />} />
+                                    <Route path="/admin/register-medical-staff" element={<RegisterMedicalStaff />} />
+                                    <Route path="/admin/create-workshift" element={<CreateWorkShift />} />
+                                    <Route path="/admin/workshift-list" element={<WorkShiftList />} />
+                                    <Route path="/admin/work-assignment" element={<WorkAssignment />} />
+                                    <Route path="/admin/services" element={<ServiceManager />} />
+                                    <Route path="/admin/staff-management" element={<StaffManagement />} />
+                                    <Route path="/admin/all-orders" element={<AllOrders />} />
 
-                                {/* Other Routes */}
-                                <Route path="/oauth-success" element={<OAuthSuccess />} />
-                                <Route path="/reset-password" element={<ResetPassword />} />
-                                <Route path="/forgot-password" element={<ForgotPassword />} />
-                                <Route path="*" element={<Navigate to="/" />} />
-                            </Routes>
+                                    {/* Other Routes */}
+                                    <Route path="/oauth-success" element={<OAuthSuccess />} />
+                                    <Route path="/reset-password" element={<ResetPassword />} />
+                                    <Route path="/forgot-password" element={<ForgotPassword />} />
+                                    <Route path="*" element={<Navigate to="/" />} />
+                                </Routes>
+                            </PageWrapper>
                         </main>
                     </CartProvider>
                 </ServiceProvider>
