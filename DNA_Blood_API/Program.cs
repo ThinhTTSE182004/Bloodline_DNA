@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
 using DNA_Blood_API.Services;
 using DNA_Blood_API.Repository;
+using QuestPDF.Infrastructure;
 
 namespace DNA_API1
 {
@@ -18,6 +19,9 @@ namespace DNA_API1
     {
         public static void Main(string[] args)
         {
+            // Configure QuestPDF License
+            QuestPDF.Settings.License = LicenseType.Community;
+            
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.

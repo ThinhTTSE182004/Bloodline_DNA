@@ -91,6 +91,25 @@ namespace DNA_API1.Controllers
             return Ok(new { message = "Đã gửi kết quả xét nghiệm qua email." });
         }
 
+        [HttpGet("Results/{resultId}/download-pdf")]
+        public async Task<IActionResult> DownloadResultPdf(int resultId)
+        {
+            try
+            {
+                var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+                var pdfBytes = await _resultService.GeneratePdfReportAsync(resultId, userId);
+                
+                if (pdfBytes == null)
+                    return NotFound(new { message = "Kết quả không tồn tại hoặc bạn không có quyền truy cập." });
+
+                return File(pdfBytes, "application/pdf", $"DNA_Result_{resultId}_{DateTime.Now:yyyyMMdd}.pdf");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
         [HttpPost("Feedback")]
         public async Task<IActionResult> PostFeedback([FromBody] DNA_API1.ViewModels.CreateFeedbackDTO dto)
         {

@@ -12,7 +12,7 @@ namespace DNA_API1.Repository
             _context = context;
         }
 
-        public async Task<Result> AddResultAsync(CreateResultDTO resultDto)
+        public async Task<Result> AddResultAsync(CreateResultWithLocusDTO resultDto)
         {
             var result = new Result
             {
@@ -50,14 +50,31 @@ namespace DNA_API1.Repository
                 .ToListAsync();
         }
 
-        public async Task<Result?> GetResultByIdAsync(int resultId)
+
+
+        public async Task<Result?> GetResultWithFullDataAsync(int resultId, int userId)
         {
             return await _context.Results
                 .Include(r => r.OrderDetail)
                     .ThenInclude(od => od.Order)
+                        .ThenInclude(o => o.Customer)
                 .Include(r => r.OrderDetail)
                     .ThenInclude(od => od.ServicePackage)
-                .FirstOrDefaultAsync(r => r.ResultId == resultId);
+                .Include(r => r.OrderDetail)
+                    .ThenInclude(od => od.Samples)
+                        .ThenInclude(s => s.Participant)
+                .Include(r => r.OrderDetail)
+                    .ThenInclude(od => od.Samples)
+                        .ThenInclude(s => s.SampleType)
+                .Include(r => r.OrderDetail)
+                    .ThenInclude(od => od.Order)
+                        .ThenInclude(o => o.OrderDetails)
+                            .ThenInclude(od => od.Samples)
+                                .ThenInclude(s => s.Participant)
+                .Include(r => r.TestLocusResults)
+                    .ThenInclude(tlr => tlr.Locus)
+                .Where(r => r.ResultId == resultId && r.OrderDetail.Order.CustomerId == userId)
+                .FirstOrDefaultAsync();
         }
     }
 }

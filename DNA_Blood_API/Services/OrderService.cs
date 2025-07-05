@@ -156,17 +156,21 @@ namespace DNA_API1.Services
                     };
                     details.Add(detail);
 
-                    var sample = new Sample
+                    // Tạo 2 samples cho mỗi OrderDetail (1 cho mỗi participant)
+                    for (int j = 0; j < 2; j++)
                     {
-                        SampleTypeId = sampleType.SampleTypeId,
-                        StaffId = staffId,
-                        SampleStatus = "Pending",
-                        CollectedDate = null,
-                        ReceivedDate = null
-                    };
-                    samples.Add(sample);
+                        var sample = new Sample
+                        {
+                            SampleTypeId = sampleType.SampleTypeId,
+                            StaffId = staffId,
+                            SampleStatus = "Pending",
+                            CollectedDate = null,
+                            ReceivedDate = null
+                        };
+                        samples.Add(sample);
 
-                    sampleTransferInfos.Add((staffId, medicalStaffId));
+                        sampleTransferInfos.Add((staffId, medicalStaffId));
+                    }
 
                     // Tạo DeliveryTask cho mỗi order detail chỉ khi là At Home
                     if (collectionMethod.MethodName == "At Home")

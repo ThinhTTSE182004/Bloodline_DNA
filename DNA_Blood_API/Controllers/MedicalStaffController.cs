@@ -108,21 +108,32 @@ namespace DNA_API1.Controllers
             }
         }
 
-        // Sau khi orderDetail đã cập nhật trạng thái thì mới lưu và Result.
+        // Tạo kết quả với thông tin locus chi tiết (cho PDF)
         [HttpPost("add-result")]
-        public async Task<IActionResult> AddResult([FromBody] CreateResultDTO result)
+        public async Task<IActionResult> AddResult([FromBody] CreateResultWithLocusDTO result)
         {
             try
             {
-                var createdResult = await _resultService.AddResultAsync(result);
-                return Ok(createdResult);
+                var createdResult = await _resultService.AddResultWithLocusAsync(result);
+                return Ok(new 
+                { 
+                    message = "Kết quả đã được tạo thành công với thông tin locus chi tiết",
+                    resultId = createdResult.ResultId,
+                    result = createdResult
+                });
             }
             catch (Exception ex)
             {
-                return BadRequest(ex.Message);
+                // Log lỗi chi tiết
+                Console.WriteLine($"Error in AddResult: {ex.Message}");
+                Console.WriteLine($"StackTrace: {ex.StackTrace}");
+                
+                return BadRequest(new { 
+                    message = "Có lỗi xảy ra khi tạo kết quả",
+                    error = ex.Message,
+                    details = ex.InnerException?.Message
+                });
             }
         }
-
-        
     }
 }

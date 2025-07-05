@@ -5,9 +5,9 @@ namespace DNA_API1.Repository
 {
     public interface IResultRepository
     {
-        Task<Result> AddResultAsync(CreateResultDTO result);
+        Task<Result> AddResultAsync(CreateResultWithLocusDTO result);
         Task<bool> ExistsByOrderDetailIdAsync(int orderDetailId);
         Task<List<Result>> GetResultsByUserIdAsync(int userId);
-        Task<Result?> GetResultByIdAsync(int resultId);
+        Task<Result?> GetResultWithFullDataAsync(int resultId, int userId);
     }
 }

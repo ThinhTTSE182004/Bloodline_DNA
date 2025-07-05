@@ -57,7 +57,7 @@
 //        public DateOnly? ReceivedDate { get; set; }
 //    }
 
-//    public class ResultDTO
+
 //    {
 //        public int ResultId { get; set; }
 //        public DateTime? ReportDate { get; set; }
