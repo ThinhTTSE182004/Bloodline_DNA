@@ -1,33 +1,16 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaRegCalendarAlt } from 'react-icons/fa';
 import AdminNavbar from '../../components/AdminNavbar';
 import AdminSidebar from '../../components/AdminSidebar';
-import { motion } from 'framer-motion';
+import Calendar from '../../components/Calendar';
+import ExpandableAssignmentCard from '../../components/ExpandableAssignmentCard';
 
 
 const daysInMonth = (month, year) => {
   return new Date(year, month + 1, 0).getDate();
 };
 
-const getMonthMatrix = (month, year) => {
-  const firstDay = new Date(year, month, 1).getDay();
-  const days = daysInMonth(month, year);
-  const matrix = [];
-  let week = [];
-  let dayCount = 1;
-  for (let i = 0; i < 6; i++) {
-    week = [];
-    for (let j = 0; j < 7; j++) {
-      if ((i === 0 && j < firstDay) || dayCount > days) {
-        week.push(null);
-      } else {
-        week.push(dayCount++);
-      }
-    }
-    matrix.push(week);
-  }
-  return matrix;
-};
+
 
 const WorkAssignment = () => {
   const [medicalStaffs, setMedicalStaffs] = useState([]);
@@ -45,18 +28,10 @@ const WorkAssignment = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [selectedWeek, setSelectedWeek] = useState(0);
   const [selectedShiftType, setSelectedShiftType] = useState('all');
-
-  // Hỗ trợ chọn tháng/năm
-  const monthSelectRef = useRef();
-  const yearSelectRef = useRef();
-  const handleMonthChange = (e) => setCurrentMonth(Number(e.target.value));
-  const handleYearChange = (e) => setCurrentYear(Number(e.target.value));
+  const [allAssignments, setAllAssignments] = useState([]);
 
   // Tính số lần được phân công trong tháng cho từng user
   const getAssignedCount = (userId) => suggestedAssignments.filter(a => a.userId === userId && new Date(a.assignmentDate).getMonth() === currentMonth).length;
-
-  // Kiểm tra ngày hiện tại
-  const todayStr = new Date().toISOString().slice(0, 10);
 
   useEffect(() => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -162,11 +137,56 @@ const WorkAssignment = () => {
       });
   }, [shifts, dates, medicalStaffs, staffs, maxShiftPerMonth]);
 
-  const monthMatrix = getMonthMatrix(currentMonth, currentYear);
-  const monthNames = [
-    'January', 'February', 'March', 'April', 'May', 'June',
-    'July', 'August', 'September', 'October', 'November', 'December'
-  ];
+  // Fetch all assignments for calendar display
+  useEffect(() => {
+    const fetchAllAssignments = async () => {
+      try {
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+        const response = await fetch('https://localhost:7113/api/ShiftAssignment/AllAssignments', {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        
+        if (!response.ok) {
+          throw new Error(await response.text());
+        }
+        
+        const data = await response.json();
+        
+        // Fetch staff and medical staff data to determine staff types
+        const staffsResponse = await fetch('https://localhost:7113/api/ShiftAssignment/staffs', {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        
+        const medicalStaffsResponse = await fetch('https://localhost:7113/api/ShiftAssignment/medical-staffs', {
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+        
+        if (!staffsResponse.ok || !medicalStaffsResponse.ok) {
+          throw new Error('Failed to fetch staff data');
+        }
+        
+        const medicalStaffsData = await medicalStaffsResponse.json();
+        
+        // Add staff type information to assignments
+        const enhancedAssignments = data.map(assignment => {
+          const isMedicalStaff = medicalStaffsData.some(ms => ms.userId === assignment.userId);
+          return {
+            ...assignment,
+            isMedicalStaff
+          };
+        });
+        
+        setAllAssignments(enhancedAssignments);
+      } catch (err) {
+        console.error('Error fetching all assignments:', err);
+        setAllAssignments([]);
+      }
+    };
+
+    fetchAllAssignments();
+  }, []);
+
+
 
   const handleAccept = async (assignment) => {
     try {
@@ -261,66 +281,29 @@ const WorkAssignment = () => {
     weeks.push(dates.slice(i, i + 7));
   }
 
-  // Ô ngày: vuông, chỉ hiện số ngày căn giữa, border mỏng xanh lá nhạt, nền trắng, không thông tin phụ
-  const dayCellClass = 'bg-white border border-green-200 flex items-center justify-center text-lg font-bold text-green-900 rounded-md p-8 w-full h-full';
+
 
   return (
     <>
       <AdminNavbar onSidebarToggle={() => setSidebarOpen(true)} />
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-      <div className="pt-32 pb-8 w-4/5 mx-auto min-h-screen transition-all duration-300">
+      <div className="pt-32 pb-8 w-11/12 mx-auto min-h-screen transition-all duration-300">
         {/* Modern Monthly Calendar */}
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.8 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, delay: 0 }}
-          className="w-full flex flex-col items-center justify-center mb-8">
-          <div className="relative w-full rounded-md shadow-none overflow-hidden bg-green-100" style={{marginTop: 0}}>
-            {/* Header with light green color, rounded corners */}
-            <div className="bg-green-200 p-6 flex flex-col items-center justify-center rounded-t-md border-b-0 relative">
-              <FaRegCalendarAlt className="text-green-600 text-3xl mb-2 drop-shadow-lg" />
-              <div className="flex items-center gap-2">
-                <button className="text-green-700 border border-green-300 bg-white hover:bg-green-50 rounded-md px-3 py-1 transition text-lg font-bold" onClick={() => setCurrentMonth(m => m === 0 ? 11 : m - 1)}>&lt;</button>
-                <select ref={monthSelectRef} value={currentMonth} onChange={handleMonthChange} className="rounded-md border border-green-300 px-2 py-1 text-green-900 bg-white font-bold focus:outline-none focus:ring-2 focus:ring-green-300 text-lg">
-                  {monthNames.map((name, idx) => <option key={name} value={idx}>{name}</option>)}
-                </select>
-                <select ref={yearSelectRef} value={currentYear} onChange={handleYearChange} className="rounded-md border border-green-300 px-2 py-1 text-green-900 bg-white font-bold focus:outline-none focus:ring-2 focus:ring-green-300 text-lg">
-                  {Array.from({length: 5}, (_, i) => new Date().getFullYear() - 2 + i).map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-                <button className="text-green-700 border border-green-300 bg-white hover:bg-green-50 rounded-md px-3 py-1 transition text-lg font-bold" onClick={() => setCurrentMonth(m => m === 11 ? 0 : m + 1)}>&gt;</button>
-              </div>
-              <span className="font-bold text-2xl text-green-700 tracking-wide mt-2 drop-shadow">Monthly Calendar</span>
-            </div>
-            {/* Calendar grid: square cells, only day numbers, thin borders, white background, 2px gap */}
-            <div className="p-6 bg-green-100">
-              <div className="grid grid-cols-7 gap-[2px]">
-                {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(d => (
-                  <div key={d} className="text-center font-semibold text-green-700 bg-green-50 py-2 rounded-md tracking-wide text-base">{d}</div>
-                ))}
-                {monthMatrix.flat().map((day, idx) => {
-                  const isToday = day && (new Date(currentYear, currentMonth, day).toISOString().slice(0, 10) === todayStr);
-                  const dateStr = day ? new Date(currentYear, currentMonth, day).toISOString().slice(0, 10) : null;
-                  return (
-                    <div
-                      key={idx}
-                      className={`${dayCellClass} ${day ? (isToday ? 'ring-2 ring-green-400 cursor-pointer hover:bg-green-50' : 'cursor-pointer hover:bg-green-50') : 'bg-green-50 text-green-200 border-0 cursor-default'}`}
-                      onClick={() => day && (setSelectedDate(dateStr), setShowPopup(true))}
-                    >
-                      {day || ''}
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-        </motion.div>
+        <Calendar 
+          currentMonth={currentMonth}
+          currentYear={currentYear}
+          onMonthChange={setCurrentMonth}
+          onYearChange={setCurrentYear}
+          onDateSelect={(dateStr) => {
+            setSelectedDate(dateStr);
+            setShowPopup(true);
+          }}
+          selectedDate={selectedDate}
+          assignments={allAssignments}
+        />
         {/* 2 staff/medical staff tables */}
         <div className="flex flex-col md:flex-row gap-8 mb-10 w-full max-w-5xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0, x: -40}}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8}}
-            viewport={{ once: true }}
+          <div 
             className="flex-1 bg-white rounded-xl shadow-lg p-6 max-h-96 overflow-y-auto border border-blue-100">
             <h2 className="font-semibold mb-2 text-blue-700">Medical Staffs</h2>
             <table className="w-full text-left">
@@ -341,12 +324,8 @@ const WorkAssignment = () => {
                 ))}
               </tbody>
             </table>
-          </motion.div>
-          <motion.div 
-            initial={{ opacity: 0, x: 40}}
-            whileInView={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8}}
-            viewport={{ once: true }}
+          </div>
+          <div 
             className="flex-1 bg-white rounded-xl shadow-lg p-6 max-h-96 overflow-y-auto border border-blue-100">
             <h2 className="font-semibold mb-2 text-blue-700">Staffs</h2>
             <table className="w-full text-left">
@@ -367,7 +346,7 @@ const WorkAssignment = () => {
                 ))}
               </tbody>
             </table>
-          </motion.div>
+          </div>
         </div>
         {/* Filter + Auto Assignment and Accept Assignment All buttons for shift assignment table by week */}
         <div className="flex flex-wrap gap-4 mb-4 items-center justify-end">
@@ -396,49 +375,69 @@ const WorkAssignment = () => {
               <option value="afternoon">Afternoon</option>
             </select>
           </div>
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8}}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8}}
-            viewport={{ once: true }}
+          <button
             className="px-4 py-2 bg-blue-600 text-white rounded font-bold shadow hover:bg-blue-700 transition"
             onClick={fetchSuggestedAssignments}
             disabled={loadingAutoAssign}
           >
             {loadingAutoAssign ? 'Auto-suggesting...' : 'Auto Assignment for Employee'}
-          </motion.button>
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8}}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.8}}
-            viewport={{ once: true }}
+          </button>
+          <button
             className="px-4 py-2 bg-green-600 text-white rounded font-bold shadow hover:bg-green-700 transition"
             onClick={handleAcceptAll}
             disabled={loadingAcceptAll}
           >
             {loadingAcceptAll ? 'Confirming all...' : 'Accept Assignment All'}
-          </motion.button>
+          </button>
         </div>
-        {/* Shift assignment table by week */}
-        <div className="mt-4">
+                {/* Professional Shift Assignment Table */}
+        <div className="mt-6 w-full">
           {weeks
             .map((weekDates, weekIdx) => ({ weekDates, weekIdx }))
             .filter(({ weekIdx }) => selectedWeek === 0 || selectedWeek === weekIdx + 1)
             .map(({ weekDates, weekIdx }) => (
-              <motion.div 
-                initial={{ opacity: 0, y: 40}}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8}}
-                viewport={{ once: true }}
-                key={`${weekIdx}-${selectedWeek}-${selectedShiftType}`} className="mb-10 bg-white rounded-2xl shadow-xl border border-blue-100 p-6 transition hover:shadow-2xl">
-                <h3 className="font-semibold mb-4 text-blue-700 text-lg">Week {weekIdx + 1}</h3>
+              <div 
+                key={`${weekIdx}-${selectedWeek}-${selectedShiftType}`} 
+                className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full"
+              >
+                {/* Compact Professional Header */}
+                <div className="bg-gradient-to-r from-slate-700 to-slate-800 px-4 py-2">
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-white/10 rounded flex items-center justify-center">
+                      <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-white text-base">Week {weekIdx + 1}</h3>
+                      <p className="text-slate-300 text-xs">Assignment Overview</p>
+                    </div>
+                  </div>
+                </div>
+                
                 <div className="overflow-x-auto">
-                  <table className="min-w-full w-full border border-blue-200 text-sm">
+                    <table className="w-full text-sm">
                     <thead>
-                      <tr>
-                        <th className="border px-2 py-2 bg-blue-50 text-blue-700">Shift / Day</th>
+                        <tr className="bg-slate-50 border-b border-slate-200">
+                          <th className="px-3 py-2 text-slate-700 font-medium text-left min-w-[90px]">
+                            <div className="flex items-center gap-2">
+                              <svg className="w-3 h-3 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                              <span>Shift</span>
+                            </div>
+                          </th>
                         {weekDates.map(date => (
-                          <th key={date} className="border px-2 py-2 bg-blue-50 text-blue-700">{date.slice(-2)}/{date.slice(5,7)}</th>
+                            <th key={date} className="px-2 py-2 text-slate-700 font-medium text-center border-l border-slate-200 min-w-[100px]">
+                              <div className="flex flex-col items-center">
+                                <span className="text-xs font-semibold text-slate-600 uppercase tracking-wide">
+                                  {new Date(date).toLocaleDateString('en-US', { weekday: 'short' })}
+                                </span>
+                                <span className="text-xs font-bold text-slate-800">
+                                  {date.slice(-2)}/{date.slice(5,7)}
+                                </span>
+                              </div>
+                            </th>
                         ))}
                       </tr>
                     </thead>
@@ -450,74 +449,122 @@ const WorkAssignment = () => {
                           return true;
                         })
                         .map(shift => (
-                        <tr key={shift.shiftId}>
-                          <td className="border px-2 py-2 font-semibold bg-blue-50 text-blue-800">{shift.shiftName}</td>
-                          {weekDates.map(date => (
-                            <td key={date} className="border px-1 py-1 align-top min-w-[140px] bg-white hover:bg-blue-50 transition">
-                              {suggestedAssignments
-                                .filter(a => a.shiftId === shift.shiftId && a.assignmentDate === date)
-                                .map(assignment => (
-                                  <div key={assignment.userId} className="mb-2 p-2 rounded-xl bg-white shadow flex flex-col gap-1 group transition">
-                                    <span className="truncate font-medium text-blue-900 group-hover:text-blue-700 text-base">{assignment.userName}</span>
-                                    <span className="text-xs text-blue-500 mb-1">{assignment.roleName}</span>
-                                    <span className="text-xs text-green-700 mb-1">Assignment count: {getAssignedCount(assignment.userId)}</span>
-                                    <div className="flex justify-end">
-                                      <button className="px-2 py-1 bg-green-500 text-white rounded-full text-xs font-bold shadow hover:bg-green-600 transition flex items-center gap-1" onClick={() => handleAccept(assignment)} title="Accept shift assignment">
-                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-                                        Accept
+                        <tr key={shift.shiftId} className="border-b border-slate-100 hover:bg-slate-50/50 transition-colors">
+                          <td className="px-3 py-3 font-medium text-slate-800 bg-slate-50/70 border-r border-slate-200">
+                            <div className="flex flex-col gap-1">
+                              <span className="font-semibold text-slate-900 text-sm">{shift.shiftName}</span>
+                              <span className="text-xs text-slate-600 font-mono">
+                                {shift.startTime?.slice(0, 5) || ''} - {shift.endTime?.slice(0, 5) || ''}
+                              </span>
+                            </div>
+                          </td>
+                          {weekDates.map(date => {
+                            const dayAssignments = suggestedAssignments.filter(
+                              a => a.shiftId === shift.shiftId && a.assignmentDate === date
+                            );
+                            
+                            // Separate medical staff and regular staff
+                            const medicalStaffAssignments = dayAssignments.filter(assignment => {
+                              const medicalStaff = medicalStaffs.find(ms => ms.userId === assignment.userId);
+                              return medicalStaff;
+                            });
+                            
+                            const regularStaffAssignments = dayAssignments.filter(assignment => {
+                              const regularStaff = staffs.find(s => s.userId === assignment.userId);
+                              return regularStaff;
+                            });
+                            
+                            return (
+                              <td key={date} className="px-2 py-3 align-top bg-white border-r border-slate-100">
+                                <div className="space-y-2">
+                                  {/* Medical Staff Section */}
+                                  {medicalStaffAssignments.length > 0 && (
+                                    <div>
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-2 h-2 bg-rose-400 rounded-full"></div>
+                                        <span className="text-xs font-medium text-slate-700">
+                                          Medical Staff ({medicalStaffAssignments.length})
+                                        </span>
+                                      </div>
+                                      <div className="space-y-1">
+                                        {medicalStaffAssignments.map((assignment) => (
+                                          <div key={assignment.userId} className="flex items-center justify-between p-2 bg-rose-50/60 rounded-md border border-rose-100/50 hover:bg-rose-50/80 transition-colors">
+                                            <span className="truncate text-sm font-medium text-slate-700">
+                                              {assignment.userName}
+                                            </span>
+                                            <button 
+                                              className="ml-2 p-1 bg-rose-500/80 text-white rounded-md text-xs hover:bg-rose-600 transition-colors"
+                                              onClick={() => handleAccept(assignment)}
+                                              title="Accept assignment"
+                                            >
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                              </svg>
                                       </button>
+                                          </div>
+                                        ))}
+                                      </div>
                                     </div>
+                                  )}
+                                  
+                                  {/* Regular Staff Section */}
+                                  {regularStaffAssignments.length > 0 && (
+                                    <div>
+                                      <div className="flex items-center gap-2 mb-2">
+                                        <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+                                        <span className="text-xs font-medium text-slate-700">
+                                          Staff ({regularStaffAssignments.length})
+                                        </span>
+                                      </div>
+                                      <div className="space-y-1">
+                                        {regularStaffAssignments.map((assignment) => (
+                                          <div key={assignment.userId} className="flex items-center justify-between p-2 bg-blue-50/60 rounded-md border border-blue-100/50 hover:bg-blue-50/80 transition-colors">
+                                            <span className="truncate text-sm font-medium text-slate-700">
+                                              {assignment.userName}
+                                            </span>
+                                            <button 
+                                              className="ml-2 p-1 bg-blue-500/80 text-white rounded-md text-xs hover:bg-blue-600 transition-colors"
+                                              onClick={() => handleAccept(assignment)}
+                                              title="Accept assignment"
+                                            >
+                                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                                              </svg>
+                                            </button>
                                   </div>
                                 ))}
+                                      </div>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Empty state */}
+                                  {dayAssignments.length === 0 && (
+                                    <div className="text-center py-2 text-slate-400 text-xs">
+                                      <svg className="w-3 h-3 mx-auto mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                      </svg>
+                                      No assignments
+                                    </div>
+                                  )}
+                                </div>
                             </td>
-                          ))}
+                            );
+                          })}
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              </motion.div>
+              </div>
             ))}
         </div>
-        {/* Shift assignment popup */}
+        {/* Expandable Assignment Card */}
         {showPopup && selectedDate && (
-          <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-2xl p-8 w-full max-w-2xl relative">
-              <button className="absolute top-2 right-4 text-2xl text-gray-400 hover:text-gray-700" onClick={() => setShowPopup(false)}>&times;</button>
-              <h2 className="text-xl font-bold mb-4 text-green-700 text-center hover:text-green-600 transition-all duration-300">Shift Assignment for {selectedDate.split('-').reverse().join('/')}</h2>
-              <div className="overflow-x-auto max-h-96 overflow-y-auto">
-                <table className="min-w-full border border-green-200">
-                  <thead>
-                    <tr className="bg-green-50">
-                      <th className="px-3 py-2 border">Employee Name</th>
-                      <th className="px-3 py-2 border">Employee ID</th>
-                      <th className="px-3 py-2 border">Role</th>
-                      <th className="px-3 py-2 border">Shift Name</th>
-                      <th className="px-3 py-2 border">Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {suggestedAssignments.filter(a => a.assignmentDate === selectedDate).length === 0 ? (
-                      <tr><td colSpan={5} className="text-center py-4 text-gray-400">No shift assignments for this date.</td></tr>
-                    ) : (
-                      suggestedAssignments.filter(a => a.assignmentDate === selectedDate).map(a => {
-                        const shift = shifts.find(s => s.shiftId === a.shiftId);
-                        return (
-                          <tr key={a.userId + '-' + a.shiftId}>
-                            <td className="border px-3 py-2">{a.userName}</td>
-                            <td className="border px-3 py-2">{a.userId}</td>
-                            <td className="border px-3 py-2">{a.roleName}</td>
-                            <td className="border px-3 py-2">{shift ? shift.shiftName : ''}</td>
-                            <td className="border px-3 py-2">{shift ? `${shift.startTime.slice(0,5)} - ${shift.endTime.slice(0,5)}` : ''}</td>
-                          </tr>
-                        );
-                      })
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </div>
+          <ExpandableAssignmentCard
+            selectedDate={selectedDate}
+            shifts={shifts}
+            onClose={() => setShowPopup(false)}
+          />
         )}
       </div>
     </>
