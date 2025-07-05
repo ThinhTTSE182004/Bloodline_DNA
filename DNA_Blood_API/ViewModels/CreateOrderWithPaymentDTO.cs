@@ -6,10 +6,10 @@
         
         // Ngày đặt lịch hẹn
         public DateTime? BookingDate { get; set; }
-        
+
         // Thông tin người tham gia xét nghiệm
-        public CreateParticipantDTO Participant { get; set; }
-        
+        public List<CreateParticipantDTO> Participants { get; set; }
+
         // Thông tin gói dịch vụ
         public List<CreateOrderDetailDTO> Details { get; set; }
         

@@ -35,7 +35,10 @@ namespace DNA_API1.Controllers
             {
                 return BadRequest(ModelState);
             }
-
+            if (dto.Participants == null || dto.Participants.Count != 2)
+            {
+                return BadRequest(new { message = "Cần nhập đủ thông tin 2 người tham gia!" });
+            }
             var customerId = GetUserIdFromToken();
             if (customerId == null)
                 return Unauthorized();

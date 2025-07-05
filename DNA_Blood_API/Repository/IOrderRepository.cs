@@ -9,7 +9,7 @@ namespace DNA_API1.Repository
         Task<SampleType> GetSampleTypeByNameAsync(string name);
         Task<CollectionMethod> GetCollectionMethodByNameAsync(string name);
         Task<int> CreateOrderWithDetailsAsync(
-    Participant participant,
+     List<Participant> participants,
     Order order,
     List<OrderDetail> details,
     List<Sample> samples,

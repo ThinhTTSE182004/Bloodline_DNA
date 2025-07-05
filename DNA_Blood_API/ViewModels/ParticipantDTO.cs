@@ -22,4 +22,4 @@ namespace DNA_API1.ViewModels
         [Required(ErrorMessage = "Tên người thân không được để trống")]
         public string NameRelation { get; set; }
     }
-} 
+}

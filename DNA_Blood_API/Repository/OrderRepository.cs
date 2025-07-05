@@ -151,7 +151,7 @@ namespace DNA_API1.Repository
         }
 
         public async Task<int> CreateOrderWithDetailsAsync(
-     Participant participant,
+      List<Participant> participants,
      Order order,
      List<OrderDetail> details,
      List<Sample> samples,
@@ -165,8 +165,12 @@ namespace DNA_API1.Repository
 
             try
             {
-                _context.Participants.Add(participant);
-                await _context.SaveChangesAsync();
+                // Lưu từng participant
+                foreach (var participant in participants)
+                {
+                    _context.Participants.Add(participant);
+                    await _context.SaveChangesAsync();
+                }
 
                 _context.Orders.Add(order);
                 await _context.SaveChangesAsync();
@@ -178,24 +182,30 @@ namespace DNA_API1.Repository
                     _context.OrderDetails.Add(detail);
                     await _context.SaveChangesAsync();
 
-                    var sample = samples[i];
-                    sample.OrderDetailId = detail.OrderDetailId;
-                    sample.ParticipantId = participant.ParticipantId;
-                    _context.Samples.Add(sample);
-                    await _context.SaveChangesAsync(); // Lưu để có SampleId
-
-                    // Tạo SampleTransfer tương ứng
-                    var (staffId, medicalStaffId) = sampleTransferInfos[i];
-                    var transfer = new SampleTransfer
+                    // Mapping sample với participant: mỗi detail có 2 sample, mỗi sample gán đúng participant
+                    for (int j = 0; j < 2; j++)
                     {
-                        SampleId = sample.SampleId, // Bây giờ sample đã có SampleId
-                        StaffId = staffId,
-                        MedicalStaffId = medicalStaffId,
-                        TransferDate = DateTime.Now,
-                        SampleTransferStatus = "Pending",
-                    };
-                    _context.SampleTransfers.Add(transfer);
-                    await _context.SaveChangesAsync(); // Save after each transfer creation
+                        var sampleIndex = i * 2 + j;
+                        if (sampleIndex >= samples.Count) break;
+                        var sample = samples[sampleIndex];
+                        sample.OrderDetailId = detail.OrderDetailId;
+                        sample.ParticipantId = participants[j].ParticipantId; // Gán đúng participant
+                        _context.Samples.Add(sample);
+                        await _context.SaveChangesAsync();
+
+                        // Tạo SampleTransfer tương ứng
+                        var (staffId, medicalStaffId) = sampleTransferInfos[sampleIndex];
+                        var transfer = new SampleTransfer
+                        {
+                            SampleId = sample.SampleId,
+                            StaffId = staffId,
+                            MedicalStaffId = medicalStaffId,
+                            TransferDate = DateTime.Now,
+                            SampleTransferStatus = "Pending",
+                        };
+                        _context.SampleTransfers.Add(transfer);
+                        await _context.SaveChangesAsync();
+                    }
                 }
 
                 payment.OrderId = order.OrderId;
@@ -242,7 +252,6 @@ namespace DNA_API1.Repository
                 throw;
             }
         }
-
         public async Task<ServicePackage> GetServicePackageByIdAsync(int servicePackageId)
         {
             return await _context.ServicePackages

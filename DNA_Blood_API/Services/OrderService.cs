@@ -96,19 +96,21 @@ namespace DNA_API1.Services
                 // Nếu không phải At Home, không cần DeliveryAddress
                 dto.DeliveryAddress = null;
             }
+            if (dto.Participants == null || dto.Participants.Count != 2)
+                throw new Exception("Cần nhập đủ thông tin 2 người tham gia!");
 
             try
             {
-                // 1. Create participant
-                var participant = new Participant
+                // 1. Create participants (2 người)
+                var participants = dto.Participants.Select(p => new Participant
                 {
-                    FullName = dto.Participant.FullName,
-                    Sex = dto.Participant.Sex,
-                    BirthDate = dto.Participant.BirthDate,
-                    Phone = dto.Participant.Phone,
-                    Relationship = dto.Participant.Relationship,
-                    NameRelation = dto.Participant.NameRelation
-                };
+                    FullName = p.FullName,
+                    Sex = p.Sex,
+                    BirthDate = p.BirthDate,
+                    Phone = p.Phone,
+                    Relationship = p.Relationship,
+                    NameRelation = p.NameRelation
+                }).ToList();
 
                 // 2. Create order
                 var order = new Order
@@ -222,7 +224,7 @@ namespace DNA_API1.Services
 
                 // 6. Save everything using repository
                 var orderId = await _orderRepository.CreateOrderWithDetailsAsync(
-                    participant,
+                    participants,
                     order,
                     details,
                     samples,
