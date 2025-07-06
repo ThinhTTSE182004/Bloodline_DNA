@@ -3,7 +3,21 @@ import Navbar from '../../components/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import signalRService from '../../services/signalRService.js';
 import { motion } from 'framer-motion';
+import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
 
+// Hàm sinh màu dựa trên tên user
+function getColorClassFromName(name) {
+  const colors = [
+    "bg-red-500", "bg-green-500", "bg-blue-500", "bg-yellow-500",
+    "bg-purple-500", "bg-pink-500", "bg-indigo-500", "bg-teal-500",
+    "bg-orange-500", "bg-lime-500", "bg-cyan-500", "bg-amber-500",
+    "bg-rose-500", "bg-fuchsia-500", "bg-violet-500", "bg-emerald-500",
+    "bg-sky-500", "bg-slate-500", "bg-neutral-500", "bg-stone-500"
+  ];
+  if (!name) return "bg-gray-400";
+  const charCode = name.charCodeAt(0);
+  return colors[charCode % colors.length];
+}
 
 const Profile = () => {
   const [userProfile, setUserProfile] = useState(null);
@@ -291,11 +305,15 @@ const Profile = () => {
           >
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
               <div className="flex-shrink-0">
-                <div className="h-24 w-24 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center text-white text-4xl transform transition-all duration-300 hover:scale-110">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-12 h-12">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                </div>
+                <Avatar size="xl" className={`${getColorClassFromName(userProfile?.name)} text-white text-4xl transform transition-all duration-300 hover:scale-110`}>
+                  {userProfile?.avatarUrl ? (
+                    <AvatarImage src={userProfile.avatarUrl} alt={userProfile.name} />
+                  ) : (
+                    <AvatarFallback>
+                      {userProfile?.name ? userProfile.name.charAt(0).toUpperCase() : '?'}
+                    </AvatarFallback>
+                  )}
+                </Avatar>
               </div>
               <div className="flex-grow text-center md:text-left">
                 <h1 className="text-3xl font-bold text-gray-900 mb-2 cursor-default">{userProfile.name}</h1>
