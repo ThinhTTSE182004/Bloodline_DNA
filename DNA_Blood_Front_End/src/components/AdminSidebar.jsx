@@ -1,60 +1,152 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaTachometerAlt, FaUserPlus, FaUserMd, FaCalendarAlt, FaListAlt, FaUsersCog, FaUserFriends, FaPlusCircle, FaClipboardList, FaVials, FaChartBar, FaEye, FaBoxOpen, FaTimes, FaShoppingCart } from 'react-icons/fa';
+import { FaTachometerAlt, FaUserPlus, FaUserMd, FaCalendarAlt, FaListAlt, FaUsersCog, FaClipboardList, FaBoxOpen, FaEye, FaShoppingCart, FaChevronDown, FaChevronUp, FaBars, FaTimes } from 'react-icons/fa';
+import { Card, CardHeader, CardContent } from './ui';
+import { Avatar, AvatarImage } from './ui';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui';
 
-const menuItems = [
-  { label: 'Dashboard', icon: <FaTachometerAlt />, to: '/admin' },
-  { label: 'Register Staff', icon: <FaUserPlus />, to: '/admin/register-staff' },
-  { label: 'Register Medical Staff', icon: <FaUserMd />, to: '/admin/register-medical-staff' },
-  { label: 'Staff Management', icon: <FaUsersCog />, to: '/admin/staff-management' },
-  { label: 'All Orders', icon: <FaShoppingCart />, to: '/admin/all-orders' },
-  { label: 'Create Work Shift', icon: <FaCalendarAlt />, to: '/admin/create-workshift' },
-  { label: 'Work Shift List', icon: <FaListAlt />, to: '/admin/workshift-list' },
-  { label: 'Work Assignment', icon: <FaClipboardList />, to: '/admin/work-assignment' },
-  { label: 'Service Management', icon: <FaBoxOpen />, to: '/admin/services' },
-  { label: 'View Customer Site', icon: <FaEye />, to: '/' },
-];
-
-const AdminSidebar = ({ isOpen, onClose }) => {
-  const location = useLocation();
+// Sidebar Component
+const Sidebar = ({ width = "270px", children, isOpen, onClose }) => {
   return (
     <>
-      {/* Overlay */}
+      {/* Blurred Backdrop */}
       <div
-        className={`fixed inset-0 bg-black bg-opacity-40 z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 z-40 transition-opacity duration-300 ${isOpen ? 'opacity-100 pointer-events-auto backdrop-blur-sm' : 'opacity-0 pointer-events-none'}`}
+        style={{ background: isOpen ? 'rgba(30, 41, 59, 0.15)' : 'transparent', backdropFilter: isOpen ? 'blur(6px)' : 'none' }}
         onClick={onClose}
         aria-hidden={!isOpen}
       />
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-full w-64 bg-gradient-to-b from-blue-700 to-blue-900 shadow-xl z-50 transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
-        style={{ willChange: 'transform' }}
+        className={`fixed top-0 left-0 h-full z-50 transition-transform duration-300 ease-in-out transform ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        style={{ width, willChange: 'transform' }}
       >
-        <button className="absolute top-4 right-4 text-white text-2xl md:hidden" onClick={onClose}>
-          <FaTimes />
-        </button>
-        <nav className="flex flex-col py-8 space-y-2 mt-12 md:mt-0">
-          {menuItems.map((item, idx) => (
-            <Link
-              key={item.label}
-              to={item.to}
-              className={`flex items-center px-6 py-3 mx-4 rounded-lg text-white text-base font-medium transition-all duration-200 transform hover:bg-blue-600 hover:scale-105 hover:shadow-lg group ${location.pathname === item.to ? 'bg-blue-600 scale-105 shadow-lg' : ''}`}
-              style={{ animation: `fadeInLeft 0.3s ${idx * 0.05 + 0.1}s both` }}
-              onClick={onClose}
-            >
-              <span className="mr-3 text-lg group-hover:animate-bounce">{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
-        </nav>
-        <style>{`
-          @keyframes fadeInLeft {
-            from { opacity: 0; transform: translateX(-30px); }
-            to { opacity: 1; transform: translateX(0); }
-          }
-        `}</style>
+        <Card className="h-full w-full flex flex-col shadow-2xl rounded-r-2xl border-0 bg-white relative">
+          {/* Close button (mobile) */}
+          <button className="absolute top-4 right-4 text-gray-500 text-2xl md:hidden z-10 hover:text-blue-600 transition" onClick={onClose}>
+            <span className="sr-only">Close sidebar</span>
+            <FaTimes />
+          </button>
+          {children}
+        </Card>
       </aside>
     </>
+  );
+};
+
+// Menu Component
+const Menu = ({ subHeading, children }) => {
+  return (
+    <div className="mb-2">
+      <div className="px-6 pt-4 pb-1 text-xs font-semibold text-slate-400 tracking-widest uppercase">
+        {subHeading}
+      </div>
+      <nav className="flex flex-col gap-1">
+        {children}
+      </nav>
+    </div>
+  );
+};
+
+// MenuItem Component
+const MenuItem = ({ link, children, target, badge, icon, onClick }) => {
+  const location = useLocation();
+  const isActive = location.pathname === link;
+  
+  const content = (
+    <div className={`flex items-center gap-3 px-6 py-2 rounded-lg text-base font-medium transition-all duration-200 hover:bg-slate-100 hover:text-blue-700 focus:bg-slate-200 focus:text-blue-700 outline-none ${isActive ? 'bg-slate-100 text-blue-700 font-semibold shadow' : 'text-slate-700'}`}>
+      {icon && <span className="text-lg">{icon}</span>}
+      <span className="flex-1">{children}</span>
+      {badge && (
+        <span className="bg-blue-500 text-white text-xs px-2 py-1 rounded-full">
+          New
+        </span>
+      )}
+    </div>
+  );
+
+  if (link) {
+    return (
+      <Link to={link} target={target} onClick={onClick}>
+        {content}
+      </Link>
+    );
+  }
+
+  return (
+    <button onClick={onClick} className="w-full text-left">
+      {content}
+    </button>
+  );
+};
+
+// Submenu Component
+const Submenu = ({ title, children, icon }) => {
+  const [isOpen, setIsOpen] = useState(false);
+  
+  return (
+    <div>
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        className="flex items-center gap-3 px-6 py-2 rounded-lg text-base font-medium transition-all duration-200 hover:bg-slate-100 hover:text-blue-700 focus:bg-slate-200 focus:text-blue-700 outline-none text-slate-700 w-full text-left"
+      >
+        {icon && <span className="text-lg">{icon}</span>}
+        <span className="flex-1">{title}</span>
+        {isOpen ? <FaChevronUp className="text-sm" /> : <FaChevronDown className="text-sm" />}
+      </button>
+      {isOpen && (
+        <div className="ml-6 border-l border-slate-200">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+};
+
+const AdminSidebar = ({ isOpen, onClose }) => {
+  return (
+    <Sidebar width="270px" isOpen={isOpen} onClose={onClose}>
+      <CardContent className="flex-1 flex flex-col overflow-y-auto px-0 pt-2 pb-6">
+        <Menu subHeading="HOME">
+          <MenuItem link="/admin" icon={<FaTachometerAlt />}>
+            Dashboard
+          </MenuItem>
+        </Menu>
+        <Menu subHeading="MANAGEMENT">
+          <MenuItem link="/admin/register-staff" icon={<FaUserPlus />}>
+            Register Staff
+          </MenuItem>
+          <MenuItem link="/admin/register-medical-staff" icon={<FaUserMd />}>
+            Register Medical Staff
+          </MenuItem>
+          <MenuItem link="/admin/staff-management" icon={<FaUsersCog />}>
+            Staff Management
+          </MenuItem>
+          <MenuItem link="/admin/all-orders" icon={<FaShoppingCart />}>
+            All Orders
+          </MenuItem>
+          <Submenu title="Work Shifts" icon={<FaCalendarAlt />}>
+            <MenuItem link="/admin/create-workshift" icon={<FaCalendarAlt />}>
+              Create Work Shift
+            </MenuItem>
+            <MenuItem link="/admin/workshift-list" icon={<FaListAlt />}>
+              Work Shift List
+            </MenuItem>
+            <MenuItem link="/admin/work-assignment" icon={<FaClipboardList />}>
+              Work Assignment
+            </MenuItem>
+          </Submenu>
+          <MenuItem link="/admin/services" icon={<FaBoxOpen />}>
+            Service Management
+          </MenuItem>
+        </Menu>
+        <Menu subHeading="OTHERS">
+          <MenuItem link="/" icon={<FaEye />} target="_blank">
+            View Customer Site
+          </MenuItem>
+        </Menu>
+      </CardContent>
+    </Sidebar>
   );
 };
 
