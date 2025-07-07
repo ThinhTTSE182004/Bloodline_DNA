@@ -25,7 +25,7 @@ const FAQ = () => {
   };
 
   return (
-    <section id="FAQ" className="py-16 bg-gray-50 h-full">
+    <section id="faq" className="py-16 bg-gray-50 h-full">
       <div className="h-full flex flex-col">
         <div className="mb-8">
           <motion.h4 

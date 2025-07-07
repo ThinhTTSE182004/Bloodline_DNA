@@ -58,7 +58,7 @@ const Features = () => {
   };
 
   return (
-    <div className="py-20 bg-light">
+    <section id="features" className="py-20 bg-light">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <motion.h2
@@ -111,7 +111,7 @@ const Features = () => {
           ))}
         </motion.div>
       </div>
-    </div>
+    </section>
   );
 };
 

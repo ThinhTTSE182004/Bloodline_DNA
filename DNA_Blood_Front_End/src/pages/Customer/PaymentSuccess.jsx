@@ -92,64 +92,105 @@ const PaymentSuccess = () => {
                       <FaUser className="mr-2" /> User Information
                     </h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {/* Main Participant */}
                       <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaUser className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Full Name</div>
-                          <div className="font-medium text-gray-900">{userDetails.fullName}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
-                        <FaEnvelope className="mt-1 text-blue-500 w-5 h-5" />
-                        <div>
-                          <div className="text-sm text-gray-500">Email</div>
-                          <div className="font-medium text-gray-900">{userDetails.email}</div>
+                          <div className="font-medium text-gray-900">{userDetails.participants?.[0]?.fullName || '-'}</div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaPhone className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Phone</div>
-                          <div className="font-medium text-gray-900">{userDetails.phone}</div>
-                        </div>
-                      </div>
-                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
-                        <FaMapMarkerAlt className="mt-1 text-blue-500 w-5 h-5" />
-                        <div>
-                          <div className="text-sm text-gray-500">Address</div>
-                          <div className="font-medium text-gray-900">{userDetails.deliveryAddress || 'At Medical Center'}</div>
+                          <div className="font-medium text-gray-900">{userDetails.participants?.[0]?.phone || '-'}</div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaCalendarAlt className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Date of Birth</div>
-                          <div className="font-medium text-gray-900">{userDetails.birthDate}</div>
+                          <div className="font-medium text-gray-900">{userDetails.participants?.[0]?.birthDate || '-'}</div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaTransgender className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Gender</div>
-                          <div className="font-medium text-gray-900">{userDetails.sex}</div>
+                          <div className="font-medium text-gray-900">{userDetails.participants?.[0]?.sex || '-'}</div>
                         </div>
                       </div>
                       <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
                         <FaUsers className="mt-1 text-blue-500 w-5 h-5" />
                         <div>
                           <div className="text-sm text-gray-500">Relationship</div>
-                          <div className="font-medium text-gray-900">{userDetails.relationship}</div>
+                          <div className="font-medium text-gray-900">{userDetails.participants?.[0]?.relationship || '-'}</div>
                         </div>
                       </div>
-                      {userDetails.relationship !== 'self' && userDetails.relationship !== '' && (
-                        <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
-                          <FaUserFriends className="mt-1 text-blue-500 w-5 h-5" />
-                          <div>
-                            <div className="text-sm text-gray-500">Related Person</div>
-                            <div className="font-medium text-gray-900">{userDetails.nameRelation}</div>
-                          </div>
+                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
+                        <FaUserFriends className="mt-1 text-blue-500 w-5 h-5" />
+                        <div>
+                          <div className="text-sm text-gray-500">Related Person</div>
+                          <div className="font-medium text-gray-900">{userDetails.participants?.[0]?.nameRelation || '-'}</div>
                         </div>
+                      </div>
+                      {/* Nếu có người liên quan (participants[1]) thì hiển thị thêm */}
+                      {userDetails.participants?.length > 1 && (
+                        <>
+                          <div className="col-span-2 border-t border-gray-300 my-2"></div>
+                          <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
+                            <FaUser className="mt-1 text-green-500 w-5 h-5" />
+                            <div>
+                              <div className="text-sm text-gray-500">Related Person Name</div>
+                              <div className="font-medium text-gray-900">{userDetails.participants?.[1]?.fullName || '-'}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
+                            <FaPhone className="mt-1 text-green-500 w-5 h-5" />
+                            <div>
+                              <div className="text-sm text-gray-500">Related Person Phone</div>
+                              <div className="font-medium text-gray-900">{userDetails.participants?.[1]?.phone || '-'}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
+                            <FaCalendarAlt className="mt-1 text-green-500 w-5 h-5" />
+                            <div>
+                              <div className="text-sm text-gray-500">Related Person DOB</div>
+                              <div className="font-medium text-gray-900">{userDetails.participants?.[1]?.birthDate || '-'}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
+                            <FaTransgender className="mt-1 text-green-500 w-5 h-5" />
+                            <div>
+                              <div className="text-sm text-gray-500">Related Person Gender</div>
+                              <div className="font-medium text-gray-900">{userDetails.participants?.[1]?.sex || '-'}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
+                            <FaUsers className="mt-1 text-green-500 w-5 h-5" />
+                            <div>
+                              <div className="text-sm text-gray-500">Relationship</div>
+                              <div className="font-medium text-gray-900">{userDetails.participants?.[1]?.relationship || '-'}</div>
+                            </div>
+                          </div>
+                          <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white">
+                            <FaUserFriends className="mt-1 text-green-500 w-5 h-5" />
+                            <div>
+                              <div className="text-sm text-gray-500">Related To</div>
+                              <div className="font-medium text-gray-900">{userDetails.participants?.[1]?.nameRelation || '-'}</div>
+                            </div>
+                          </div>
+                        </>
                       )}
+                      {/* Địa chỉ giao mẫu */}
+                      <div className="flex items-start space-x-3 border border-gray-300 px-2 py-2 bg-white col-span-2">
+                        <FaMapMarkerAlt className="mt-1 text-blue-500 w-5 h-5" />
+                        <div>
+                          <div className="text-sm text-gray-500">Address</div>
+                          <div className="font-medium text-gray-900">{userDetails.deliveryAddress || 'At Medical Center'}</div>
+                        </div>
+                      </div>
                     </div>
                   </div>
 
