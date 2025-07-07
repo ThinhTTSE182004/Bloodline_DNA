@@ -2,6 +2,6 @@
 {
     public interface IPaymentService
     {
-        bool UpdatePaymentStatusByOrderId(int orderId, string status);
+        Task<bool> UpdatePaymentStatusByOrderId(int orderId, string status);
     }
 }

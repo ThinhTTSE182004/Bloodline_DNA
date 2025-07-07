@@ -156,15 +156,33 @@ namespace DNA_API1
             //    });
             //});
 
+            //builder.Services.AddCors(options =>
+            //{
+            //    options.AddDefaultPolicy(policy =>
+            //    {
+            //        policy
+            //            .AllowAnyOrigin()      // Cho phép tất cả các origin
+            //            .AllowAnyHeader()
+            //            .AllowAnyMethod();
+            //        // Không dùng .AllowCredentials() với .AllowAnyOrigin()
+            //    });
+            //});
+
+
             builder.Services.AddCors(options =>
             {
-                options.AddDefaultPolicy(policy =>
+                options.AddPolicy("AllowFrontend", policy =>
                 {
                     policy
-                        .AllowAnyOrigin()      // Cho phép tất cả các origin
+                        .WithOrigins(
+                            "http://localhost:7113",
+                            "http://localhost:5176",
+                            "http://localhost:5173",
+                            "http://localhost:5174"
+                        )
                         .AllowAnyHeader()
-                        .AllowAnyMethod();
-                    // Không dùng .AllowCredentials() với .AllowAnyOrigin()
+                        .AllowAnyMethod()
+                        .AllowCredentials(); // Cho phép credentials (Bearer token)
                 });
             });
             var app = builder.Build();
@@ -178,14 +196,14 @@ namespace DNA_API1
 
             app.UseHttpsRedirection();
 
-            app.UseCors();
+            app.UseCors("AllowFrontend");
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllers();
 
             // Configure SignalR endpoint
-            app.MapHub<UserHub>("/userHub");
+            app.MapHub<UserHub>("/userHub").RequireCors("AllowFrontend");
 
             app.Run();
         }

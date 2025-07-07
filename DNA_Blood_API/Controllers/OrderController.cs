@@ -80,9 +80,9 @@ namespace DNA_API1.Controllers
 
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Admin")]
         [HttpPut("update-payment-status")]
-        public IActionResult UpdatePaymentStatusByOrder([FromBody] UpdatePaymentStatusByOrderDTO dto)
+        public async Task<IActionResult> UpdatePaymentStatusByOrder([FromBody] UpdatePaymentStatusByOrderDTO dto)
         {
-            var result = _paymentService.UpdatePaymentStatusByOrderId(dto.OrderId, dto.Status);
+            var result = await _paymentService.UpdatePaymentStatusByOrderId(dto.OrderId, dto.Status);
             if (result)
                 return Ok(new { message = "Payment status updated successfully." });
             return NotFound(new { message = "Payment not found for the given orderId." });
