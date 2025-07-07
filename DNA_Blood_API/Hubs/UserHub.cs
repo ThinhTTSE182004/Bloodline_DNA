@@ -13,7 +13,10 @@ namespace DNA_API1.Hubs
         {
             await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"User_{userId}");
         }
-
+        public async Task JoinAdminGroup()
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, "Admin");
+        }
         public override async Task OnConnectedAsync()
         {
             Console.WriteLine($"[SignalR] New connection: {Context.ConnectionId}");

@@ -10,12 +10,33 @@ import {
   FaColumns,
   FaBars,
   FaTimes,
+  FaBell,
 } from "react-icons/fa";
+import signalRService from '../services/signalRService';
+
+// Toast notification component
+function Toast({ message, onClose }) {
+  useEffect(() => {
+    const timer = setTimeout(onClose, 3500);
+    return () => clearTimeout(timer);
+  }, [onClose]);
+  return (
+    <div className="fixed top-6 right-6 z-[9999] bg-blue-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-2 animate-fade-in">
+      <FaBell className="mr-2" />
+      <span>{message}</span>
+      <button onClick={onClose} className="ml-4 text-white hover:text-gray-200">×</button>
+    </div>
+  );
+}
 
 const AdminNavbar = ({ onSidebarToggle }) => {
   const [userName, setUserName] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const [toast, setToast] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -53,6 +74,36 @@ const AdminNavbar = ({ onSidebarToggle }) => {
       }
     }
   }, [navigate]);
+
+  useEffect(() => {
+    const userRole = localStorage.getItem("userRole") || sessionStorage.getItem("userRole");
+    console.log('[AdminNavbar] userRole:', userRole);
+    if (userRole === "Admin") {
+      console.log('[AdminNavbar] Calling joinAdminGroup');
+      signalRService.joinAdminGroup && signalRService.joinAdminGroup();
+    }
+    const handleNewOrder = (data) => {
+      console.log('[AdminNavbar] Received NewOrder:', data);
+      setNotifications(prev => {
+        const newList = [...prev, data];
+        console.log('[AdminNavbar] setNotifications, before:', prev, 'after:', newList);
+        return newList;
+      });
+      setUnreadCount(prev => {
+        const newCount = prev + 1;
+        console.log('[AdminNavbar] setUnreadCount, before:', prev, 'after:', newCount);
+        return newCount;
+      });
+      setToast({ message: `Đơn hàng mới từ ${data.customerName} (${data.customerPhone})!` });
+      console.log('[AdminNavbar] setToast:', data.customerName, data.customerPhone);
+    };
+    console.log('[AdminNavbar] Registering event: NewOrder', handleNewOrder);
+    signalRService.on('NewOrder', handleNewOrder);
+    return () => {
+      console.log('[AdminNavbar] Unregistering event: NewOrder', handleNewOrder);
+      signalRService.off('NewOrder', handleNewOrder);
+    };
+  }, []);
 
   const handleLogout = () => {
     sessionStorage.removeItem("token");
@@ -112,6 +163,58 @@ const AdminNavbar = ({ onSidebarToggle }) => {
             >
               Staff
             </Link>
+            
+            {/* Notification Bell & Dropdown (desktop only) */}
+            <div className="relative">
+              <button
+                className="relative w-10 h-10 flex items-center justify-center text-gray-700 hover:text-blue-600 transition-colors duration-300 focus:outline-none"
+                onClick={() => {
+                  setShowNotifications((prev) => {
+                    if (!prev) setUnreadCount(0);
+                    return !prev;
+                  });
+                }}
+                aria-label="Notifications"
+              >
+                <FaBell className="w-5 h-5" />
+                {unreadCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center z-10">
+                    {unreadCount}
+                  </span>
+                )}
+              </button>
+              {/* Dropdown notification */}
+              <div
+                className="absolute right-0 mt-3 w-80 bg-white rounded-xl shadow-2xl border border-gray-100 z-50"
+                style={{ minWidth: '320px', display: showNotifications ? 'block' : 'none' }}
+              >
+                <div className="py-2 max-h-96 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="px-4 py-6 text-gray-400 text-center">No new notifications</div>
+                  ) : (
+                    notifications.slice().reverse().map((noti, idx) => (
+                      <div
+                        key={idx}
+                        className="px-4 py-3 mb-1 bg-blue-50 rounded-lg shadow-sm border border-blue-100 flex flex-col gap-1 cursor-pointer hover:bg-blue-100 transition"
+                        onClick={() => {
+                          setShowNotifications(false);
+                          navigate('/admin/all-orders');
+                        }}
+                      >
+                        <div className="flex items-center gap-2">
+                          <span className="text-blue-700 font-semibold">{noti.message}</span>
+                        </div>
+                        <div className="text-xs text-gray-700">Order ID: <span className="font-mono">{noti.orderId}</span></div>
+                        <div className="text-xs text-gray-700">Khách: <span>{noti.customerName} ({noti.customerPhone})</span></div>
+                        <div className="text-xs text-gray-700">Tổng tiền: <span className="font-semibold">{noti.totalAmount}₫</span></div>
+                        <div className="text-xs text-gray-700">Thời gian: <span>{new Date(noti.createdAt).toLocaleString()}</span></div>
+                        <div className="text-xs text-gray-700">Trạng thái: <span>{noti.paymentStatus}</span></div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+            </div>
             
             {/* User Dropdown */}
             <div className="relative">
@@ -245,6 +348,8 @@ const AdminNavbar = ({ onSidebarToggle }) => {
           </div>
         </div>
       )}
+
+      {toast && <Toast message={toast.message} onClose={() => setToast(null)} />}
     </nav>
   );
 };

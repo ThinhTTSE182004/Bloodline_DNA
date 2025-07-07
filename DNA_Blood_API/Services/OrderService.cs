@@ -1,7 +1,10 @@
-﻿using DNA_API1.Models;
+﻿using DNA_API1.Hubs;
+using DNA_API1.Models;
 using DNA_API1.Repository;
 using DNA_API1.ViewModels;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace DNA_API1.Services
 {
@@ -11,16 +14,20 @@ namespace DNA_API1.Services
         private readonly IStaffAssignmentService _staffAssignmentService;
         private readonly ISampleTransferRepository _sampleTransferService;
         private readonly IStaffScheduleRepository _staffScheduleRepository;
+        private readonly IHubContext<UserHub> _hubContext;
         public OrderService(
             IOrderRepository orderRepository,
             IStaffAssignmentService staffAssignmentService,
             ISampleTransferRepository sampleTransferRepository,
-            IStaffScheduleRepository staffScheduleRepository)
+            IStaffScheduleRepository staffScheduleRepository,
+            IHubContext<UserHub> hubContext
+            )
         {
             _orderRepository = orderRepository;
             _staffAssignmentService = staffAssignmentService;
             _sampleTransferService = sampleTransferRepository;
             _staffScheduleRepository = staffScheduleRepository;
+            _hubContext = hubContext;
         }
 
         public async Task<OrderHistoryDTO?> ConfirmOrderAsync(int orderId)
@@ -238,6 +245,34 @@ namespace DNA_API1.Services
                     delivery,
                     collectionMethod.MethodName == "At Home" ? deliveryTasks : null
                 );
+
+                // Thêm log trước khi gửi SignalR
+                Console.WriteLine("[SignalR] Sending NewOrder to Admin group: " + JsonConvert.SerializeObject(new {
+                    message = "Có đơn hàng mới!",
+                    orderId = orderId,
+                    customerId = dto.CustomerId,
+                    customerName = participants.FirstOrDefault()?.FullName ?? "",
+                    customerPhone = participants.FirstOrDefault()?.Phone ?? "",
+                    totalAmount = payment.Total,
+                    deliveryAddress = delivery?.DeliveryAddress ?? "",
+                    createdAt = order.CreateAt,
+                    paymentStatus = payment.PaymentStatus,
+                    collectionMethod = collectionMethod.MethodName
+                }));
+
+                // Gửi thông báo cho admin
+                await _hubContext.Clients.Group("Admin").SendAsync("NewOrder", new {
+                    message = "Có đơn hàng mới!",
+                    orderId = orderId,
+                    customerId = dto.CustomerId,
+                    customerName = participants.FirstOrDefault()?.FullName ?? "",
+                    customerPhone = participants.FirstOrDefault()?.Phone ?? "",
+                    totalAmount = payment.Total,
+                    deliveryAddress = delivery?.DeliveryAddress ?? "",
+                    createdAt = order.CreateAt,
+                    paymentStatus = payment.PaymentStatus,
+                    collectionMethod = collectionMethod.MethodName
+                });
 
                 return orderId;
             }

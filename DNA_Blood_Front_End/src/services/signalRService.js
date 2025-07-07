@@ -196,6 +196,17 @@ class SignalRService {
             this.connection.off(eventName, callback);
         }
     }
+
+    async joinAdminGroup() {
+        if (!this.connection) return;
+        if (this.connection.state !== signalR.HubConnectionState.Connected) return;
+        try {
+            await this.connection.invoke('JoinAdminGroup');
+            console.log('[SignalR] Admin joined Admin group');
+        } catch (err) {
+            console.error('[SignalR] Error joining Admin group:', err);
+        }
+    }
 }
 
 export default new SignalRService(); 
