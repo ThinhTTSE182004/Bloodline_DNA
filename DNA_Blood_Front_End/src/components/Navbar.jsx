@@ -310,14 +310,16 @@ useEffect(() => {
                 </div>
               </div>
             </div>
-            <Link to="/cart" className="relative inline-flex items-center justify-center w-10 h-10 text-gray-700 hover:text-blue-600 transition-colors duration-300">
-              <FaShoppingCart className="w-5 h-5" />
-              {cartCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
+            {isLoggedIn && (
+              <Link to="/cart" className="relative inline-flex items-center justify-center w-10 h-10 text-gray-700 hover:text-blue-600 transition-colors duration-300">
+                <FaShoppingCart className="w-5 h-5" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
             {isLoggedIn ? (
               <div className="relative">
                 <button
@@ -520,18 +522,20 @@ useEffect(() => {
                 </div>
               </div>
             </div>
-            <Link
-              to="/cart"
-              className="w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 flex items-center"
-            >
-              <FaShoppingCart className="w-5 h-5 mr-2" />
-              Cart
-              {cartCount > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
-                  {cartCount}
-                </span>
-              )}
-            </Link>
+            {isLoggedIn && (
+              <Link
+                to="/cart"
+                className="w-full text-left px-3 py-2 text-black font-medium hover:text-blue-600 transition-colors duration-200 flex items-center"
+              >
+                <FaShoppingCart className="w-5 h-5 mr-2" />
+                Cart
+                {cartCount > 0 && (
+                  <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-xs font-bold rounded-full">
+                    {cartCount}
+                  </span>
+                )}
+              </Link>
+            )}
             {isLoggedIn ? (
               <div className="mt-4">
                 <button

@@ -4,15 +4,25 @@ import { FaDna, FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/
 import { useServices } from '../context/ServiceContext';
 import { useCart } from '../context/CartContext';
 import { motion } from 'framer-motion';
+import ServiceDetail from './ServiceDetail';
 
 const Services = () => {
   const { services, loading, error } = useServices();
   const { addToCart } = useCart();
   const [startIndex, setStartIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [selectedService, setSelectedService] = useState(null);
 
   const handleAddToCart = (service) => {
     addToCart(service);
+  };
+
+  const handleViewDetails = (service) => {
+    setSelectedService(service);
+  };
+
+  const closeModal = () => {
+    setSelectedService(null);
   };
 
   const nextSlide = () => {
@@ -127,26 +137,28 @@ const Services = () => {
                     />
                   </div>
                   <div className="p-6 flex flex-col flex-grow">
-                    <Link
-                      to={`/fill-booking-form?service=${service.servicePackageId}`}
-                      className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors duration-300 block"
+                    <span
+                      onClick={() => handleViewDetails(service)}
+                      className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors duration-300 block cursor-pointer"
+                      role="button"
+                      tabIndex={0}
                     >
                       {service.serviceName}
-                    </Link>
+                    </span>
                     <div className="text-blue-600 font-semibold text-lg mb-3 cursor-default">
                       ${service.price.toLocaleString()}
                     </div>
-
                     <div className="text-base text-gray-500 mb-4 line-clamp-2 flex-grow">
                       {service.description || "Professional DNA testing service with accurate results and detailed analysis."}
                     </div>
-
-                    <button
-                      onClick={() => handleAddToCart(service)}
-                      className="w-full bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 transition flex items-center justify-center text-base font-semibold mt-auto"
-                    >
-                      Add to Cart
-                    </button>
+                    <div className="flex gap-2 mt-auto">
+                      <button
+                        onClick={() => handleAddToCart(service)}
+                        className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 transition text-base font-semibold"
+                      >
+                        Add to Cart
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -171,6 +183,15 @@ const Services = () => {
           </motion.div>
         </motion.div>
       </div>
+
+      {/* Modal hiển thị chi tiết service */}
+      {selectedService && (
+        <ServiceDetail
+          service={selectedService}
+          onClose={closeModal}
+          onAddToCart={handleAddToCart}
+        />
+      )}
     </section>
   );
 };

@@ -239,7 +239,7 @@ const FillBookingForm = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Test Type */}
                 <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="testType" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <label htmlFor="testType" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaFlask className="w-6 h-6 mr-3 text-blue-600" />
                     Test Type
                   </label>
@@ -258,7 +258,7 @@ const FillBookingForm = () => {
 
                 {/* Sample Collection Method */}
                 <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="sampleCollectionMethod" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <label htmlFor="sampleCollectionMethod" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaPrescriptionBottleAlt className="w-6 h-6 mr-3 text-blue-600" />
                     Sample Collection Method
                   </label>
@@ -277,7 +277,7 @@ const FillBookingForm = () => {
 
                 {/* Sample Type */}
                 <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="sampleType" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <label htmlFor="sampleType" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaFlask className="w-6 h-6 mr-3 text-blue-600" />
                     Sample Type
                   </label>
@@ -297,7 +297,7 @@ const FillBookingForm = () => {
 
                 {/* Booking Date */}
                 <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="bookingDate" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <label htmlFor="bookingDate" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaCalendarAlt className="w-6 h-6 mr-3 text-blue-600" />
                     Booking Date
                   </label>
@@ -316,7 +316,7 @@ const FillBookingForm = () => {
                 {/* Address - chỉ hiện khi chọn At Home */}
                 {formData.sampleCollectionMethod === 'At Home' && (
                   <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                    <label htmlFor="address" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <label htmlFor="address" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaMapMarkerAlt className="w-6 h-6 mr-3 text-blue-600" />
                       Address
                     </label>
@@ -334,7 +334,7 @@ const FillBookingForm = () => {
 
                 {/* Relationship to Patient */}
                 <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="relationshipToPatient" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <label htmlFor="relationshipToPatient" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaUsers className="w-6 h-6 mr-3 text-blue-600" />
                     Relationship to Patient
                   </label>
@@ -363,7 +363,7 @@ const FillBookingForm = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Main Participant Full Name */}
                   <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <label htmlFor="mainParticipant.fullName" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <label htmlFor="mainParticipant.fullName" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaUser className="w-5 h-5 mr-2 text-blue-600" />
                       Full Name
                     </label>
@@ -380,7 +380,7 @@ const FillBookingForm = () => {
 
                   {/* Main Participant Gender */}
                   <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <label htmlFor="mainParticipant.gender" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <label htmlFor="mainParticipant.gender" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaTransgender className="w-5 h-5 mr-2 text-blue-600" />
                       Gender
                     </label>
@@ -400,7 +400,7 @@ const FillBookingForm = () => {
 
                   {/* Main Participant Date of Birth */}
                   <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <label htmlFor="mainParticipant.dateOfBirth" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <label htmlFor="mainParticipant.dateOfBirth" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaCalendarAlt className="w-5 h-5 mr-2 text-blue-600" />
                       Date of Birth
                     </label>
@@ -416,7 +416,7 @@ const FillBookingForm = () => {
 
                   {/* Main Participant Phone Number */}
                   <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <label htmlFor="mainParticipant.phoneNumber" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <label htmlFor="mainParticipant.phoneNumber" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaPhone className="w-5 h-5 mr-2 text-blue-600" />
                       Phone Number
                     </label>
@@ -433,7 +433,7 @@ const FillBookingForm = () => {
 
                   {/* Main Participant Email */}
                   <div className="bg-white p-4 rounded-lg border border-gray-200 md:col-span-2">
-                    <label htmlFor="mainParticipant.email" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <label htmlFor="mainParticipant.email" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaEnvelope className="w-5 h-5 mr-2 text-blue-600" />
                       Email
                     </label>
@@ -459,7 +459,7 @@ const FillBookingForm = () => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Related Participant Full Name */}
                     <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.fullName" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <label htmlFor="relatedParticipant.fullName" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaUser className="w-5 h-5 mr-2 text-green-600" />
                         Full Name
                       </label>
@@ -476,7 +476,7 @@ const FillBookingForm = () => {
 
                     {/* Related Participant Gender */}
                     <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.gender" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <label htmlFor="relatedParticipant.gender" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaTransgender className="w-5 h-5 mr-2 text-green-600" />
                         Gender
                       </label>
@@ -496,7 +496,7 @@ const FillBookingForm = () => {
 
                     {/* Related Participant Date of Birth */}
                     <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.dateOfBirth" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <label htmlFor="relatedParticipant.dateOfBirth" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaCalendarAlt className="w-5 h-5 mr-2 text-green-600" />
                         Date of Birth
                       </label>
@@ -512,7 +512,7 @@ const FillBookingForm = () => {
 
                     {/* Related Participant Phone Number */}
                     <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.phoneNumber" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <label htmlFor="relatedParticipant.phoneNumber" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaPhone className="w-5 h-5 mr-2 text-green-600" />
                         Phone Number
                       </label>
@@ -529,7 +529,7 @@ const FillBookingForm = () => {
 
                     {/* Related Participant Email */}
                     <div className="bg-white p-4 rounded-lg border border-gray-200 md:col-span-2">
-                      <label htmlFor="relatedParticipant.email" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <label htmlFor="relatedParticipant.email" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaEnvelope className="w-5 h-5 mr-2 text-green-600" />
                         Email
                       </label>
