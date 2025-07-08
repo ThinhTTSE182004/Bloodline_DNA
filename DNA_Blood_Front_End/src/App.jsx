@@ -45,6 +45,7 @@ import ServiceManager from './pages/Admin/ServiceManager';
 import StaffManagement from './pages/Admin/StaffManagement';
 import AllOrders from './pages/Admin/AllOrders';
 import CustomerLayout from './pages/Customer/CustomerLayout';
+import Chatbot from './components/ui/Chatbot';
 
 const HomePage = () => (
     <>
@@ -116,6 +117,7 @@ const App = () => {
                                 </Routes>
                             </PageWrapper>
                         </main>
+                        <Chatbot />
                     </CartProvider>
                 </ServiceProvider>
             </NotificationProvider>

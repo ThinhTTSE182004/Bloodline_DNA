@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace YourNamespace.Controllers
 {
-    
     [ApiController]
     [Route("api/[controller]")]
     public class ChatbotController : ControllerBase
