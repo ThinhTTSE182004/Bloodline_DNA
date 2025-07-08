@@ -59,7 +59,7 @@ const StaffNavbar = () => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/staff" className="flex-shrink-0 flex items-center">
-              <FaDna className="h-8 w-8 text-blue-600" />
+              <img src="/img/logo.png" alt="Logo" className="h-10 w-10 object-contain" />
               <span className="ml-2 text-xl font-semibold text-black">DNA Testing</span>
             </Link>
           </div>

@@ -130,7 +130,7 @@ const AdminNavbar = ({ onSidebarToggle }) => {
             </button>
   
             <Link to="/admin" className="flex-shrink-0 flex items-center">
-              <FaDna className="h-8 w-8 text-blue-600" />
+              <img src="/img/logo.png" alt="Logo" className="h-10 w-10 object-contain" />
               <span className="ml-2 text-xl font-semibold text-black hover:text-blue-600 transition-colors duration-200 cursor-pointer">
                 DNA Admin
               </span>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaShoppingCart, FaBars, FaTimes, FaUser, FaSignOutAlt, FaBell } from 'react-icons/fa';
-import { FaDna } from "react-icons/fa6";
+// import { FaDna } from "react-icons/fa6";
 import { useCart } from '../context/CartContext';
 import signalRService from '../services/signalRService';
 
@@ -186,7 +186,7 @@ useEffect(() => {
         <div className="flex justify-between h-20">
           <div className="flex items-center">
             <Link to="/" className="flex-shrink-0 flex items-center">
-              <FaDna className="h-8 w-8 text-blue-600" />
+              <img src="/img/logo.png" alt="Logo" className="h-10 w-10 object-contain" />
               <span className="ml-2 text-xl font-semibold text-black hover:text-blue-600 transition-colors duration-200 cursor-pointer">DNA Testing</span>
             </Link>
           </div>

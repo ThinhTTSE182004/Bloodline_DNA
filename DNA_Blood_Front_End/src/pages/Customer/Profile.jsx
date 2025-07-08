@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import signalRService from '../../services/signalRService.js';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
+import { FaDownload } from 'react-icons/fa';
 
 // Hàm sinh màu dựa trên tên user
 function getColorClassFromName(name) {
@@ -239,6 +240,44 @@ const Profile = () => {
       });
     } catch (error) {
       console.error('Error setting up SignalR:', error);
+    }
+  };
+
+  // Download PDF handler
+  const handleDownloadPdf = async (resultId, event) => {
+    if (event) event.stopPropagation();
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      // SỬA ĐƯỜNG DẪN API TẠI ĐÂY
+      const res = await fetch(`https://localhost:7113/api/UserProfile/Results/${resultId}/download-pdf`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      if (!res.ok) throw new Error('Failed to download PDF');
+      const blob = await res.blob();
+
+      // Lấy tên file từ header nếu có
+      let filename = `result_${resultId}.pdf`;
+      const disposition = res.headers.get('content-disposition');
+      if (disposition && disposition.indexOf('filename=') !== -1) {
+        const match = disposition.match(/filename[^;=\n]*=((['\"]).*?\\2|[^;\\n]*)/);
+        if (match && match[1]) {
+          filename = decodeURIComponent(match[1].replace(/['\"]/g, ''));
+        }
+      }
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      alert('Download failed: ' + err.message);
     }
   };
 
@@ -506,18 +545,29 @@ const Profile = () => {
                             {orderResults.map(result => (
                               <div key={result.resultId} className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 shadow hover:shadow-lg transition-all">
                                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
-                                  <div>
-                                    <div className="text-gray-700 text-sm mb-1">Test Name: <span className="font-semibold text-green-700">{result.testName}</span></div>
+                                  <div className="w-full flex flex-col gap-1">
+                                    <div className="flex items-center justify-between w-full mb-1">
+                                      <div className="text-gray-700 text-sm">Test Name: <span className="font-semibold text-green-700">{result.testName}</span></div>
+                                      <button
+                                        className="ml-2 px-3 py-1 bg-gray-700 text-white rounded hover:bg-gray-900 transition flex items-center gap-1 text-xs"
+                                        onClick={e => handleDownloadPdf(result.resultId, e)}
+                                      >
+                                        <FaDownload className="mr-1" /> PDF
+                                      </button>
+                                    </div>
                                     <div className="text-gray-700 text-sm mb-1">Result Status: <span className={`font-semibold ${result.resultStatus === 'Positive' ? 'text-green-600' : 'text-red-600'}`}>{result.resultStatus}</span></div>
-                                    <div className="text-gray-500 text-xs mb-1">Report Date: {result.reportDate ? new Date(result.reportDate).toLocaleString() : 'N/A'}</div>
-                                    <div className="text-gray-500 text-xs mb-1">Created At: {result.createAt ? new Date(result.createAt).toLocaleString() : 'N/A'}</div>
                                     <div className="text-gray-700 text-sm mb-1">Summary: {result.testSummary || 'N/A'}</div>
-                                    <div className="text-gray-700 text-sm mb-1">Raw Data: {result.rawDataPath || 'N/A'}</div>
-                                    <div className="text-gray-700 text-sm mb-1">Report URL: {result.reportUrl || 'N/A'}</div>
-                                    <div className="text-gray-700 text-sm mb-1">Samples: {result.samples && result.samples.length > 0 ? result.samples.map(s => `${s.sampleName} (${s.sampleStatus})`).join(', ') : 'N/A'}</div>
-                                  </div>
-                                  <div className="flex flex-col items-end gap-2">
-                                    <div className="px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">Result ID: {result.resultId}</div>
+                                        <div className="text-gray-700 text-sm mb-1">Raw Data: {result.rawDataPath || 'N/A'}</div>
+                                    <div className="flex flex-col md:flex-row md:gap-4 w-full">
+                                      <div className="flex-1">
+                                        <div className="text-gray-700 text-sm mb-1">Report URL: {result.reportUrl || 'N/A'}</div>
+                                        <div className="text-gray-700 text-sm mb-1">Samples: {result.samples && result.samples.length > 0 ? result.samples.map(s => `${s.sampleName} (${s.sampleStatus})`).join(', ') : 'N/A'}</div>
+                                      </div>
+                                      <div className="flex flex-col items-end min-w-[160px]">
+                                        <div className="text-gray-500 text-xs mb-1">Report Date: {result.reportDate ? new Date(result.reportDate).toLocaleString() : 'N/A'}</div>
+                                        <div className="text-gray-500 text-xs mb-1">Created At: {result.createAt ? new Date(result.createAt).toLocaleString() : 'N/A'}</div>
+                                      </div>
+                                    </div>
                                   </div>
                                 </div>
                               </div>
