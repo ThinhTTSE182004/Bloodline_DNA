@@ -24,6 +24,7 @@ namespace DNA_API1
             
             var builder = WebApplication.CreateBuilder(args);
 
+            builder.Services.AddHttpClient();
             // Add services to the container.
             builder.Services.AddControllers();
 
@@ -178,7 +179,8 @@ namespace DNA_API1
                             "http://localhost:7113",
                             "http://localhost:5176",
                             "http://localhost:5173",
-                            "http://localhost:5174"
+                            "http://localhost:5174",
+                            "http://localhost:3000"
                         )
                         .AllowAnyHeader()
                         .AllowAnyMethod()
