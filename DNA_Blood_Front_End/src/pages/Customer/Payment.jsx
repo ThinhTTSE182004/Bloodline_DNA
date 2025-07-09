@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaMoneyBillWave, FaUniversity, FaCheckCircle, FaUser, FaTransgender, FaCalendarAlt, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUsers, FaUserFriends } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
 import { useServices } from '../../context/ServiceContext';
+import { motion } from 'framer-motion';
 
 const Payment = () => {
   const [paymentMethod, setPaymentMethod] = useState('bankTransfer');
@@ -125,92 +126,192 @@ const Payment = () => {
       <main className="flex-grow pt-24 pb-12 px-2 sm:px-6 lg:px-8">
         <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* User Information Card */}
-          <div className="bg-white shadow-xl rounded-2xl p-8 flex flex-col items-center mb-8 transition-transform duration-300 hover:scale-105 hover:shadow-2xl group">
-            <h2 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300 cursor-default">CONFIRM USER INFORMATION</h2>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="bg-white shadow-xl rounded-2xl p-8 flex flex-col items-center mb-8 hover:scale-105 hover:shadow-2xl group">
+            <motion.h2 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300 cursor-default">
+                CONFIRM USER INFORMATION
+            </motion.h2>
             <div className="w-full max-w-md space-y-4 text-gray-700 group-hover:text-gray-900">
               {/* Main Participant */}
-              <div className="bg-blue-50 rounded-lg p-4 mb-4">
-                <h3 className="font-bold text-blue-700 mb-3">Main Participant (Person Taking the Test)</h3>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="bg-blue-50 rounded-lg p-4 mb-4">
+                <motion.h3 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="font-bold text-blue-700 mb-3">
+                    Main Participant (Person Taking the Test)
+                </motion.h3>
                 {bookingData.participants && bookingData.participants.length > 0 && (
                   <>
-                    <div className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.8, delay: 0.4 }}
+                      className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
                       <FaUser className="mr-3 text-blue-500 text-xl" />
                       <span className="font-semibold w-36">Full Name:</span>
                       <span className="ml-2 flex-1 truncate">{bookingData.participants[0].fullName}</span>
-                    </div>
-                    <div className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
+                    </motion.div>
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.8, delay: 0.5 }}
+                      className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
                       <FaPhone className="mr-3 text-blue-500 text-xl" />
                       <span className="font-semibold w-36">Phone:</span>
                       <span className="ml-2 flex-1 truncate">{bookingData.participants[0].phone}</span>
-                    </div>
-                    <div className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
+                    </motion.div>
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.8, delay: 0.6 }}
+                      className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
                       <FaCalendarAlt className="mr-3 text-blue-500 text-xl" />
                       <span className="font-semibold w-36">Date of Birth:</span>
                       <span className="ml-2 flex-1 truncate">{bookingData.participants[0].birthDate}</span>
-                    </div>
-                    <div className="flex items-center bg-white rounded-lg px-4 py-3">
+                    </motion.div>
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      transition={{ duration: 0.8, delay: 0.7 }}
+                      className="flex items-center bg-white rounded-lg px-4 py-3">
                       <FaTransgender className="mr-3 text-blue-500 text-xl" />
                       <span className="font-semibold w-36">Gender:</span>
                       <span className="ml-2 flex-1 capitalize">{bookingData.participants[0].sex}</span>
-                    </div>
+                    </motion.div>
                   </>
                 )}
-              </div>
+              </motion.div>
 
               {/* Related Participant */}
               {bookingData.participants && bookingData.participants.length > 1 && (
-                <div className="bg-green-50 rounded-lg p-4 mb-4">
-                  <h3 className="font-bold text-green-700 mb-3">Related Participant (Person Booking)</h3>
-                  <div className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}
+                  className="bg-green-50 rounded-lg p-4 mb-4">
+                  <motion.h3 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 0.9 }}
+                    className="font-bold text-green-700 mb-3">
+                      Related Participant (Person Booking)
+                  </motion.h3>
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 1 }}
+                    className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
                     <FaUser className="mr-3 text-green-500 text-xl" />
                     <span className="font-semibold w-36">Full Name:</span>
                     <span className="ml-2 flex-1 truncate">{bookingData.participants[1].fullName}</span>
-                  </div>
-                  <div className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
+                  </motion.div>
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 1.1 }}
+                    className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
                     <FaPhone className="mr-3 text-green-500 text-xl" />
                     <span className="font-semibold w-36">Phone:</span>
                     <span className="ml-2 flex-1 truncate">{bookingData.participants[1].phone}</span>
-                  </div>
-                  <div className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
+                  </motion.div>
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 1.2 }}
+                    className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
                     <FaCalendarAlt className="mr-3 text-green-500 text-xl" />
                     <span className="font-semibold w-36">Date of Birth:</span>
                     <span className="ml-2 flex-1 truncate">{bookingData.participants[1].birthDate}</span>
-                  </div>
-                  <div className="flex items-center bg-white rounded-lg px-4 py-3">
+                  </motion.div>
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8, delay: 1.3 }}
+                    className="flex items-center bg-white rounded-lg px-4 py-3">
                     <FaTransgender className="mr-3 text-green-500 text-xl" />
                     <span className="font-semibold w-36">Gender:</span>
                     <span className="ml-2 flex-1 capitalize">{bookingData.participants[1].sex}</span>
-                  </div>
-                </div>
+                  </motion.div>
+                </motion.div>
               )}
 
               {/* Booking Information */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-bold text-gray-700 mb-3">Booking Information</h3>
-                <div className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+                className="bg-gray-50 rounded-lg p-4">
+                <motion.h3 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.9 }}
+                  className="font-bold text-gray-700 mb-3">
+                    Booking Information
+                </motion.h3>
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 1.0 }}
+                  className="flex items-center bg-white rounded-lg px-4 py-3 mb-2">
                   <FaCalendarAlt className="mr-3 text-gray-500 text-xl" />
                   <span className="font-semibold w-36">Booking Date:</span>
                   <span className="ml-2 flex-1 truncate">{bookingData.bookingDate ? new Date(bookingData.bookingDate).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' }) : 'N/A'}</span>
-                </div>
+                </motion.div>
                 {bookingData.deliveryAddress && bookingData.deliveryAddress !== 'N/A' && (
-                  <div className="flex items-center bg-white rounded-lg px-4 py-3">
+                  <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 1.1 }}
+                    className="flex items-center bg-white rounded-lg px-4 py-3">
                     <FaMapMarkerAlt className="mr-3 text-gray-500 text-xl" />
                     <span className="font-semibold w-36">Address:</span>
                     <span className="ml-2 flex-1 truncate">{bookingData.deliveryAddress}</span>
-                  </div>
+                  </motion.div>
                 )}
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Payment Card */}
-          <div className="bg-white shadow-xl rounded-2xl p-8 flex flex-col mb-8 transition-transform duration-300 hover:scale-105 hover:shadow-2xl group">
-            <h1 className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300 cursor-default">PAYMENT INFORMATION</h1>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="bg-white shadow-xl rounded-2xl p-8 flex flex-col mb-8 hover:scale-105 hover:shadow-2xl group">
+            <motion.h1 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.1 }}
+              className="text-2xl font-extrabold text-blue-600 mb-6 text-center tracking-wide group-hover:text-blue-700 transition-colors duration-300 cursor-default">
+                PAYMENT INFORMATION
+            </motion.h1>
             {/* Order Summary */}
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 cursor-default group-hover:text-black">Order Summary</h2>
+              <motion.h2 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="text-xl font-bold text-gray-800 mb-4 cursor-default group-hover:text-black">
+                  Order Summary
+              </motion.h2>
               <div className="overflow-x-auto rounded-lg border border-gray-200">
-                <table className="min-w-full divide-y divide-gray-200 rounded-lg">
+                <motion.table 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.3 }}
+                  className="min-w-full divide-y divide-gray-200 rounded-lg">
                   <thead className="bg-blue-50">
                     <tr>
                       <th className="px-6 py-3 text-left text-xs font-bold text-blue-600 uppercase tracking-wider cursor-default group-hover:text-blue-700">Service</th>
@@ -229,15 +330,25 @@ const Payment = () => {
                       <td className="px-6 py-4 whitespace-nowrap text-base font-bold text-blue-600 text-right cursor-default group-hover:text-blue-700">{calculateTotalAmount()} VND</td>
                     </tr>
                   </tbody>
-                </table>
+                </motion.table>
               </div>
             </div>
 
             {/* Select Payment Method */}
             <div className="mb-8">
-              <h2 className="text-xl font-bold text-gray-800 mb-4 cursor-default">Select Payment Method</h2>
+              <motion.h2 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.4 }}
+                className="text-xl font-bold text-gray-800 mb-4 cursor-default">
+                  Select Payment Method
+              </motion.h2>
               <div className="space-y-4">
-                <label className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer ${paymentMethod === 'bankTransfer' ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white hover:border-blue-300'}`}>
+                <motion.label 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className={`flex items-center space-x-3 p-4 rounded-lg border-2 cursor-pointer ${paymentMethod === 'bankTransfer' ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white hover:border-blue-300'}`}>
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -248,8 +359,12 @@ const Payment = () => {
                   />
                   <FaUniversity className="w-6 h-6 text-blue-600" />
                   <span className="text-lg text-gray-800 font-semibold">Bank Transfer</span>
-                </label>
-                <label className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all duration-200 cursor-pointer ${paymentMethod === 'cashOnDelivery' ? 'border-green-600 bg-green-50' : 'border-gray-200 bg-white hover:border-green-300'}`}>
+                </motion.label>
+                <motion.label 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className={`flex items-center space-x-3 p-4 rounded-lg border-2 cursor-pointer ${paymentMethod === 'cashOnDelivery' ? 'border-green-600 bg-green-50' : 'border-gray-200 bg-white hover:border-green-300'}`}>
                   <input
                     type="radio"
                     name="paymentMethod"
@@ -260,23 +375,58 @@ const Payment = () => {
                   />
                   <FaMoneyBillWave className="w-6 h-6 text-green-600" />
                   <span className="text-lg text-gray-800 font-semibold">Cash on Delivery</span>
-                </label>
+                </motion.label>
               </div>
             </div>
 
             {/* Bank Account Information (Conditional) */}
             {paymentMethod === 'bankTransfer' && (
-              <div className="bg-blue-50 border border-blue-200 rounded-md p-4 text-blue-800 mb-8 animate-fade-in">
-                <h3 className="font-bold text-lg mb-2">Bank Account Information</h3>
-                <p><strong>Bank:</strong> BIDV</p>
-                <p><strong>Account Number:</strong> 123456789</p>
-                <p><strong>Account Holder:</strong> DNA TESTING COMPANY LIMITED</p>
-                <p className="mt-2 text-sm">Note: Please include your Order ID in the transfer note</p>
-              </div>
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.5 }}
+                className="bg-blue-50 border border-blue-200 rounded-md p-4 text-blue-800 mb-8 animate-fade-in">
+                <motion.h3 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="font-bold text-lg mb-2">
+                    Bank Account Information
+                </motion.h3>
+                <motion.p
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.7 }}>
+                    <strong>Bank:</strong> BIDV
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.8 }}>
+                    <strong>Account Number:</strong> 123456789
+                </motion.p>
+                <motion.p
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.9 }}>
+                    <strong>Account Holder:</strong> DNA TESTING COMPANY LIMITED
+                </motion.p>
+                <motion.p 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 1.0 }}
+                  className="mt-2 text-sm">
+                    Note: Please include your Order ID in the transfer note
+                </motion.p>
+              </motion.div>
             )}
 
             {/* Confirm Payment Button */}
-            <div className="flex justify-center">
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 1.1 }}
+              className="flex justify-center">
               <button
                 onClick={handleConfirmPayment}
                 className="inline-flex items-center px-8 py-3 border border-transparent text-base font-bold rounded-full shadow-lg text-white bg-gradient-to-r from-blue-600 to-blue-400 hover:from-blue-700 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-all duration-200"
@@ -284,8 +434,8 @@ const Payment = () => {
                 <FaCheckCircle className="w-5 h-5 mr-2" />
                 CONFIRM PAYMENT
               </button>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
         </div>
       </main>
     </div>

@@ -16,7 +16,7 @@ const StaffOrder = () => {
   const [noteOption, setNoteOption] = useState('');
   const [customNote, setCustomNote] = useState('');
   const [showConfirmModal, setShowConfirmModal] = useState(false);
-  const [confirmActionDetails, setConfirmActionDetails] = useState({ action: null, transferId: null, actionText: '' });
+  const [confirmActionDetails, setConfirmActionDetails] = useState({ action: null, transferIds: null, actionText: '' });
   const navigate = useNavigate();
 
   const statusHierarchy = ['Pending', 'Delivering Kit', 'Collecting Sample', 'Delivering to Lab', 'Completed'];
@@ -65,22 +65,35 @@ const StaffOrder = () => {
     fetchAllData();
   }, [navigate]);
 
-  const handleTransferAction = (action, transferId, actionText) => {
-    setConfirmActionDetails({ action, transferId, actionText });
+  const handleTransferAction = (action, transferId, actionText, isAtHome = false) => {
+    if (isAtHome) {
+      // Chỉ đồng bộ các sample at home có cùng kitCode
+      const selectedTransfer = atHomeTransfers.find(t => t.sampleTransferId === transferId);
+      if (!selectedTransfer) return;
+      const kitCode = selectedTransfer.kitCode;
+      const groupTransferIds = atHomeTransfers
+        .filter(t => t.kitCode === kitCode)
+        .map(t => t.sampleTransferId);
+      setConfirmActionDetails({ action, transferIds: groupTransferIds, actionText, kitCode });
+    } else {
+      // Chỉ thực hiện cho 1 sample ở bảng medical center
+      setConfirmActionDetails({ action, transferIds: [transferId], actionText });
+    }
     setShowConfirmModal(true);
   };
 
   const executeConfirmedAction = async () => {
-    const { action, transferId } = confirmActionDetails;
-    if (!action || !transferId) return;
+    const { action, transferIds } = confirmActionDetails;
+    if (!action || !transferIds || transferIds.length === 0) return;
 
     setError(null);
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) {
         navigate('/login');
-        return;
       }
+      // Gọi API cho từng transferId trong nhóm
+      await Promise.all(transferIds.map(async (transferId) => {
       const response = await fetch(`https://localhost:7113/api/Staff/${action}/${transferId}`, {
         method: 'PUT',
         headers: {
@@ -88,19 +101,17 @@ const StaffOrder = () => {
           'Content-Type': 'application/json'
         },
       });
-
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.message || `Failed to perform action: ${action}`);
       }
-      
+      }));
       await fetchAllData();
     } catch (err) {
-      console.error(`Error performing action ${action}:`, err);
       setError(`Failed to perform action. Please try again.`);
     } finally {
       setShowConfirmModal(false);
-      setConfirmActionDetails({ action: null, transferId: null, actionText: '' });
+      setConfirmActionDetails({ action: null, transferIds: null, actionText: '' });
     }
   };
 
@@ -175,13 +186,12 @@ const StaffOrder = () => {
     );
   }
 
-  const medicalCenterStatuses = ['Collecting Sample', 'Delivering to Lab'];
-  const medicalCenterTransfers = sampleTransfers.filter(
-    transfer => medicalCenterStatuses.includes(transfer.sampleTransferStatus)
-  );
-
+  // Lọc các sample transfer theo collectionMethod
   const atHomeTransfers = sampleTransfers.filter(
-    transfer => transfer.methodTypeName === 'At Home'
+    transfer => transfer.collectionMethod === 'At Home'
+  );
+  const medicalCenterTransfers = sampleTransfers.filter(
+    transfer => transfer.collectionMethod === 'At Medical Center'
   );
 
   return (
@@ -246,14 +256,14 @@ const StaffOrder = () => {
             </div>
           </motion.div>
 
-          {/* Sample Transfers Table */}
+          {/* Sample Transfers Table at home*/}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay:0.2}}
             className="bg-white shadow-lg rounded-lg overflow-hidden">
             <div className="px-6 py-5 bg-gradient-to-r from-purple-600 to-purple-700">
-              <h2 className="text-xl font-bold text-white flex items-center"><FaClipboardList className="mr-2" /> Sample Transfers</h2>
+              <h2 className="text-xl font-bold text-white flex items-center"><FaClipboardList className="mr-2" /> Sample Transfers At Home</h2>
             </div>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -269,6 +279,100 @@ const StaffOrder = () => {
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
                   {atHomeTransfers.map((transfer) => {
+                    const statusIndex = statusHierarchy.indexOf(transfer.sampleTransferStatus);
+                    const isDeliverKitDisabled = statusIndex >= 1;
+                    const isCollectSampleDisabled = statusIndex >= 2;
+                    const isDeliverToLabDisabled = statusIndex >= 3;
+
+                    return (
+                    <tr key={transfer.sampleTransferId} className="hover:bg-gray-50">
+                      <td className="px-8 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{transfer.sampleTransferId}</td>
+                      <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">{transfer.sampleId}</td>
+                      <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">{transfer.kitCode || 'N/A'}</td>
+                      <td className="px-8 py-4 whitespace-nowrap">
+                        <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          transfer.sampleTransferStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
+                          transfer.sampleTransferStatus === 'Delivering Kit' ? 'bg-blue-100 text-blue-800' :
+                          transfer.sampleTransferStatus === 'Collecting Sample' ? 'bg-orange-100 text-orange-800' :
+                          transfer.sampleTransferStatus === 'Delivering to Lab' ? 'bg-teal-100 text-teal-800' :
+                          transfer.sampleTransferStatus === 'Received' ? 'bg-green-100 text-green-800' :
+                          'bg-green-100 text-green-800' // Completed
+                        }`}>
+                          {transfer.sampleTransferStatus}
+                        </span>
+                      </td>
+                      <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(transfer.transferDate).toLocaleString()}</td>
+                      <td className="px-8 py-4 whitespace-nowrap text-sm font-medium">
+                        {transfer.sampleTransferStatus === 'Received' ? (
+                          <div className="flex items-center font-semibold text-green-600">
+                            <FaCheckCircle className="mr-2" />
+                            Confirmed
+                          </div>
+                        ) : (
+                          <div className="flex space-x-2">
+                            <button
+                              onClick={() => handleTransferAction('deliver-kit', transfer.sampleTransferId, 'Delivering Kit', true)}
+                              className={`flex items-center px-3 py-2 text-white rounded-md transition-all duration-200 text-xs font-semibold ${
+                                isDeliverKitDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
+                              }`}
+                              title="Delivering Kit"
+                              disabled={isDeliverKitDisabled}
+                            >
+                              <FaTruck className="mr-2" /> Deliver Kit
+                            </button>
+                            <button
+                              onClick={() => handleTransferAction('collect-sample', transfer.sampleTransferId, 'Collecting Sample', true)}
+                              className={`flex items-center px-3 py-2 text-white rounded-md transition-all duration-200 text-xs font-semibold ${
+                                isCollectSampleDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'
+                              }`}
+                               title="Collecting Sample"
+                               disabled={isCollectSampleDisabled}
+                            >
+                              <FaBoxOpen className="mr-2" /> Collect Sample
+                            </button>
+                             <button
+                              onClick={() => handleTransferAction('deliver-to-lab', transfer.sampleTransferId, 'Delivering to Lab', true)}
+                              className={`flex items-center px-3 py-2 text-white rounded-md transition-all duration-200 text-xs font-semibold ${
+                                isDeliverToLabDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-600'
+                              }`}
+                               title="Delivering to Lab"
+                               disabled={isDeliverToLabDisabled}
+                            >
+                              <FaVial className="mr-2" /> Deliver to Lab
+                            </button>
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  )})}
+                </tbody>
+              </table>
+            </div>
+          </motion.div>
+
+          {/* Sample Transfers Table at medical center */}
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay:0.2}}
+            className="bg-white shadow-lg rounded-lg overflow-hidden">
+            <div className="px-6 py-5 bg-gradient-to-r from-purple-600 to-purple-700">
+              <h2 className="text-xl font-bold text-white flex items-center"><FaClipboardList className="mr-2" /> Sample Transfers At Medical Center</h2>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transfer ID</th>
+                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sample ID</th>
+                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kit Code</th>
+                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transfer Date</th>
+                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {medicalCenterTransfers.map((transfer) => {
                     const statusIndex = statusHierarchy.indexOf(transfer.sampleTransferStatus);
                     const isDeliverKitDisabled = statusIndex >= 1;
                     const isCollectSampleDisabled = statusIndex >= 2;
@@ -340,93 +444,6 @@ const StaffOrder = () => {
             </div>
           </motion.div>
 
-          {/* Sample Transfers (at Medical Center) Table */}
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay:0.3}}
-            className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="px-6 py-5 bg-gradient-to-r from-pink-600 to-pink-700">
-              <h2 className="text-xl font-bold text-white flex items-center">
-                <FaClipboardList className="mr-2" /> Sample Transfers (at Medical Center)
-              </h2>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transfer ID</th>
-                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sample ID</th>
-                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kit Code</th>
-                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Transfer Date</th>
-                    <th className="px-8 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {medicalCenterTransfers.map((transfer) => {
-                    const statusIndex = statusHierarchy.indexOf(transfer.sampleTransferStatus);
-                    const isCollectSampleDisabled = statusIndex >= 2;
-                    const isDeliverToLabDisabled = statusIndex >= 3;
-
-                    return (
-                      <tr key={transfer.sampleTransferId} className="hover:bg-gray-50">
-                        <td className="px-8 py-4 whitespace-nowrap text-sm font-medium text-gray-900">#{transfer.sampleTransferId}</td>
-                        <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">{transfer.sampleId}</td>
-                        <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">{transfer.kitCode || 'N/A'}</td>
-                        <td className="px-8 py-4 whitespace-nowrap">
-                          <span className={`px-3 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                            transfer.sampleTransferStatus === 'Pending' ? 'bg-yellow-100 text-yellow-800' : 
-                            transfer.sampleTransferStatus === 'Delivering Kit' ? 'bg-blue-100 text-blue-800' :
-                            transfer.sampleTransferStatus === 'Collecting Sample' ? 'bg-orange-100 text-orange-800' :
-                            transfer.sampleTransferStatus === 'Delivering to Lab' ? 'bg-teal-100 text-teal-800' :
-                            transfer.sampleTransferStatus === 'Received' ? 'bg-green-100 text-green-800' :
-                            'bg-green-100 text-green-800' // Completed
-                          }`}>
-                            {transfer.sampleTransferStatus}
-                          </span>
-                        </td>
-                        <td className="px-8 py-4 whitespace-nowrap text-sm text-gray-500">{new Date(transfer.transferDate).toLocaleString()}</td>
-                        <td className="px-8 py-4 whitespace-nowrap text-sm font-medium">
-                          {transfer.sampleTransferStatus === 'Received' ? (
-                            <div className="flex items-center font-semibold text-green-600">
-                              <FaCheckCircle className="mr-2" />
-                              Confirmed
-                            </div>
-                          ) : (
-                            <div className="flex space-x-2">
-                              {/* Only show Collect Sample and Deliver to Lab */}
-                              <button
-                                onClick={() => handleTransferAction('collect-sample', transfer.sampleTransferId, 'Collecting Sample')}
-                                className={`flex items-center px-3 py-2 text-white rounded-md transition-all duration-200 text-xs font-semibold ${
-                                  isCollectSampleDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-orange-500 hover:bg-orange-600'
-                                }`}
-                                title="Collecting Sample"
-                                disabled={isCollectSampleDisabled}
-                              >
-                                <FaBoxOpen className="mr-2" /> Collect Sample
-                              </button>
-                              <button
-                                onClick={() => handleTransferAction('deliver-to-lab', transfer.sampleTransferId, 'Delivering to Lab')}
-                                className={`flex items-center px-3 py-2 text-white rounded-md transition-all duration-200 text-xs font-semibold ${
-                                  isDeliverToLabDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-teal-500 hover:bg-teal-600'
-                                }`}
-                                title="Delivering to Lab"
-                                disabled={isDeliverToLabDisabled}
-                              >
-                                <FaVial className="mr-2" /> Deliver to Lab
-                              </button>
-                            </div>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          </motion.div>
-
           {/* Assigned Orders Table */}
           <motion.div 
             initial={{ opacity: 0 }}
@@ -478,6 +495,11 @@ const StaffOrder = () => {
                   Are you sure you want to confirm: <br />
                   <strong className="font-semibold text-gray-700">"{confirmActionDetails.actionText}"</strong>?
                 </p>
+                {confirmActionDetails.transferIds && confirmActionDetails.transferIds.length > 1 && (
+                  <p className="text-xs text-gray-600 mt-2">
+                    This will update <b>{confirmActionDetails.transferIds.length}</b> samples with kit code <b>{confirmActionDetails.kitCode}</b>.
+                  </p>
+                )}
               </div>
               <div className="flex justify-center space-x-4 mt-4">
                 <button

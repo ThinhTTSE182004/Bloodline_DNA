@@ -91,11 +91,30 @@ const StaffFeedback = () => {
     setResponseLoading(false);
   };
 
+  // Sắp xếp feedbacks: chưa response lên đầu, trong đó feedback cũ hơn lên trên
+  const sortedFeedbacks = [...feedbacks].sort((a, b) => {
+    const aNoResp = !a.contentResponses || a.contentResponses.length === 0;
+    const bNoResp = !b.contentResponses || b.contentResponses.length === 0;
+    if (aNoResp && !bNoResp) return -1;
+    if (!aNoResp && bNoResp) return 1;
+    if (aNoResp && bNoResp) {
+      // So sánh createAt (feedback cũ hơn lên trên)
+      const aTime = a.createAt ? new Date(a.createAt).getTime() : 0;
+      const bTime = b.createAt ? new Date(b.createAt).getTime() : 0;
+      return aTime - bTime;
+    }
+    return 0;
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-100 to-blue-200">
       <StaffNavbar />
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-3xl mx-auto bg-white shadow-2xl rounded-2xl p-8">
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8 }}
+          className="max-w-3xl mx-auto bg-white shadow-2xl rounded-2xl p-8">
           <h1 className="text-3xl font-bold text-center mb-8 text-blue-800">Customer Feedback</h1>
           {loading ? (
             <div className="text-center py-8">Loading...</div>
@@ -105,7 +124,7 @@ const StaffFeedback = () => {
             <div className="text-center text-gray-500 py-8">No feedback found.</div>
           ) : (
             <div className="space-y-8">
-              {feedbacks.map(fb => (
+              {sortedFeedbacks.map(fb => (
                 <div key={fb.feedbackId} className="bg-gradient-to-r from-white to-blue-50 rounded-xl p-6 shadow hover:shadow-lg transition-all border border-blue-100">
                   <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-2">
                     <div className="flex flex-col md:flex-row md:items-center gap-2">
@@ -144,7 +163,7 @@ const StaffFeedback = () => {
               ))}
             </div>
           )}
-        </div>
+        </motion.div>
       </main>
       {/* Response Modal */}
       {responseModal.open && (

@@ -4,6 +4,7 @@ import AdminNavbar from '../../components/AdminNavbar';
 import AdminSidebar from '../../components/AdminSidebar';
 import Calendar from '../../components/Calendar';
 import ExpandableAssignmentCard from '../../components/ExpandableAssignmentCard';
+import { motion } from 'framer-motion';
 
 
 const daysInMonth = (month, year) => {
@@ -303,7 +304,11 @@ const WorkAssignment = () => {
         />
         {/* 2 staff/medical staff tables */}
         <div className="flex flex-col md:flex-row gap-8 mb-10 w-full max-w-5xl mx-auto">
-          <div 
+          <motion.div 
+            initial={{ opacity: 0, x: -60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="flex-1 bg-white rounded-xl shadow-lg p-6 max-h-96 overflow-y-auto border border-blue-100">
             <h2 className="font-semibold mb-2 text-blue-700">Medical Staffs</h2>
             <table className="w-full text-left">
@@ -324,8 +329,12 @@ const WorkAssignment = () => {
                 ))}
               </tbody>
             </table>
-          </div>
-          <div 
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, x: 60 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
             className="flex-1 bg-white rounded-xl shadow-lg p-6 max-h-96 overflow-y-auto border border-blue-100">
             <h2 className="font-semibold mb-2 text-blue-700">Staffs</h2>
             <table className="w-full text-left">
@@ -346,11 +355,16 @@ const WorkAssignment = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+          </motion.div>
         </div>
         {/* Filter + Auto Assignment and Accept Assignment All buttons for shift assignment table by week */}
         <div className="flex flex-wrap gap-4 mb-4 items-center justify-end">
-          <div className="flex items-center gap-2">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0 }}
+            className="flex items-center gap-2">
             <label className="font-semibold text-blue-700">Filter by week:</label>
             <select
               className="border rounded px-2 py-1"
@@ -362,8 +376,13 @@ const WorkAssignment = () => {
                 <option key={idx + 1} value={idx + 1}>Week {idx + 1}</option>
               ))}
             </select>
-          </div>
-          <div className="flex items-center gap-2">
+          </motion.div>
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="flex items-center gap-2">
             <label className="font-semibold text-blue-700">Filter by shift:</label>
             <select
               className="border rounded px-2 py-1"
@@ -374,21 +393,29 @@ const WorkAssignment = () => {
               <option value="morning">Morning</option>
               <option value="afternoon">Afternoon</option>
             </select>
-          </div>
-          <button
+          </motion.div>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
             className="px-4 py-2 bg-blue-600 text-white rounded font-bold shadow hover:bg-blue-700 transition"
             onClick={fetchSuggestedAssignments}
             disabled={loadingAutoAssign}
           >
             {loadingAutoAssign ? 'Auto-suggesting...' : 'Auto Assignment for Employee'}
-          </button>
-          <button
+          </motion.button>
+          <motion.button
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.6 }}
             className="px-4 py-2 bg-green-600 text-white rounded font-bold shadow hover:bg-green-700 transition"
             onClick={handleAcceptAll}
             disabled={loadingAcceptAll}
           >
             {loadingAcceptAll ? 'Confirming all...' : 'Accept Assignment All'}
-          </button>
+          </motion.button>
         </div>
                 {/* Professional Shift Assignment Table */}
         <div className="mt-6 w-full">
@@ -396,8 +423,12 @@ const WorkAssignment = () => {
             .map((weekDates, weekIdx) => ({ weekDates, weekIdx }))
             .filter(({ weekIdx }) => selectedWeek === 0 || selectedWeek === weekIdx + 1)
             .map(({ weekDates, weekIdx }) => (
-              <div 
-                key={`${weekIdx}-${selectedWeek}-${selectedShiftType}`} 
+              <motion.div
+                key={`${weekIdx}-${selectedWeek}-${selectedShiftType}`}
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.7}}
                 className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden w-full"
               >
                 {/* Compact Professional Header */}
@@ -555,7 +586,7 @@ const WorkAssignment = () => {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </motion.div>
             ))}
         </div>
         {/* Expandable Assignment Card */}
