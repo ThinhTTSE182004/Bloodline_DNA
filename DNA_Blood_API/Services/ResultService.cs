@@ -234,9 +234,7 @@ namespace DNA_API1.Services
         {
             container.PaddingVertical(20).Column(col =>
             {
-                // Title
-                col.Item().Text("DNA PATERNITY TEST REPORT").FontSize(18).Bold().AlignCenter();
-
+ 
                 // Report Information
                 col.Item().PaddingTop(20).Table(table =>
                 {
@@ -354,11 +352,7 @@ namespace DNA_API1.Services
                     col.Item().Text("Generated on: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")).FontSize(8);
                 });
 
-                row.ConstantItem(200).Column(col =>
-                {
-                    col.Item().Text("Authorized Signature:").FontSize(10).AlignRight();
-                    col.Item().Text("________________________").FontSize(12).AlignRight();
-                });
+                
             });
         }
 
