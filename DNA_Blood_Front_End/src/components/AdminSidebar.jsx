@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { FaTachometerAlt, FaUserPlus, FaUserMd, FaCalendarAlt, FaListAlt, FaUsersCog, FaClipboardList, FaBoxOpen, FaEye, FaShoppingCart, FaChevronDown, FaChevronUp, FaBars, FaTimes } from 'react-icons/fa';
+import { FaTachometerAlt, FaUserPlus, FaUserMd, FaCalendarAlt, FaListAlt, FaUsersCog, FaClipboardList, FaBoxOpen, FaEye, FaShoppingCart, FaChevronDown, FaChevronUp, FaBars, FaTimes, FaPlusCircle } from 'react-icons/fa';
 import { Card, CardHeader, CardContent } from './ui';
 import { Avatar, AvatarImage } from './ui';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui';
@@ -139,6 +139,14 @@ const AdminSidebar = ({ isOpen, onClose }) => {
           <MenuItem link="/admin/services" icon={<FaBoxOpen />}>
             Service Management
           </MenuItem>
+          <Submenu title="Blog" icon={<FaListAlt />}>
+            <MenuItem link="/admin/blogs" icon={<FaListAlt />}>
+              Blog Management
+            </MenuItem>
+            <MenuItem link="/admin/blogs-create" icon={<FaPlusCircle />}>
+              Create Blog
+            </MenuItem>
+          </Submenu>
         </Menu>
         <Menu subHeading="OTHERS">
           <MenuItem link="/" icon={<FaEye />} target="_blank">

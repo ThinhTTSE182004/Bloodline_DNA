@@ -45,6 +45,12 @@ import ServiceManager from './pages/Admin/ServiceManager';
 import StaffManagement from './pages/Admin/StaffManagement';
 import AllOrders from './pages/Admin/AllOrders';
 import CustomerLayout from './pages/Customer/CustomerLayout';
+import BlogList from './components/BlogList';
+import BlogDetail from './components/BlogDetail';
+import AdminBlogList from './pages/Admin/AdminBlogList';
+import AdminCreateBlog from './pages/Admin/AdminCreateBlog';
+import AdminEditBlog from './pages/Admin/AdminEditBlog';
+
 
 const HomePage = () => (
     <>
@@ -66,7 +72,7 @@ const HomePage = () => (
 
 const App = () => {
     return (
-        <Router>
+        
             <NotificationProvider>
                 <ServiceProvider>
                     <CartProvider>
@@ -86,6 +92,10 @@ const App = () => {
                                     <Route path="/account-setting" element={<CustomerLayout><AccountSetting /></CustomerLayout>} />
                                     <Route path="/login" element={<CustomerLayout><Login /></CustomerLayout>} />
                                     <Route path="/register" element={<CustomerLayout><Register /></CustomerLayout>} />
+
+                                    {/* Blog Routes - Public */}
+                                    <Route path="/blog" element={<CustomerLayout><BlogList /></CustomerLayout>} />
+                                    <Route path="/blog/:blogId" element={<CustomerLayout><BlogDetail /></CustomerLayout>} />
 
                                     {/* Staff Routes */}
                                     <Route path="/staff" element={<Staff />} />
@@ -107,6 +117,10 @@ const App = () => {
                                     <Route path="/admin/services" element={<ServiceManager />} />
                                     <Route path="/admin/staff-management" element={<StaffManagement />} />
                                     <Route path="/admin/all-orders" element={<AllOrders />} />
+                                    <Route path="/admin/blogs" element={<AdminBlogList />} />
+                                    <Route path="/admin/blogs-create" element={<AdminCreateBlog />} />
+                                    <Route path="/admin/blogs/edit/:id" element={<AdminEditBlog />} />
+
 
                                     {/* Other Routes */}
                                     <Route path="/oauth-success" element={<OAuthSuccess />} />
@@ -119,7 +133,7 @@ const App = () => {
                     </CartProvider>
                 </ServiceProvider>
             </NotificationProvider>
-        </Router>
+        
     );
 }
 
