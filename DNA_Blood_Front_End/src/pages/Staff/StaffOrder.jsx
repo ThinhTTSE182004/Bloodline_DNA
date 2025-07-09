@@ -180,6 +180,10 @@ const StaffOrder = () => {
     transfer => medicalCenterStatuses.includes(transfer.sampleTransferStatus)
   );
 
+  const atHomeTransfers = sampleTransfers.filter(
+    transfer => transfer.methodTypeName === 'At Home'
+  );
+
   return (
     <div className="min-h-screen bg-gray-100">
       <StaffNavbar />
@@ -264,7 +268,7 @@ const StaffOrder = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {sampleTransfers.map((transfer) => {
+                  {atHomeTransfers.map((transfer) => {
                     const statusIndex = statusHierarchy.indexOf(transfer.sampleTransferStatus);
                     const isDeliverKitDisabled = statusIndex >= 1;
                     const isCollectSampleDisabled = statusIndex >= 2;
