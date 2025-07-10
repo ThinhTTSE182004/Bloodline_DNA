@@ -45,16 +45,13 @@ import ServiceManager from './pages/Admin/ServiceManager';
 import StaffManagement from './pages/Admin/StaffManagement';
 import AllOrders from './pages/Admin/AllOrders';
 import CustomerLayout from './pages/Customer/CustomerLayout';
-<<<<<<< HEAD
 import BlogList from './components/BlogList';
 import BlogDetail from './components/BlogDetail';
 import AdminBlogList from './pages/Admin/AdminBlogList';
 import AdminCreateBlog from './pages/Admin/AdminCreateBlog';
-import AdminEditBlog from './pages/Admin/AdminEditBlog';
-
-=======
 import Chatbot from './components/ui/Chatbot';
->>>>>>> 613ae33ac6ebe1a54385697d7860d1bc6ea1300b
+// import AdminEditBlog from './pages/Admin/AdminEditBlog'; // [NOTE] Đã comment lại vì file này chưa tồn tại hoặc không cần thiết nếu đã dùng popup edit trong AdminBlogList
+
 
 const HomePage = () => (
     <>
@@ -123,7 +120,7 @@ const App = () => {
                                     <Route path="/admin/all-orders" element={<AllOrders />} />
                                     <Route path="/admin/blogs" element={<AdminBlogList />} />
                                     <Route path="/admin/blogs-create" element={<AdminCreateBlog />} />
-                                    <Route path="/admin/blogs/edit/:id" element={<AdminEditBlog />} />
+                                    {/* <Route path="/admin/blogs/edit/:id" element={<AdminEditBlog />} /> */} {/* [NOTE] Đã comment lại vì file này chưa tồn tại hoặc không cần thiết nếu đã dùng popup edit trong AdminBlogList */}
 
 
                                     {/* Other Routes */}

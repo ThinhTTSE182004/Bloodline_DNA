@@ -183,9 +183,8 @@ namespace DNA_API1.Services
                         FullName = s.Participant.FullName,
                         Sex = s.Participant.Sex,
                         BirthDate = s.Participant.BirthDate,
+                        Phone = s.Participant.Phone,
                         Relationship = s.Participant.Relationship,
-                        SampleType = s.SampleType.Name,
-                        CollectedDate = s.CollectedDate
                     })
                     .DistinctBy(p => p.FullName) // Loại bỏ trùng lặp nếu có
                     .ToList(),
@@ -273,27 +272,26 @@ namespace DNA_API1.Services
                         columns.RelativeColumn(); // Birth Date
                         columns.RelativeColumn(); // Phone
                         columns.RelativeColumn(); // Relationship
-                        columns.RelativeColumn(); // NameRelation
                     });
 
                     // Header
                     table.Header(header =>
                     {
-                        header.Cell().Text("Full Name").Bold();
-                        header.Cell().Text("Sex").Bold();
-                        header.Cell().Text("Birth Date").Bold();
-                        header.Cell().Text("Phone").Bold();
-                        header.Cell().Text("Relationship").Bold();
-                        header.Cell().Text("Relation Name").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Full Name").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Sex").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Birth Date").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Phone").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Relationship").Bold();
                     });
 
                     // Data
                     foreach (var participant in data.Participants)
                     {
-                        table.Cell().Text(participant.FullName);
-                        table.Cell().Text(participant.Sex);
-                        table.Cell().Text(participant.BirthDate.HasValue ? participant.BirthDate.Value.ToString("dd/MM/yyyy") : "");
-                        table.Cell().Text(participant.Relationship ?? "");
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.FullName ?? "");
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.Sex ?? "");
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.BirthDate.ToString("dd/MM/yyyy"));
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.Phone ?? "");
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.Relationship ?? "");
                     }
                 });
 
@@ -314,19 +312,20 @@ namespace DNA_API1.Services
                         // Header
                         table.Header(header =>
                         {
-                            header.Cell().Text("Locus").Bold();
-                            header.Cell().Text("Person A").Bold();
-                            header.Cell().Text("Person B").Bold();
-                            header.Cell().Text("Match").Bold();
+                            header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Locus").Bold();
+                            header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Person A").Bold();
+                            header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Person B").Bold();
+                            header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Match").Bold();
                         });
 
                         // Data
                         foreach (var locus in data.LocusResults)
                         {
-                            table.Cell().Text(locus.LocusName);
-                            table.Cell().Text(locus.PersonAAlleles);
-                            table.Cell().Text(locus.PersonBAlleles);
-                            table.Cell().Text(locus.IsMatch == true ? "Yes" : "No").FontColor(locus.IsMatch == true ? "#008000" : "#FF0000");
+                            table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(locus.LocusName);
+                            table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(locus.PersonAAlleles);
+                            table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(locus.PersonBAlleles);
+                            table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(locus.IsMatch == true ? "Yes" : "No")
+                                .FontColor(locus.IsMatch == true ? "#008000" : "#FF0000");
                         }
                     });
                 }
