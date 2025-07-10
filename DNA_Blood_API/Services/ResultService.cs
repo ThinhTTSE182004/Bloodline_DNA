@@ -220,14 +220,13 @@ namespace DNA_API1.Services
         {
             container.Row(row =>
             {
+                row.ConstantItem(100).Image("img/logo.png", ImageScaling.FitArea);
                 row.RelativeItem().Column(col =>
                 {
                     col.Item().Text("BLOODLINE DNA TESTING LABORATORY").FontSize(16).Bold();
                     col.Item().Text("123 DNA Street, Ho Chi Minh City, Vietnam").FontSize(10);
                     col.Item().Text("Phone: +84 123 456 789 | Email: info@bloodlinedna.com").FontSize(10);
                 });
-
-                row.ConstantItem(100).Text(""); // Placeholder for logo
             });
         }
 
@@ -236,7 +235,7 @@ namespace DNA_API1.Services
             container.PaddingVertical(20).Column(col =>
             {
                 // Title
-                col.Item().Text("DNA TESTING REPORT").FontSize(18).Bold();
+                col.Item().AlignCenter().Text("DNA PATERNITY TEST REPORT").FontSize(18).Bold();
 
                 // Report Information
                 col.Item().PaddingTop(20).Table(table =>
@@ -264,26 +263,28 @@ namespace DNA_API1.Services
                 });
 
                 // Participants Information
-                col.Item().PaddingTop(20).Text("PARTICIPANTS INFORMATION").FontSize(14).Bold();
+                col.Item().PaddingTop(20).Text("PARTICIPANT INFORMATION").FontSize(14).Bold();
                 col.Item().Table(table =>
                 {
                     table.ColumnsDefinition(columns =>
                     {
-                        columns.RelativeColumn();
-                        columns.RelativeColumn();
-                        columns.RelativeColumn();
-                        columns.RelativeColumn();
-                        columns.RelativeColumn();
+                        columns.RelativeColumn(); // Name
+                        columns.RelativeColumn(); // Sex
+                        columns.RelativeColumn(); // Birth Date
+                        columns.RelativeColumn(); // Phone
+                        columns.RelativeColumn(); // Relationship
+                        columns.RelativeColumn(); // NameRelation
                     });
 
                     // Header
                     table.Header(header =>
                     {
-                        header.Cell().Text("Name").Bold();
+                        header.Cell().Text("Full Name").Bold();
                         header.Cell().Text("Sex").Bold();
                         header.Cell().Text("Birth Date").Bold();
+                        header.Cell().Text("Phone").Bold();
                         header.Cell().Text("Relationship").Bold();
-                        header.Cell().Text("Sample Type").Bold();
+                        header.Cell().Text("Relation Name").Bold();
                     });
 
                     // Data
@@ -292,23 +293,22 @@ namespace DNA_API1.Services
                         table.Cell().Text(participant.FullName);
                         table.Cell().Text(participant.Sex);
                         table.Cell().Text(participant.BirthDate.HasValue ? participant.BirthDate.Value.ToString("dd/MM/yyyy") : "");
-                        table.Cell().Text(participant.Relationship);
-                        table.Cell().Text(participant.SampleType);
+                        table.Cell().Text(participant.Relationship ?? "");
                     }
                 });
 
                 // Test Results
                 if (data.LocusResults.Any())
                 {
-                    col.Item().PaddingTop(20).Text("TEST RESULTS").FontSize(14).Bold();
+                    col.Item().PaddingTop(20).Text("GENETIC MARKER RESULTS").FontSize(14).Bold();
                     col.Item().Table(table =>
                     {
                         table.ColumnsDefinition(columns =>
                         {
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
-                            columns.RelativeColumn();
+                            columns.RelativeColumn(); // Locus
+                            columns.RelativeColumn(); // Person A
+                            columns.RelativeColumn(); // Person B
+                            columns.RelativeColumn(); // Match
                         });
 
                         // Header
@@ -326,7 +326,7 @@ namespace DNA_API1.Services
                             table.Cell().Text(locus.LocusName);
                             table.Cell().Text(locus.PersonAAlleles);
                             table.Cell().Text(locus.PersonBAlleles);
-                            table.Cell().Text(locus.MatchStatus).FontColor(locus.IsMatch == true ? "#008000" : "#FF0000");
+                            table.Cell().Text(locus.IsMatch == true ? "Yes" : "No").FontColor(locus.IsMatch == true ? "#008000" : "#FF0000");
                         }
                     });
                 }
@@ -340,8 +340,7 @@ namespace DNA_API1.Services
 
                 // Conclusion
                 col.Item().PaddingTop(20).Text("CONCLUSION").FontSize(14).Bold();
-                col.Item().Text($"Based on the analysis of {data.LocusResults.Count} genetic markers, " +
-                               $"the test results indicate: {GetConclusion(data.LocusResults)}");
+                col.Item().Text($"Based on the analysis of {data.LocusResults.Count} genetic markers, the test results indicate: {GetConclusion(data.LocusResults)}");
             });
         }
 
@@ -355,9 +354,10 @@ namespace DNA_API1.Services
                     col.Item().Text("Generated on: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")).FontSize(8);
                 });
 
-                row.ConstantItem(100).Column(col =>
+                row.ConstantItem(200).Column(col =>
                 {
-                    col.Item().Text("Page {page}").FontSize(8);
+                    col.Item().AlignRight().Text("Authorized Signature:").FontSize(10);
+                    col.Item().AlignRight().Text("________________________").FontSize(12);
                 });
             });
         }

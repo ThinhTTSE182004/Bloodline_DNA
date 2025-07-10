@@ -45,12 +45,16 @@ import ServiceManager from './pages/Admin/ServiceManager';
 import StaffManagement from './pages/Admin/StaffManagement';
 import AllOrders from './pages/Admin/AllOrders';
 import CustomerLayout from './pages/Customer/CustomerLayout';
+<<<<<<< HEAD
 import BlogList from './components/BlogList';
 import BlogDetail from './components/BlogDetail';
 import AdminBlogList from './pages/Admin/AdminBlogList';
 import AdminCreateBlog from './pages/Admin/AdminCreateBlog';
 import AdminEditBlog from './pages/Admin/AdminEditBlog';
 
+=======
+import Chatbot from './components/ui/Chatbot';
+>>>>>>> 613ae33ac6ebe1a54385697d7860d1bc6ea1300b
 
 const HomePage = () => (
     <>
@@ -130,6 +134,7 @@ const App = () => {
                                 </Routes>
                             </PageWrapper>
                         </main>
+                        <Chatbot />
                     </CartProvider>
                 </ServiceProvider>
             </NotificationProvider>

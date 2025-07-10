@@ -25,42 +25,84 @@ public class SampleTransferRepository : ISampleTransferRepository
         var transfer = await _context.SampleTransfers.FindAsync(transferId);
         if (transfer == null) return new StatusChangeResult { Success = false, Message = "Sample transfer not found." };
 
-        // Định nghĩa flow chuyển đổi trạng thái hợp lệ
-        var nextStatus = new Dictionary<string, string>
-        {
-            { "Pending", "Delivering Kit" },
-            { "Delivering Kit", "Collecting Sample" },
-            { "Collecting Sample", "Delivering to Lab" },
-            { "Delivering to Lab", "Received" },
-            { "Received", "Complete" }
-        };
+        // Lấy sample và collection method trước
+        var sample = await _context.Samples
+            .Include(s => s.OrderDetail)
+                .ThenInclude(od => od.Order)
+                    .ThenInclude(o => o.CollectionMethod)
+            .FirstOrDefaultAsync(s => s.SampleId == transfer.SampleId);
 
-        // Kiểm tra chuyển đổi hợp lệ
+        if (sample == null) return new StatusChangeResult { Success = false, Message = "Sample not found." };
+
+        var collectionMethod = sample.OrderDetail?.Order?.CollectionMethod?.MethodName;
+
+        // Xác định flow trạng thái hợp lệ dựa trên collectionMethod
+        Dictionary<string, string> nextStatus;
+        if (collectionMethod == "At Medical Center")
+        {
+            nextStatus = new Dictionary<string, string>
+            {
+                { "Pending", "Collecting Sample" },
+                { "Collecting Sample", "Delivering to Lab" },
+                { "Delivering to Lab", "Received" },
+                { "Received", "Complete" }
+            };
+        }
+        else // At Home
+        {
+            nextStatus = new Dictionary<string, string>
+            {
+                { "Pending", "Delivering Kit" },
+                { "Delivering Kit", "Collecting Sample" },
+                { "Collecting Sample", "Delivering to Lab" },
+                { "Delivering to Lab", "Received" },
+                { "Received", "Complete" }
+            };
+        }
+
+        // Kiểm tra flow hợp lệ trước khi cập nhật
         if (!nextStatus.TryGetValue(transfer.SampleTransferStatus, out var allowedNext) || allowedNext != newStatus)
             return new StatusChangeResult {
                 Success = false,
                 Message = $"Cannot change status from '{transfer.SampleTransferStatus}' to '{newStatus}'. Allowed next status: '{allowedNext}'."
             };
 
+        // Cập nhật trạng thái SampleTransfer trước
         transfer.SampleTransferStatus = newStatus;
 
         // Mapping trạng thái SampleTransfer sang Sample
-        var sampleStatusMapping = new Dictionary<string, string>
+        Dictionary<string, string> sampleStatusMapping;
+        if (collectionMethod == "At Medical Center")
         {
-            { "Pending", "Pending" },
-            { "Delivering Kit", "WaitingForCollection" },
-            { "Collecting Sample", "Collected" },
-            { "Delivering to Lab", "InLab" },
-            { "Received", "InLab" }
-            // "Complete" thì giữ nguyên
-        };
+            sampleStatusMapping = new Dictionary<string, string>
+            {
+                { "Pending", "Pending" },
+                { "Collecting Sample", "Collected" },
+                { "Delivering to Lab", "InLab" },
+                { "Received", "InLab" }
+                // "Complete" thì giữ nguyên
+            };
+        }
+        else // At Home
+        {
+            sampleStatusMapping = new Dictionary<string, string>
+            {
+                { "Pending", "Pending" },
+                { "Delivering Kit", "WaitingForCollection" },
+                { "Collecting Sample", "Collected" },
+                { "Delivering to Lab", "InLab" },
+                { "Received", "InLab" }
+                // "Complete" thì giữ nguyên
+            };
+        }
 
+        // Nếu trạng thái mới có mapping sang Sample thì cập nhật luôn
         if (sampleStatusMapping.TryGetValue(newStatus, out var sampleStatus))
         {
-            var sample = await _context.Samples.FindAsync(transfer.SampleId);
-            if (sample != null)
+            var sample2 = await _context.Samples.FindAsync(transfer.SampleId);
+            if (sample2 != null)
             {
-                sample.SampleStatus = sampleStatus;
+                sample2.SampleStatus = sampleStatus;
             }
         }
 
@@ -82,7 +124,8 @@ public class SampleTransferRepository : ISampleTransferRepository
                 SampleTransferStatus = t.SampleTransferStatus,
                 StaffName = t.Staff.Name,
                 MedicalStaffName = t.MedicalStaff.Name,
-                TransferDate = t.TransferDate 
+                TransferDate = t.TransferDate,
+                CollectionMethod = t.Sample.OrderDetail.Order.CollectionMethod.MethodName
             })
             .ToListAsync();
     }
@@ -100,7 +143,8 @@ public class SampleTransferRepository : ISampleTransferRepository
                 SampleTransferStatus = t.SampleTransferStatus,
                 StaffName = t.Staff.Name,
                 MedicalStaffName = t.MedicalStaff.Name,
-                TransferDate = t.TransferDate
+                TransferDate = t.TransferDate,
+                CollectionMethod = t.Sample.OrderDetail.Order.CollectionMethod.MethodName
             })
             .ToListAsync();
     }

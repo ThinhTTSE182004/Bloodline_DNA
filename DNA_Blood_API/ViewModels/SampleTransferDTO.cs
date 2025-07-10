@@ -10,5 +10,6 @@
         public string StaffName { get; set; } = string.Empty;
         public string MedicalStaffName { get; set; } = string.Empty;
         public DateTime? TransferDate { get; set; }
+        public string CollectionMethod { get; set; } = string.Empty;
     }
 }

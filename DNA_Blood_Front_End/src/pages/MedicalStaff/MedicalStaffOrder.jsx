@@ -3,6 +3,8 @@ import MedicalStaffNavbar from '../../components/MedicalStaffNavbar';
 import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaSpinner, FaExclamationTriangle, FaCheck, FaFlask, FaCheckCircle, FaPlusCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';
+import { FaTrash } from 'react-icons/fa';
+import { FaCheck as FaCheckIcon, FaTimes as FaTimesIcon } from 'react-icons/fa';
 
 const MedicalStaffOrder = () => {
   const [samples, setSamples] = useState([]);
@@ -21,7 +23,10 @@ const MedicalStaffOrder = () => {
     testSummary: '',
     rawDataPath: '',
     reportUrl: '',
-    resultStatus: ''
+    resultStatus: '',
+    locusResults: [
+      { locusId: '', personAAlleles: '', personBAlleles: '', isMatch: null }
+    ]
   });
   const [resultError, setResultError] = useState('');
 
@@ -129,7 +134,9 @@ const MedicalStaffOrder = () => {
 
   const openAddResultModal = (orderDetailId) => {
     setCurrentOrderDetailId(orderDetailId);
-    setResultData({ testSummary: '', rawDataPath: '', reportUrl: '', resultStatus: '' });
+    setResultData({ testSummary: '', rawDataPath: '', reportUrl: '', resultStatus: '', locusResults: [
+      { locusId: '', personAAlleles: '', personBAlleles: '', isMatch: null }
+    ] });
     setResultError('');
     setShowAddResultModal(true);
   };
@@ -178,6 +185,41 @@ const MedicalStaffOrder = () => {
     } catch (err) {
       setResultError(err.message);
     }
+  };
+
+  const handleLocusChange = (index, field, value) => {
+    const updated = resultData.locusResults.map((locus, i) =>
+      i === index ? { ...locus, [field]: value } : locus
+    );
+    setResultData({ ...resultData, locusResults: updated });
+  };
+
+  // Toggle isMatch: null -> true -> false -> null
+  const handleToggleIsMatch = (index) => {
+    const current = resultData.locusResults[index].isMatch;
+    let next;
+    if (current === null || current === undefined) next = true;
+    else if (current === true) next = false;
+    else next = null;
+    handleLocusChange(index, 'isMatch', next);
+  };
+
+  const handleAddLocus = () => {
+    setResultData({
+      ...resultData,
+      locusResults: [
+        ...resultData.locusResults,
+        { locusId: '', personAAlleles: '', personBAlleles: '', isMatch: null }
+      ]
+    });
+  };
+
+  const handleRemoveLocus = (index) => {
+    if (resultData.locusResults.length === 1) return;
+    setResultData({
+      ...resultData,
+      locusResults: resultData.locusResults.filter((_, i) => i !== index)
+    });
   };
 
   // 2. Filtered data
@@ -511,6 +553,78 @@ const MedicalStaffOrder = () => {
                   <option value="Negative">Negative</option>
                   <option value="Inconclusive">Inconclusive</option>
                 </select>
+              </div>
+              {/* Locus Results Table */}
+              <div className="overflow-x-auto">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Locus Results</label>
+                <table className="min-w-[600px] divide-y divide-gray-200 mb-2 border border-gray-300 rounded">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-2 py-2 text-xs font-medium text-gray-500 border border-gray-300">Locus ID</th>
+                      <th className="px-2 py-2 text-xs font-medium text-gray-500 border border-gray-300">Person A Alleles</th>
+                      <th className="px-2 py-2 text-xs font-medium text-gray-500 border border-gray-300">Person B Alleles</th>
+                      <th className="px-2 py-2 text-xs font-medium text-gray-500 border border-gray-300">Is Match</th>
+                      <th className="border border-gray-300"></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {resultData.locusResults.map((locus, idx) => (
+                      <tr key={idx}>
+                        <td className="px-2 py-1 border border-gray-300">
+                          <input
+                            type="number"
+                            value={locus.locusId}
+                            onChange={e => handleLocusChange(idx, 'locusId', e.target.value)}
+                            className="w-24 rounded border border-gray-300 focus:border-teal-500 focus:ring-teal-500 appearance-auto"
+                            required
+                          />
+                        </td>
+                        <td className="px-2 py-1 border border-gray-300">
+                          <input
+                            type="text"
+                            value={locus.personAAlleles}
+                            onChange={e => handleLocusChange(idx, 'personAAlleles', e.target.value)}
+                            className="w-32 rounded border border-gray-300"
+                            required
+                          />
+                        </td>
+                        <td className="px-2 py-1 border border-gray-300">
+                          <input
+                            type="text"
+                            value={locus.personBAlleles}
+                            onChange={e => handleLocusChange(idx, 'personBAlleles', e.target.value)}
+                            className="w-32 rounded border border-gray-300"
+                            required
+                          />
+                        </td>
+                        <td className="px-2 py-1 text-center border border-gray-300">
+                          <button
+                            type="button"
+                            onClick={() => handleToggleIsMatch(idx)}
+                            className={`w-7 h-7 flex items-center justify-center rounded border-2
+                              ${locus.isMatch === true ? 'border-green-500 bg-green-50' : locus.isMatch === false ? 'border-red-500 bg-red-50' : 'border-gray-300 bg-white'}
+                              focus:outline-none`}
+                            title="Toggle Match"
+                          >
+                            {locus.isMatch === true && <FaCheckIcon className="text-green-600 text-lg" />}
+                            {locus.isMatch === false && <FaTimesIcon className="text-red-500 text-lg" />}
+                          </button>
+                        </td>
+                        <td className="px-2 py-1 border border-gray-300">
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveLocus(idx)}
+                            className="bg-red-100 text-red-700 rounded p-2 text-base hover:bg-red-500 hover:text-white transition flex items-center justify-center"
+                            title="Remove"
+                          >
+                            <FaTrash />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <button type="button" onClick={handleAddLocus} className="px-3 py-1 bg-blue-100 text-blue-700 rounded text-xs">+ Add Locus</button>
               </div>
             </div>
 

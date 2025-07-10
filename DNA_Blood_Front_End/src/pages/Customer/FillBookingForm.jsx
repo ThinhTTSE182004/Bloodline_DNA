@@ -4,6 +4,7 @@ import { FaClipboardList, FaPencilAlt, FaFlask, FaPrescriptionBottleAlt, FaUser,
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../../context/CartContext';
 import { useServices } from '../../context/ServiceContext';
+import { motion } from 'framer-motion';
 
 
 const FillBookingForm = () => {
@@ -200,12 +201,24 @@ const FillBookingForm = () => {
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto space-y-8">
           {/* SELECTED SERVICES SUMMARY */}
-          <div className="bg-white rounded-lg shadow-xl p-8 border-2 border-blue-100">
-            <h2 className="text-2xl font-bold text-blue-700 mb-6 flex items-center hover:text-blue-600 hover:cursor-default">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="bg-white rounded-lg shadow-xl p-8 border-2 border-blue-100">
+            <motion.h2 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-2xl font-bold text-blue-700 mb-6 flex items-center hover:text-blue-600 hover:cursor-default">
               <FaClipboardList className="w-7 h-7 mr-3 text-blue-600" />
               Selected Services Details
-            </h2>
-            <div className="space-y-4">
+            </motion.h2>
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="space-y-4">
               {selectedServices.map((service) => (
                 <div key={service.servicePackageId} className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200 group hover:border-blue-300 hover:bg-blue-100">
                   <span className="flex items-center text-lg cursor-default">
@@ -218,15 +231,23 @@ const FillBookingForm = () => {
               <div className="flex justify-end pt-4 mt-4 border-t-2 border-blue-200">
                 <p className="text-2xl font-bold text-blue-700 cursor-default hover:text-blue-600">Total Amount: {calculateTotalAmount()} đ</p>
               </div>
-            </div>
-          </div>
+            </motion.div>
+          </motion.div>
 
           {/* ENTER SERVICE DETAILS */}
-          <div className="bg-white rounded-lg shadow-xl p-8 border-2 border-blue-100">
-            <h2 className="text-2xl font-bold text-blue-700 mb-8 flex items-center hover:text-blue-600 hover:cursor-default">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8 }}
+            className="bg-white rounded-lg shadow-xl p-8 border-2 border-blue-100">
+            <motion.h2 
+              initial={{ opacity: 0, scale: 0.8 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="text-2xl font-bold text-blue-700 mb-8 flex items-center hover:text-blue-600 hover:cursor-default">
               <FaPencilAlt className="w-7 h-7 mr-3 text-blue-600" />
               Enter Service Details
-            </h2>
+            </motion.h2>
             <form
               onSubmit={handleSubmit}
               onKeyDown={(e) => {
@@ -238,8 +259,12 @@ const FillBookingForm = () => {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Test Type */}
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="testType" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                  <label htmlFor="testType" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaFlask className="w-6 h-6 mr-3 text-blue-600" />
                     Test Type
                   </label>
@@ -254,11 +279,15 @@ const FillBookingForm = () => {
                     <option value="Civil">Civil</option>
                     <option value="Legal">Legal</option>
                   </select>
-                </div>
+                </motion.div>
 
                 {/* Sample Collection Method */}
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="sampleCollectionMethod" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                  <label htmlFor="sampleCollectionMethod" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaPrescriptionBottleAlt className="w-6 h-6 mr-3 text-blue-600" />
                     Sample Collection Method
                   </label>
@@ -273,11 +302,15 @@ const FillBookingForm = () => {
                     <option value="At Medical Center">At Medical Center</option>
                     <option value="At Home" disabled={formData.testType === 'Legal'}>At Home</option>
                   </select>
-                </div>
+                </motion.div>
 
                 {/* Sample Type */}
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="sampleType" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                  <label htmlFor="sampleType" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaFlask className="w-6 h-6 mr-3 text-blue-600" />
                     Sample Type
                   </label>
@@ -293,11 +326,15 @@ const FillBookingForm = () => {
                     <option value="Hair">Hair</option>
                     <option value="Fingernail">Fingernail</option>
                   </select>
-                </div>
+                </motion.div>
 
                 {/* Booking Date */}
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="bookingDate" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                  <label htmlFor="bookingDate" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaCalendarAlt className="w-6 h-6 mr-3 text-blue-600" />
                     Booking Date
                   </label>
@@ -311,12 +348,16 @@ const FillBookingForm = () => {
                     onFocus={handleDateTimeFocus}
                     min={new Date().toISOString().slice(0, 16)}
                   />
-                </div>
+                </motion.div>
 
                 {/* Address - chỉ hiện khi chọn At Home */}
                 {formData.sampleCollectionMethod === 'At Home' && (
-                  <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                    <label htmlFor="address" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                    <label htmlFor="address" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaMapMarkerAlt className="w-6 h-6 mr-3 text-blue-600" />
                       Address
                     </label>
@@ -329,12 +370,16 @@ const FillBookingForm = () => {
                       value={formData.address}
                       onChange={handleChange}
                     />
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Relationship to Patient */}
-                <div className="bg-gray-50 p-6 rounded-lg border border-gray-200">
-                  <label htmlFor="relationshipToPatient" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                <motion.div 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="bg-gray-50 p-6 rounded-lg border border-gray-200">
+                  <label htmlFor="relationshipToPatient" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                     <FaUsers className="w-6 h-6 mr-3 text-blue-600" />
                     Relationship to Patient
                   </label>
@@ -351,19 +396,34 @@ const FillBookingForm = () => {
                     <option value="sibling">Sibling</option>
                     <option value="other">Other</option>
                   </select>
-                </div>
+                </motion.div>
               </div>
 
               {/* MAIN PARTICIPANT SECTION */}
-              <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
-                <h3 className="text-xl font-bold text-blue-700 mb-6 flex items-center">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
+                <motion.h3 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                  className="text-xl font-bold text-blue-700 mb-6 flex items-center">
                   <FaUser className="w-6 h-6 mr-3 text-blue-600" />
                   Main Participant (Person Taking the Test)
-                </h3>
+                </motion.h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Main Participant Full Name */}
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <label htmlFor="mainParticipant.fullName" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200">
+                    <label htmlFor="mainParticipant.fullName" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaUser className="w-5 h-5 mr-2 text-blue-600" />
                       Full Name
                     </label>
@@ -376,11 +436,16 @@ const FillBookingForm = () => {
                       value={formData.mainParticipant.fullName}
                       onChange={handleChange}
                     />
-                  </div>
+                  </motion.div>
 
                   {/* Main Participant Gender */}
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <label htmlFor="mainParticipant.gender" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200">
+                    <label htmlFor="mainParticipant.gender" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaTransgender className="w-5 h-5 mr-2 text-blue-600" />
                       Gender
                     </label>
@@ -396,11 +461,16 @@ const FillBookingForm = () => {
                       <option value="female">Female</option>
                       <option value="other">Other</option>
                     </select>
-                  </div>
+                  </motion.div>
 
                   {/* Main Participant Date of Birth */}
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <label htmlFor="mainParticipant.dateOfBirth" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200">
+                    <label htmlFor="mainParticipant.dateOfBirth" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaCalendarAlt className="w-5 h-5 mr-2 text-blue-600" />
                       Date of Birth
                     </label>
@@ -412,11 +482,16 @@ const FillBookingForm = () => {
                       value={formData.mainParticipant.dateOfBirth}
                       onChange={handleChange}
                     />
-                  </div>
+                  </motion.div>
 
                   {/* Main Participant Phone Number */}
-                  <div className="bg-white p-4 rounded-lg border border-gray-200">
-                    <label htmlFor="mainParticipant.phoneNumber" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200">
+                    <label htmlFor="mainParticipant.phoneNumber" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaPhone className="w-5 h-5 mr-2 text-blue-600" />
                       Phone Number
                     </label>
@@ -429,11 +504,16 @@ const FillBookingForm = () => {
                       value={formData.mainParticipant.phoneNumber}
                       onChange={handleChange}
                     />
-                  </div>
+                  </motion.div>
 
                   {/* Main Participant Email */}
-                  <div className="bg-white p-4 rounded-lg border border-gray-200 md:col-span-2">
-                    <label htmlFor="mainParticipant.email" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200 md:col-span-2">
+                    <label htmlFor="mainParticipant.email" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                       <FaEnvelope className="w-5 h-5 mr-2 text-blue-600" />
                       Email
                     </label>
@@ -446,20 +526,35 @@ const FillBookingForm = () => {
                       value={formData.mainParticipant.email}
                       onChange={handleChange}
                     />
-                  </div>
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
 
               {/* RELATED PARTICIPANT SECTION - Always show */}
-              <div className="bg-green-50 rounded-lg p-6 border-2 border-green-200">
-                <h3 className="text-xl font-bold text-green-700 mb-6 flex items-center">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="bg-green-50 rounded-lg p-6 border-2 border-green-200">
+                <motion.h3 
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8 }}
+                  className="text-xl font-bold text-green-700 mb-6 flex items-center">
                   <FaUserFriends className="w-6 h-6 mr-3 text-green-600" />
                   Related Participant (Person Booking the Test)
-                </h3>
+                </motion.h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Related Participant Full Name */}
-                    <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.fullName" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8 }}
+                      className="bg-white p-4 rounded-lg border border-gray-200">
+                      <label htmlFor="relatedParticipant.fullName" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaUser className="w-5 h-5 mr-2 text-green-600" />
                         Full Name
                       </label>
@@ -472,11 +567,16 @@ const FillBookingForm = () => {
                         value={formData.relatedParticipant.fullName}
                         onChange={handleChange}
                       />
-                    </div>
+                    </motion.div>
 
                     {/* Related Participant Gender */}
-                    <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.gender" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8 }}
+                      className="bg-white p-4 rounded-lg border border-gray-200">
+                      <label htmlFor="relatedParticipant.gender" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaTransgender className="w-5 h-5 mr-2 text-green-600" />
                         Gender
                       </label>
@@ -492,11 +592,16 @@ const FillBookingForm = () => {
                         <option value="female">Female</option>
                         <option value="other">Other</option>
                       </select>
-                    </div>
+                    </motion.div>
 
                     {/* Related Participant Date of Birth */}
-                    <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.dateOfBirth" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8 }}
+                      className="bg-white p-4 rounded-lg border border-gray-200">
+                      <label htmlFor="relatedParticipant.dateOfBirth" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaCalendarAlt className="w-5 h-5 mr-2 text-green-600" />
                         Date of Birth
                       </label>
@@ -508,11 +613,16 @@ const FillBookingForm = () => {
                         value={formData.relatedParticipant.dateOfBirth}
                         onChange={handleChange}
                       />
-                    </div>
+                    </motion.div>
 
                     {/* Related Participant Phone Number */}
-                    <div className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.phoneNumber" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8 }}
+                      className="bg-white p-4 rounded-lg border border-gray-200">
+                      <label htmlFor="relatedParticipant.phoneNumber" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaPhone className="w-5 h-5 mr-2 text-green-600" />
                         Phone Number
                       </label>
@@ -525,11 +635,16 @@ const FillBookingForm = () => {
                         value={formData.relatedParticipant.phoneNumber}
                         onChange={handleChange}
                       />
-                    </div>
+                    </motion.div>
 
                     {/* Related Participant Email */}
-                    <div className="bg-white p-4 rounded-lg border border-gray-200 md:col-span-2">
-                      <label htmlFor="relatedParticipant.email" className="block text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                    <motion.div 
+                      initial={{ opacity: 0, scale: 0.8 }}
+                      whileInView={{ opacity: 1, scale: 1 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8 }}
+                      className="bg-white p-4 rounded-lg border border-gray-200 md:col-span-2">
+                      <label htmlFor="relatedParticipant.email" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
                         <FaEnvelope className="w-5 h-5 mr-2 text-green-600" />
                         Email
                       </label>
@@ -542,12 +657,17 @@ const FillBookingForm = () => {
                         value={formData.relatedParticipant.email}
                         onChange={handleChange}
                       />
-                    </div>
+                    </motion.div>
                   </div>
-                </div>
+                </motion.div>
 
               {/* Submit Button */}
-              <div className="flex justify-center pt-8">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="flex justify-center pt-8">
                 <button
                   type="submit"
                   className="inline-flex items-center px-10 py-4 border-2 border-transparent text-xl font-bold rounded-lg shadow-lg text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transform transition-all duration-300 hover:scale-105"
@@ -555,9 +675,9 @@ const FillBookingForm = () => {
                   <FaCheckCircle className="w-6 h-6 mr-3" />
                   Submit Order
                 </button>
-              </div>
+              </motion.div>
             </form>
-          </div>
+          </motion.div>
         </div>
       </main>
     </div>

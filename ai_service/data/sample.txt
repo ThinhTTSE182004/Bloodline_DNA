@@ -1,0 +1,18 @@
+User Guide for AI Service Website
+
+1. Account Registration:
+- Go to the homepage and click the "Register" button.
+- Enter your personal information and confirm your email.
+
+2. Login:
+- Use your registered email and password to log in to the system.
+
+3. Search for Services:
+- Use the search bar to look up AI services that suit your needs.
+
+4. Contact Support:
+- If you encounter any difficulties, click on the "Contact" section to send a support request.
+
+Frequently Asked Questions:
+- How to reset my password? → Click "Forgot password" on the login page.
+- Are AI services free? → Some services are free, others are charged by package. 
