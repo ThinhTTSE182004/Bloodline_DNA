@@ -290,18 +290,24 @@ const WorkAssignment = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="pt-32 pb-8 w-11/12 mx-auto min-h-screen transition-all duration-300">
         {/* Modern Monthly Calendar */}
-        <Calendar 
-          currentMonth={currentMonth}
-          currentYear={currentYear}
-          onMonthChange={setCurrentMonth}
-          onYearChange={setCurrentYear}
-          onDateSelect={(dateStr) => {
-            setSelectedDate(dateStr);
-            setShowPopup(true);
-          }}
-          selectedDate={selectedDate}
-          assignments={allAssignments}
-        />
+        <motion.div
+          initial={{ opacity: 0, y: -40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Calendar 
+            currentMonth={currentMonth}
+            currentYear={currentYear}
+            onMonthChange={setCurrentMonth}
+            onYearChange={setCurrentYear}
+            onDateSelect={(dateStr) => {
+              setSelectedDate(dateStr);
+              setShowPopup(true);
+            }}
+            selectedDate={selectedDate}
+            assignments={allAssignments}
+          />
+        </motion.div>
         {/* 2 staff/medical staff tables */}
         <div className="flex flex-col md:flex-row gap-8 mb-10 w-full max-w-5xl mx-auto">
           <motion.div 
