@@ -23,14 +23,6 @@ public partial class Result
     [Column("test_summary", TypeName = "text")]
     public string TestSummary { get; set; }
 
-    [Column("raw_data_path")]
-    [StringLength(255)]
-    [Unicode(false)]
-    public string RawDataPath { get; set; }
-
-    [Column("report_url")]
-    public string ReportUrl { get; set; }
-
     [Required]
     [Column("result_status")]
     [StringLength(50)]

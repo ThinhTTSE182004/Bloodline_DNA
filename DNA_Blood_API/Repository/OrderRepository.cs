@@ -99,8 +99,7 @@ namespace DNA_API1.Repository
                     DeliveryTaskStatus = deliveryTask?.DeliveryTaskStatus,
                     DeliveryTaskNote = deliveryTask?.Note,
                     TaskCompleteAt = deliveryTask?.CompleteAt,
-                    ResultStatus = result?.ResultStatus,
-                    ResultFileUrl = result?.ReportUrl
+                    ResultStatus = result?.ResultStatus
                 };
 
                 // --- ⭐ ÁP DỤNG BUSINESS LOGIC CỦA BẠN VÀO ĐÂY ⭐ ---

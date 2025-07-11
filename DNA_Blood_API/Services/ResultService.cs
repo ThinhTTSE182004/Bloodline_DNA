@@ -29,6 +29,8 @@ namespace DNA_API1.Services
             var orderDetail = await _context.OrderDetails
                 .Include(od => od.Samples)
                     .ThenInclude(s => s.SampleType)
+                .Include(od => od.Samples)
+                    .ThenInclude(s => s.Participant)
                 .Include(od => od.ServicePackage)
                 .FirstOrDefaultAsync(od => od.OrderDetailId == result.OrderDetailId);
 
@@ -73,15 +75,22 @@ namespace DNA_API1.Services
                 TestName = orderDetail.ServicePackage?.ServiceName ?? "Unknown Service",
                 ReportDate = createdResult.ReportDate,
                 TestSummary = createdResult.TestSummary,
-                RawDataPath = createdResult.RawDataPath,
-                ReportUrl = createdResult.ReportUrl,
                 ResultStatus = createdResult.ResultStatus,
                 CreateAt = createdResult.CreateAt,
                 Samples = orderDetail.Samples?.Select(s => new SampleInfoDTO
                 {
                     SampleId = s.SampleId,
                     SampleStatus = s.SampleStatus,
-                    SampleName = s.SampleType?.Name ?? "Unknown Type"
+                    SampleName = s.SampleType?.Name ?? "Unknown Type",
+                    Participant = s.Participant == null ? null : new ParticipantInfoDTO
+                    {
+                        ParticipantId = s.Participant.ParticipantId,
+                        FullName = s.Participant.FullName,
+                        Sex = s.Participant.Sex,
+                        BirthDate = s.Participant.BirthDate,
+                        Relationship = s.Participant.Relationship,
+                        Phone = s.Participant.Phone
+                    }
                 }).ToList() ?? new List<SampleInfoDTO>()
             };
         }
@@ -96,15 +105,22 @@ namespace DNA_API1.Services
                 TestName = r.OrderDetail.ServicePackage.ServiceName,
                 ReportDate = r.ReportDate,
                 TestSummary = r.TestSummary,
-                RawDataPath = r.RawDataPath,
-                ReportUrl = r.ReportUrl,
                 ResultStatus = r.ResultStatus,
                 CreateAt = r.CreateAt,
                 Samples = r.OrderDetail.Samples.Select(s => new SampleInfoDTO
                 {
                     SampleId = s.SampleId,
                     SampleStatus = s.SampleStatus,
-                    SampleName = s.SampleType.Name
+                    SampleName = s.SampleType.Name,
+                    Participant = s.Participant == null ? null : new ParticipantInfoDTO
+                    {
+                        ParticipantId = s.Participant.ParticipantId,
+                        FullName = s.Participant.FullName,
+                        Sex = s.Participant.Sex,
+                        BirthDate = s.Participant.BirthDate,
+                        Relationship = s.Participant.Relationship,
+                        Phone = s.Participant.Phone
+                    }
                 }).ToList()
             }).ToList();
             return resultDTOs;
@@ -112,20 +128,18 @@ namespace DNA_API1.Services
 
         public async Task ShareResultByEmailAsync(int userId, ShareResultRequestDTO request)
         {
-            // Lấy kết quả và kiểm tra quyền truy cập
+            // Get result and check access rights
             var result = await _resultRepository.GetResultWithFullDataAsync(request.ResultId, userId);
             if (result == null)
-                throw new Exception("Kết quả không tồn tại hoặc bạn không có quyền truy cập.");
+                throw new Exception("Result does not exist or you do not have access rights.");
 
-            // Lấy thông tin file/report
+            // Get file/report info
             var testName = result.OrderDetail.ServicePackage.ServiceName;
-            var reportUrl = result.ReportUrl;
-            var subject = $"Chia sẻ kết quả xét nghiệm: {testName}";
-            var body = $"<p>Bạn nhận được kết quả xét nghiệm từ hệ thống DNA Testing.</p>" +
-                       $"<p>Tên xét nghiệm: <b>{testName}</b></p>" +
-                       (string.IsNullOrEmpty(reportUrl)
-                            ? "<p>Không có file kết quả đính kèm.</p>"
-                            : $"<p>Bạn có thể xem kết quả tại: <a href='{reportUrl}'>{reportUrl}</a></p>");
+            var pdfUrl = $"https://localhost:7113/api/UserProfile/Results/{result.ResultId}/download-pdf";
+            var subject = $"Share DNA Test Result: {testName}";
+            var body = $"<p>You have received a DNA test result from the DNA Testing system.</p>" +
+                       $"<p>Test name: <b>{testName}</b></p>" +
+                       $"<p>You can download the result file at: <a href='{pdfUrl}'>{pdfUrl}</a></p>";
 
             await _emailService.SendEmailAsync(request.ToEmail, subject, body);
         }
@@ -143,15 +157,22 @@ namespace DNA_API1.Services
                 TestName = result.OrderDetail.ServicePackage.ServiceName,
                 ReportDate = result.ReportDate,
                 TestSummary = result.TestSummary,
-                RawDataPath = result.RawDataPath,
-                ReportUrl = result.ReportUrl,
                 ResultStatus = result.ResultStatus,
                 CreateAt = result.CreateAt,
                 Samples = result.OrderDetail.Samples.Select(s => new SampleInfoDTO
                 {
                     SampleId = s.SampleId,
                     SampleStatus = s.SampleStatus,
-                    SampleName = s.SampleType.Name
+                    SampleName = s.SampleType.Name,
+                    Participant = s.Participant == null ? null : new ParticipantInfoDTO
+                    {
+                        ParticipantId = s.Participant.ParticipantId,
+                        FullName = s.Participant.FullName,
+                        Sex = s.Participant.Sex,
+                        BirthDate = s.Participant.BirthDate,
+                        Relationship = s.Participant.Relationship,
+                        Phone = s.Participant.Phone
+                    }
                 }).ToList()
             };
         }
