@@ -19,8 +19,6 @@ namespace DNA_API1.Repository
                 OrderDetailId = resultDto.OrderDetailId,
                 ReportDate = resultDto.ReportDate,
                 TestSummary = resultDto.TestSummary,
-                RawDataPath = resultDto.RawDataPath,
-                ReportUrl = resultDto.ReportUrl,
                 ResultStatus = resultDto.ResultStatus,
                 CreateAt = DateTime.Now,
                 UpdateAt = DateTime.Now
@@ -46,6 +44,9 @@ namespace DNA_API1.Repository
                 .Include(r => r.OrderDetail)
                     .ThenInclude(od => od.Samples)
                         .ThenInclude(s => s.SampleType)
+                .Include(r => r.OrderDetail)
+                    .ThenInclude(od => od.Samples)
+                        .ThenInclude(s => s.Participant)
                 .Where(r => r.OrderDetail.Order.OrderStatus != null && r.OrderDetail.Order.CustomerId == userId)
                 .ToListAsync();
         }

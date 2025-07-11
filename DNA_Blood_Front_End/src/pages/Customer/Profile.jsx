@@ -148,7 +148,7 @@ const Profile = () => {
 
   const fetchResults = async () => {
     try {
-      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
       const response = await fetch('https://localhost:7113/api/UserProfile/Results', {
         headers: {
@@ -642,17 +642,23 @@ const Profile = () => {
                                     </div>
                                     <div className="text-gray-700 text-sm mb-1">Result Status: <span className={`font-semibold ${result.resultStatus === 'Positive' ? 'text-green-600' : 'text-red-600'}`}>{result.resultStatus}</span></div>
                                     <div className="text-gray-700 text-sm mb-1">Summary: {result.testSummary || 'N/A'}</div>
-                                        <div className="text-gray-700 text-sm mb-1">Raw Data: {result.rawDataPath || 'N/A'}</div>
-                                    <div className="flex flex-col md:flex-row md:gap-4 w-full">
-                                      <div className="flex-1">
-                                        <div className="text-gray-700 text-sm mb-1">Report URL: {result.reportUrl || 'N/A'}</div>
-                                        <div className="text-gray-700 text-sm mb-1">Samples: {result.samples && result.samples.length > 0 ? result.samples.map(s => `${s.sampleName} (${s.sampleStatus})`).join(', ') : 'N/A'}</div>
-                                      </div>
-                                      <div className="flex flex-col items-end min-w-[160px]">
-                                        <div className="text-gray-500 text-xs mb-1">Report Date: {result.reportDate ? new Date(result.reportDate).toLocaleString() : 'N/A'}</div>
-                                        <div className="text-gray-500 text-xs mb-1">Created At: {result.createAt ? new Date(result.createAt).toLocaleString() : 'N/A'}</div>
-                                      </div>
-                                    </div>
+                                    <div className="text-gray-700 text-sm mb-1">Report Date: {result.reportDate ? new Date(result.reportDate).toLocaleString() : 'N/A'}</div>
+                                    <div className="text-gray-700 text-sm mb-1">Created At: {result.createAt ? new Date(result.createAt).toLocaleString() : 'N/A'}</div>
+                                    <div className="text-gray-700 text-sm mb-1">Samples:</div>
+                                    <ul className="ml-4 list-disc text-gray-700 text-sm">
+                                      {result.samples && result.samples.length > 0 ? result.samples.map((sample, idx) => (
+                                        <li key={sample.sampleId || idx} className="mb-1">
+                                          <div>Sample Name: <span className="font-semibold">{sample.sampleName}</span> ({sample.sampleStatus})</div>
+                                          {sample.participant && (
+                                            <div className="ml-2 text-xs text-gray-600">
+                                              Participant: {sample.participant.fullName} ({sample.participant.relationship})<br/>
+                                              Phone: {sample.participant.phone}<br/>
+                                              Sex: {sample.participant.sex}, Birth: {sample.participant.birthDate}
+                                            </div>
+                                          )}
+                                        </li>
+                                      )) : <li>N/A</li>}
+                                    </ul>
                                   </div>
                                 </div>
                               </motion.div>

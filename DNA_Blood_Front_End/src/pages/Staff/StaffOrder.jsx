@@ -356,7 +356,7 @@ const StaffOrder = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.8, delay:0.2}}
             className="bg-white shadow-lg rounded-lg overflow-hidden">
-            <div className="px-6 py-5 bg-gradient-to-r from-purple-600 to-purple-700">
+            <div className="px-6 py-5 bg-gradient-to-r from-teal-600 to-teal-700">
               <h2 className="text-xl font-bold text-white flex items-center"><FaClipboardList className="mr-2" /> Sample Transfers At Medical Center</h2>
             </div>
             <div className="overflow-x-auto">
@@ -374,7 +374,6 @@ const StaffOrder = () => {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {medicalCenterTransfers.map((transfer) => {
                     const statusIndex = statusHierarchy.indexOf(transfer.sampleTransferStatus);
-                    const isDeliverKitDisabled = statusIndex >= 1;
                     const isCollectSampleDisabled = statusIndex >= 2;
                     const isDeliverToLabDisabled = statusIndex >= 3;
 
@@ -404,16 +403,6 @@ const StaffOrder = () => {
                           </div>
                         ) : (
                           <div className="flex space-x-2">
-                            <button
-                              onClick={() => handleTransferAction('deliver-kit', transfer.sampleTransferId, 'Delivering Kit')}
-                              className={`flex items-center px-3 py-2 text-white rounded-md transition-all duration-200 text-xs font-semibold ${
-                                isDeliverKitDisabled ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600'
-                              }`}
-                              title="Delivering Kit"
-                              disabled={isDeliverKitDisabled}
-                            >
-                              <FaTruck className="mr-2" /> Deliver Kit
-                            </button>
                             <button
                               onClick={() => handleTransferAction('collect-sample', transfer.sampleTransferId, 'Collecting Sample')}
                               className={`flex items-center px-3 py-2 text-white rounded-md transition-all duration-200 text-xs font-semibold ${
