@@ -521,26 +521,6 @@ const MedicalStaffOrder = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700">Raw Data Path</label>
-                <input
-                  type="text"
-                  value={resultData.rawDataPath}
-                  onChange={(e) => setResultData({ ...resultData, rawDataPath: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700">Report URL</label>
-                <input
-                  type="text"
-                  value={resultData.reportUrl}
-                  onChange={(e) => setResultData({ ...resultData, reportUrl: e.target.value })}
-                  className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-teal-500 focus:ring-teal-500"
-                  required
-                />
-              </div>
-              <div>
                 <label className="block text-sm font-medium text-gray-700">Result Status</label>
                  <select
                   value={resultData.resultStatus}
