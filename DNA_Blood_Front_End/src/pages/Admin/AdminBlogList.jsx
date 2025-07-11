@@ -2,12 +2,42 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   FiEdit, FiTrash2, FiPlusCircle, FiEye, FiCheck, FiPause, FiArrowLeft,
+  FiBold, FiItalic, FiUnderline, FiLink, FiImage, 
+  FiAlignLeft, FiAlignCenter, FiAlignRight, FiAlignJustify, FiList
 } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import AdminNavbar from '../../components/AdminNavbar';
 import AdminSidebar from '../../components/AdminSidebar';
-import { CKEditor } from '@ckeditor/ckeditor5-react';
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
+
+const quillModules = {
+  toolbar: [
+    [{ 'header': [1, 2, 3, false] }],
+    ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+    [{ 'color': [] }, { 'background': [] }],
+    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+    [{ 'align': [] }],
+    ['link', 'image', 'video'],
+    ['undo', 'redo'],
+    ['clean']
+  ],
+  history: {
+    delay: 1000,
+    maxStack: 100,
+    userOnly: true
+  }
+};
+
+const quillFormats = [
+  'header',
+  'bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block',
+  'color', 'background',
+  'list', 'bullet',
+  'align',
+  'link', 'image', 'video',
+  'clean'
+];
 
 // Cấu trúc dữ liệu blog từ API
 const formatDate = (dateString) => {
@@ -94,30 +124,21 @@ const AdminBlogList = () => {
     const [title, setTitle] = useState(blog.title);
     const [content, setContent] = useState(blog.content || '<p>Blog content...</p>');
     const [loading, setLoading] = useState(false);
+    const [isFocused, setIsFocused] = useState(false);
 
     const handleUpdate = async () => {
       if (!title || !content) {
         alert('Please enter both title and content!');
         return;
       }
-      
       try {
         setLoading(true);
         const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-        
         const requestBody = {
           blogId: blog.blogId,
           title,
           content
         };
-        
-        console.log('Updating blog:', {
-          blogId: blog.blogId,
-          title,
-          content: content.substring(0, 100) + '...'
-        });
-        console.log('Request body:', requestBody);
-        
         const response = await fetch(`https://localhost:7113/api/Admin/blogs/${blog.blogId}`, {
           method: 'PUT',
           headers: {
@@ -126,17 +147,9 @@ const AdminBlogList = () => {
           },
           body: JSON.stringify(requestBody)
         });
-
-        console.log('Response status:', response.status);
-        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
         if (!response.ok) {
           const errorText = await response.text();
-          console.error('Response error:', errorText);
-          
-          // Thử với POST method nếu PUT không hoạt động
           if (response.status === 405) {
-            console.log('Trying with POST method...');
             const postResponse = await fetch(`https://localhost:7113/api/Admin/blogs/${blog.blogId}`, {
               method: 'POST',
               headers: {
@@ -145,28 +158,21 @@ const AdminBlogList = () => {
               },
               body: JSON.stringify(requestBody)
             });
-            
             if (!postResponse.ok) {
               const postErrorText = await postResponse.text();
               throw new Error(`Failed to update blog (POST): ${postResponse.status} - ${postErrorText}`);
             }
-            
-            const result = await postResponse.json();
-            console.log('Update successful with POST:', result);
+            await postResponse.json();
           } else {
             throw new Error(`Failed to update blog: ${response.status} - ${errorText}`);
           }
         } else {
-          const result = await response.json();
-          console.log('Update successful with PUT:', result);
+          await response.json();
         }
-
-        // Refresh danh sách blog
         await fetchBlogs();
         onClose();
         alert('Blog updated successfully!');
       } catch (err) {
-        console.error('Error updating blog:', err);
         alert(`Error updating blog: ${err.message}`);
       } finally {
         setLoading(false);
@@ -182,7 +188,7 @@ const AdminBlogList = () => {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 40 }}
           transition={{ duration: 0.4 }}
-          className="relative max-w-3xl w-full mx-auto bg-white/90 shadow-2xl rounded-3xl p-2 sm:p-8 border border-blue-100 z-10"
+          className="w-full max-w-6xl mx-auto bg-white/95 shadow-2xl rounded-3xl p-10 border border-blue-100 z-10"
         >
           <div className="flex items-center gap-4 mb-6">
             <motion.button
@@ -211,16 +217,31 @@ const AdminBlogList = () => {
             onChange={(e) => setTitle(e.target.value)}
             className="w-full border border-blue-200 rounded-2xl px-5 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow transition-all text-lg"
           />
-          {/* Content Editor */}
-          <div className="mt-4 mb-6 bg-blue-50/50 rounded-2xl shadow-inner p-2">
-            <CKEditor
-              editor={ClassicEditor}
-              data={content}
-              onChange={(event, editor) => setContent(editor.getData())}
+          {/* Content Editor Card */}
+          <div className={`w-full flex flex-col h-[300px] bg-white rounded-3xl border transition-all duration-300 ${isFocused ? 'border-blue-400 shadow-2xl ring-2 ring-blue-200' : 'border-blue-100 shadow'} quill-placeholder-indent`}>
+            <div className="flex flex-col p-6 quill-fix-placeholder
+              [&_.ql-toolbar]:flex [&_.ql-toolbar]:flex-nowrap [&_.ql-toolbar]:items-center
+              [&_.ql-toolbar]:gap-2 [&_.ql-toolbar]:text-xl
+              [&_.ql-toolbar]:min-h-[56px] [&_.ql-toolbar]:py-3
+              [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:rounded-none [&_.ql-toolbar]:bg-transparent
+              [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-blue-100
+              [&_.ql-container]:h-[200px] [&_.ql-container]:max-h-[200px] [&_.ql-container]:overflow-y-auto [&_.ql-container]:overflow-x-hidden [&_.ql-container]:border-0
+              [&_.ql-editor]:rounded-none [&_.ql-editor]:bg-transparent [&_.ql-editor]:pt-3 [&_.ql-editor]:px-6 [&_.ql-editor]:pb-3 [&_.ql-editor]:break-words [&_.ql-editor]:whitespace-pre-line [&_.ql-editor]:text-lg">
+              <ReactQuill
+              theme="snow"
+              value={content}
+              onChange={setContent}
+              placeholder="Write your blog content here..."
+              className="h-full min-h-[150px] w-full flex-1"
+              modules={quillModules}
+              formats={quillFormats}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
             />
+            </div>
           </div>
-          {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row justify-end gap-4 mt-6 flex-wrap">
+          {/* Nút Update/Cancel ngoài card nhỏ */}
+          <div className="w-full flex justify-end mt-8">
             <motion.button
               whileHover={{ scale: 1.08, backgroundColor: '#4ade80' }}
               whileTap={{ scale: 0.97 }}
@@ -235,7 +256,7 @@ const AdminBlogList = () => {
               whileTap={{ scale: 0.97 }}
               onClick={onClose}
               disabled={loading}
-              className="px-6 py-3 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-lg shadow transition-all flex items-center gap-2"
+              className="ml-4 px-6 py-3 rounded-full bg-red-600 hover:bg-red-700 text-white font-semibold text-lg shadow transition-all flex items-center gap-2"
             >
               Cancel
             </motion.button>
@@ -251,12 +272,22 @@ const AdminBlogList = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {/* Popup Edit Card */}
       {editBlog && <EditBlogCard blog={editBlog} onClose={() => setEditBlog(null)} />}
-      <div className="p-2 sm:p-6 pt-32 transition-all duration-300 bg-gray-50 min-h-screen">
+      {/* Sửa placeholder React Quill bằng style nội tuyến */}
+      <style>{`
+        .ql-editor.ql-blank::before {
+          left: 0 !important;
+          padding-left: 0 !important;
+          text-align: left !important;
+          font-style: normal !important;
+          opacity: 0.6;
+        }
+      `}</style>
+      <div className="py-4 px-2 sm:px-4 min-h-screen bg-gray-50 transition-all duration-300">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-white shadow-xl rounded-2xl p-2 sm:p-6"
+          className="w-full max-w-[95vw] mx-auto bg-white shadow-2xl rounded-3xl p-10"
         >
           {/* Tiêu đề + nút tạo mới */}
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
@@ -312,12 +343,12 @@ const AdminBlogList = () => {
 
           {/* Bảng quản lý blog */}
           {!loading && !error && (
-            <div className="overflow-x-auto">
+            <div>
               <motion.table
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
-                className="w-full text-sm text-left border-collapse"
+                className="w-full table-fixed text-sm text-left border-collapse"
               >
                 <thead className="bg-green-100 text-green-900">
                   <tr>

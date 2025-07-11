@@ -240,7 +240,7 @@ const BlogDetail = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.3, duration: 0.5 }}
-        className="prose max-w-none prose-p:text-gray-700 prose-blockquote:border-l-blue-500 prose-img:rounded-xl"
+        className="prose prose-lg max-w-none prose-p:text-black prose-blockquote:border-l-blue-500 prose-img:rounded-xl prose-ul:list-disc prose-ul:pl-6 prose-li:pl-1 prose-li:marker:text-black"
         dangerouslySetInnerHTML={{ __html: post.content }}
       />
 
