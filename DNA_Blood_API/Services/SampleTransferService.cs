@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace DNA_API1.Services
 {
-    public class SampleTransferService : ISampleTransferService
+   public class SampleTransferService : ISampleTransferService
     {
         private readonly ISampleTransferRepository _repository;
 
