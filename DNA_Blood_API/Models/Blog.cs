@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -27,6 +27,10 @@ public partial class Blog
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
+
+    // Thêm thuộc tính này để lưu link ảnh Cloudinary
+    [Column("imageUrl")]
+    public string ImageUrl { get; set; }
 
     [ForeignKey("AuthorId")]
     [InverseProperty("Blogs")]
