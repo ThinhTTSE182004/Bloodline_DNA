@@ -124,7 +124,8 @@ public class SampleTransferRepository : ISampleTransferRepository
                 SampleTransferStatus = t.SampleTransferStatus,
                 StaffName = t.Staff.Name,
                 MedicalStaffName = t.MedicalStaff.Name,
-                TransferDate = t.TransferDate 
+                TransferDate = t.TransferDate,
+                CollectionMethod = t.Sample.OrderDetail.Order.CollectionMethod.MethodName
             })
             .ToListAsync();
     }
@@ -142,7 +143,8 @@ public class SampleTransferRepository : ISampleTransferRepository
                 SampleTransferStatus = t.SampleTransferStatus,
                 StaffName = t.Staff.Name,
                 MedicalStaffName = t.MedicalStaff.Name,
-                TransferDate = t.TransferDate
+                TransferDate = t.TransferDate,
+                CollectionMethod = t.Sample.OrderDetail.Order.CollectionMethod.MethodName
             })
             .ToListAsync();
     }

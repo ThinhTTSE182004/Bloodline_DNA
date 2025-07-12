@@ -29,9 +29,12 @@ const Login = () => {
         sessionStorage.setItem('isLoggedIn', 'true');
         
         // Phân tích token để lấy thông tin người dùng
-        const tokenParts = token.split('.');
-        const payload = JSON.parse(atob(tokenParts[1]));
-        const userName = payload.name || email.split('@')[0];
+        const payload = parseJwt(token);
+        // Lấy tên từ claim chuẩn của Microsoft
+        let userName = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
+        if (!userName) {
+          userName = 'User';
+        }
         const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
         
         // Lưu thông tin người dùng vào sessionStorage
@@ -63,6 +66,19 @@ const Login = () => {
       alert('An error occurred during login. Please try again.');
     }
   };
+
+  // Hàm giải mã JWT đúng chuẩn Unicode
+  function parseJwt(token) {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  }
 
 
   return (

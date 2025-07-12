@@ -20,10 +20,10 @@ namespace DNA_API1.ViewModels
     {
         public string FullName { get; set; }
         public string Sex { get; set; }
-        public DateOnly? BirthDate { get; set; }
+        public DateOnly BirthDate { get; set; }
+        public string Phone { get; set; }
         public string Relationship { get; set; }
-        public string SampleType { get; set; }
-        public DateOnly? CollectedDate { get; set; }
+        public string NameRelation { get; set; }
     }
 
     public class LocusResultPdfDTO

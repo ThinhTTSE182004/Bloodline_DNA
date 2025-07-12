@@ -148,7 +148,7 @@ const Profile = () => {
 
   const fetchResults = async () => {
     try {
-      const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
       const response = await fetch('https://localhost:7113/api/UserProfile/Results', {
         headers: {
@@ -339,11 +339,18 @@ const Profile = () => {
       <main className="pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto space-y-8">
           {/* User Profile Card */}
-          <div
-            className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl"
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform hover:shadow-xl"
           >
             <div className="flex flex-col md:flex-row items-center space-y-4 md:space-y-0 md:space-x-6">
-              <div className="flex-shrink-0">
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="flex-shrink-0">
                 <Avatar size="xl" className={`${getColorClassFromName(userProfile?.name)} text-white text-4xl transform transition-all duration-300 hover:scale-110`}>
                   {userProfile?.avatarUrl ? (
                     <AvatarImage src={userProfile.avatarUrl} alt={userProfile.name} />
@@ -353,16 +360,33 @@ const Profile = () => {
                     </AvatarFallback>
                   )}
                 </Avatar>
-              </div>
+              </motion.div>
               <div className="flex-grow text-center md:text-left">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2 cursor-default">{userProfile.name}</h1>
-                <p className="text-gray-600 flex items-center justify-center md:justify-start cursor-default">
+                <motion.h1 
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.4 }}
+                  className="text-3xl font-bold text-gray-900 mb-2 cursor-default">
+                    {userProfile.name}
+                </motion.h1>
+                <motion.p 
+                  initial={{ opacity: 0, x: -30 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.5 }}
+                  className="text-gray-600 flex items-center justify-center md:justify-start cursor-default">
                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-5 h-5 mr-2 text-blue-500">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
                   </svg>
                   Last updated: {new Date(userProfile.updatedAt).toLocaleDateString()}
-                </p>
-                <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-3">
+                </motion.p>
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.6 }}
+                  className="mt-4 flex flex-wrap justify-center md:justify-start gap-3">
                   <Link 
                     to="/account-setting"
                     className="flex items-center px-6 py-3 bg-white border-2 border-blue-500 text-blue-600 rounded-lg hover:bg-blue-50 transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
@@ -373,23 +397,37 @@ const Profile = () => {
                     </svg>
                     Account Settings
                   </Link>
-                </div>
+                </motion.div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Personal Information Card */}
-          <div
-            className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl"
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform hover:shadow-xl"
           >
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center cursor-default">
+            <motion.h2 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+              className="text-xl font-semibold text-gray-900 mb-6 flex items-center cursor-default">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-500">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 9h3.75M15 12h3.75M15 15h3.75M4.5 19.5h15a2.25 2.25 0 0 0 2.25-2.25V6.75A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25v10.5A2.25 2.25 0 0 0 4.5 19.5Zm6-10.125a1.875 1.875 0 1 1-3.75 0 1.875 1.875 0 0 1 3.75 0Zm1.294 6.336a6.721 6.721 0 0 1-3.17.789 6.721 6.721 0 0 1-3.168-.789 3.376 3.376 0 0 1 6.338 0Z" />
               </svg>
               Personal Information
-            </h2>
+            </motion.h2>
             <div className="space-y-4">
-              <div className="flex items-center p-4 bg-gray-50 rounded-lg transform transition-all duration-300 hover:bg-gray-100">
+              <motion.div 
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.6 }}
+                className="flex items-center p-4 bg-gray-50 rounded-lg transform hover:bg-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-3 text-blue-500">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25H4.5a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5H4.5A2.25 2.25 0 0 0 2.25 6.75m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L2.52 8.91A2.25 2.25 0 0 1 1.5 6.993V6.75" />
                 </svg>
@@ -397,8 +435,13 @@ const Profile = () => {
                   <p className="text-sm text-gray-500 cursor-default">Email Address</p>
                   <p className="text-gray-900 font-medium cursor-default">{userProfile.email}</p>
                 </div>
-              </div>
-              <div className="flex items-center p-4 bg-gray-50 rounded-lg transform transition-all duration-300 hover:bg-gray-100">
+              </motion.div>
+              <motion.div 
+                initial={{ opacity: 0, x: -30 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.8 }}
+                className="flex items-center p-4 bg-gray-50 rounded-lg transform hover:bg-gray-100">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-3 text-blue-500">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M2.25 6.75c0-1.036.84-1.875 1.875-1.875h16.5c1.035 0 1.875.84 1.875 1.875v10.5a1.875 1.875 0 0 1-1.875 1.875H4.125A1.875 1.875 0 0 1 2.25 17.25V6.75Z" />
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m0 0 3 3m-3-3-3 3M12 18.75h.008v.008H12v-.008Z" />
@@ -407,26 +450,40 @@ const Profile = () => {
                   <p className="text-sm text-gray-500 cursor-default">Phone Number</p>
                   <p className="text-gray-900 font-medium cursor-default">{userProfile.phone}</p>
                 </div>
-              </div>
+              </motion.div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Order History Section */}
-          <div
-            className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform transition-all duration-300 hover:shadow-xl"
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.4 }}
+            className="bg-white shadow-lg rounded-lg p-6 md:p-8 transform hover:shadow-xl"
           >
-            <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center cursor-default">
+            <motion.h2 
+              initial={{ opacity: 0, x: -20 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+              className="text-xl font-semibold text-gray-900 mb-6 flex items-center cursor-default">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-2 text-blue-500">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15c1.012 0 1.867.668 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
               </svg>
               Order History
-            </h2>
+            </motion.h2>
             <div className="space-y-4">
-              {orderHistory.map((order) => {
+              {orderHistory.map((order, index) => {
                 const orderResults = results.filter(r => r.orderDetailId === order.orderId);
                 return (
                   <React.Fragment key={order.orderId}>
-                    <div className="w-full h-auto bg-gray-50 rounded-lg p-4 transform transition-all duration-300 hover:bg-gray-100 hover:shadow-md cursor-pointer"
+                    <motion.div 
+                      initial={{ opacity: 0, y: 20 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      viewport={{ once: true }}
+                      transition={{ duration: 0.8, delay: index * 0.1 }}
+                      className="w-full h-auto bg-gray-50 rounded-lg p-4 transform hover:bg-gray-100 hover:shadow-md cursor-pointer"
                       onClick={() => fetchOrderDetail(order.orderId)}>
                       <div className="flex flex-col md:flex-row md:justify-between md:items-center h-full gap-2 md:gap-0">
                         <div className="flex-1 flex flex-col md:flex-row md:items-center gap-2 md:gap-6">
@@ -463,17 +520,26 @@ const Profile = () => {
                           </p>
                         </div>
                       </div>
-                    </div>
+                    </motion.div>
                     {orderResults.length > 0 && (
-                      <div className="flex flex-col items-start">
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        whileInView={{ opacity: 1, scale: 1 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.8, delay: 0.2 }}
+                        className="flex flex-col items-start">
                         <div className="flex flex-row gap-2 mb-2">
-                          <button
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
                             onClick={e => { e.stopPropagation(); setExpandedOrderId(expandedOrderId === order.orderId ? null : order.orderId); }}
                           >
                             {expandedOrderId === order.orderId ? 'Hide Result' : 'See Result'}
-                          </button>
-                          <button
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition disabled:opacity-60"
                             disabled={shareStatus[orderResults[0].resultId]?.loading}
                             onClick={async e => {
@@ -501,17 +567,21 @@ const Profile = () => {
                             }}
                           >
                             {shareStatus[orderResults[0].resultId]?.loading ? 'Sharing...' : 'Share to Email'}
-                          </button>
-                          <button
-                            className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition-all duration-300 hover:scale-105 shadow-md hover:shadow-lg flex items-center font-medium"
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 hover:scale-105 shadow-md hover:shadow-lg flex items-center font-medium"
                             onClick={e => { e.stopPropagation(); setFeedbackModal({ open: true, orderId: order.orderId }); setFeedback({ rating: 0, comment: '' }); setFeedbackMsg(''); }}
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                             </svg>
                             Give Feedback
-                          </button>
-                          <button
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition disabled:opacity-60 flex items-center"
                             disabled={!feedbackList.find(fb => fb.orderId === order.orderId)}
                             onClick={async e => {
@@ -535,52 +605,73 @@ const Profile = () => {
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                             </svg>
                             See Feedback Response
-                          </button>
+                          </motion.button>
                         </div>
                         {shareStatus[orderResults[0].resultId]?.message && (
-                          <div className="mb-2 text-xs text-blue-700 text-left">{shareStatus[orderResults[0].resultId].message}</div>
+                          <motion.div 
+                            initial={{ opacity: 0, y: -10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mb-2 text-xs text-blue-700 text-left">{shareStatus[orderResults[0].resultId].message}</motion.div>
                         )}
                         {expandedOrderId === order.orderId && (
-                          <div className="w-full mt-2 space-y-4">
-                            {orderResults.map(result => (
-                              <div key={result.resultId} className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 shadow hover:shadow-lg transition-all">
+                          <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.5 }}
+                            className="w-full mt-2 space-y-4">
+                            {orderResults.map((result, resultIndex) => (
+                              <motion.div 
+                                key={result.resultId} 
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.6, delay: resultIndex * 0.1 }}
+                                className="bg-gradient-to-r from-green-50 to-blue-50 border border-green-200 rounded-lg p-4 shadow hover:shadow-lg transition-all">
                                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 md:gap-0">
                                   <div className="w-full flex flex-col gap-1">
                                     <div className="flex items-center justify-between w-full mb-1">
                                       <div className="text-gray-700 text-sm">Test Name: <span className="font-semibold text-green-700">{result.testName}</span></div>
-                                      <button
+                                      <motion.button
+                                        whileHover={{ scale: 1.05 }}
+                                        whileTap={{ scale: 0.95 }}
                                         className="ml-2 px-3 py-1 bg-gray-700 text-white rounded hover:bg-gray-900 transition flex items-center gap-1 text-xs"
                                         onClick={e => handleDownloadPdf(result.resultId, e)}
                                       >
                                         <FaDownload className="mr-1" /> PDF
-                                      </button>
+                                      </motion.button>
                                     </div>
                                     <div className="text-gray-700 text-sm mb-1">Result Status: <span className={`font-semibold ${result.resultStatus === 'Positive' ? 'text-green-600' : 'text-red-600'}`}>{result.resultStatus}</span></div>
                                     <div className="text-gray-700 text-sm mb-1">Summary: {result.testSummary || 'N/A'}</div>
-                                        <div className="text-gray-700 text-sm mb-1">Raw Data: {result.rawDataPath || 'N/A'}</div>
-                                    <div className="flex flex-col md:flex-row md:gap-4 w-full">
-                                      <div className="flex-1">
-                                        <div className="text-gray-700 text-sm mb-1">Report URL: {result.reportUrl || 'N/A'}</div>
-                                        <div className="text-gray-700 text-sm mb-1">Samples: {result.samples && result.samples.length > 0 ? result.samples.map(s => `${s.sampleName} (${s.sampleStatus})`).join(', ') : 'N/A'}</div>
-                                      </div>
-                                      <div className="flex flex-col items-end min-w-[160px]">
-                                        <div className="text-gray-500 text-xs mb-1">Report Date: {result.reportDate ? new Date(result.reportDate).toLocaleString() : 'N/A'}</div>
-                                        <div className="text-gray-500 text-xs mb-1">Created At: {result.createAt ? new Date(result.createAt).toLocaleString() : 'N/A'}</div>
-                                      </div>
-                                    </div>
+                                    <div className="text-gray-700 text-sm mb-1">Report Date: {result.reportDate ? new Date(result.reportDate).toLocaleString() : 'N/A'}</div>
+                                    <div className="text-gray-700 text-sm mb-1">Created At: {result.createAt ? new Date(result.createAt).toLocaleString() : 'N/A'}</div>
+                                    <div className="text-gray-700 text-sm mb-1">Samples:</div>
+                                    <ul className="ml-4 list-disc text-gray-700 text-sm">
+                                      {result.samples && result.samples.length > 0 ? result.samples.map((sample, idx) => (
+                                        <li key={sample.sampleId || idx} className="mb-1">
+                                          <div>Sample Name: <span className="font-semibold">{sample.sampleName}</span> ({sample.sampleStatus})</div>
+                                          {sample.participant && (
+                                            <div className="ml-2 text-xs text-gray-600">
+                                              Participant: {sample.participant.fullName} ({sample.participant.relationship})<br/>
+                                              Phone: {sample.participant.phone}<br/>
+                                              Sex: {sample.participant.sex}, Birth: {sample.participant.birthDate}
+                                            </div>
+                                          )}
+                                        </li>
+                                      )) : <li>N/A</li>}
+                                    </ul>
                                   </div>
                                 </div>
-                              </div>
+                              </motion.div>
                             ))}
-                          </div>
+                          </motion.div>
                         )}
-                      </div>
+                      </motion.div>
                     )}
                   </React.Fragment>
                 );
               })}
             </div>
-          </div>
+          </motion.div>
 
           {/* Order Detail Modal */}
           {selectedOrder && (

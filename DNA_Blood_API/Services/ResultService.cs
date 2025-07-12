@@ -29,6 +29,8 @@ namespace DNA_API1.Services
             var orderDetail = await _context.OrderDetails
                 .Include(od => od.Samples)
                     .ThenInclude(s => s.SampleType)
+                .Include(od => od.Samples)
+                    .ThenInclude(s => s.Participant)
                 .Include(od => od.ServicePackage)
                 .FirstOrDefaultAsync(od => od.OrderDetailId == result.OrderDetailId);
 
@@ -73,15 +75,22 @@ namespace DNA_API1.Services
                 TestName = orderDetail.ServicePackage?.ServiceName ?? "Unknown Service",
                 ReportDate = createdResult.ReportDate,
                 TestSummary = createdResult.TestSummary,
-                RawDataPath = createdResult.RawDataPath,
-                ReportUrl = createdResult.ReportUrl,
                 ResultStatus = createdResult.ResultStatus,
                 CreateAt = createdResult.CreateAt,
                 Samples = orderDetail.Samples?.Select(s => new SampleInfoDTO
                 {
                     SampleId = s.SampleId,
                     SampleStatus = s.SampleStatus,
-                    SampleName = s.SampleType?.Name ?? "Unknown Type"
+                    SampleName = s.SampleType?.Name ?? "Unknown Type",
+                    Participant = s.Participant == null ? null : new ParticipantInfoDTO
+                    {
+                        ParticipantId = s.Participant.ParticipantId,
+                        FullName = s.Participant.FullName,
+                        Sex = s.Participant.Sex,
+                        BirthDate = s.Participant.BirthDate,
+                        Relationship = s.Participant.Relationship,
+                        Phone = s.Participant.Phone
+                    }
                 }).ToList() ?? new List<SampleInfoDTO>()
             };
         }
@@ -96,15 +105,22 @@ namespace DNA_API1.Services
                 TestName = r.OrderDetail.ServicePackage.ServiceName,
                 ReportDate = r.ReportDate,
                 TestSummary = r.TestSummary,
-                RawDataPath = r.RawDataPath,
-                ReportUrl = r.ReportUrl,
                 ResultStatus = r.ResultStatus,
                 CreateAt = r.CreateAt,
                 Samples = r.OrderDetail.Samples.Select(s => new SampleInfoDTO
                 {
                     SampleId = s.SampleId,
                     SampleStatus = s.SampleStatus,
-                    SampleName = s.SampleType.Name
+                    SampleName = s.SampleType.Name,
+                    Participant = s.Participant == null ? null : new ParticipantInfoDTO
+                    {
+                        ParticipantId = s.Participant.ParticipantId,
+                        FullName = s.Participant.FullName,
+                        Sex = s.Participant.Sex,
+                        BirthDate = s.Participant.BirthDate,
+                        Relationship = s.Participant.Relationship,
+                        Phone = s.Participant.Phone
+                    }
                 }).ToList()
             }).ToList();
             return resultDTOs;
@@ -112,20 +128,18 @@ namespace DNA_API1.Services
 
         public async Task ShareResultByEmailAsync(int userId, ShareResultRequestDTO request)
         {
-            // Lấy kết quả và kiểm tra quyền truy cập
+            // Get result and check access rights
             var result = await _resultRepository.GetResultWithFullDataAsync(request.ResultId, userId);
             if (result == null)
-                throw new Exception("Kết quả không tồn tại hoặc bạn không có quyền truy cập.");
+                throw new Exception("Result does not exist or you do not have access rights.");
 
-            // Lấy thông tin file/report
+            // Get file/report info
             var testName = result.OrderDetail.ServicePackage.ServiceName;
-            var reportUrl = result.ReportUrl;
-            var subject = $"Chia sẻ kết quả xét nghiệm: {testName}";
-            var body = $"<p>Bạn nhận được kết quả xét nghiệm từ hệ thống DNA Testing.</p>" +
-                       $"<p>Tên xét nghiệm: <b>{testName}</b></p>" +
-                       (string.IsNullOrEmpty(reportUrl)
-                            ? "<p>Không có file kết quả đính kèm.</p>"
-                            : $"<p>Bạn có thể xem kết quả tại: <a href='{reportUrl}'>{reportUrl}</a></p>");
+            var pdfUrl = $"https://localhost:7113/api/UserProfile/Results/{result.ResultId}/download-pdf";
+            var subject = $"Share DNA Test Result: {testName}";
+            var body = $"<p>You have received a DNA test result from the DNA Testing system.</p>" +
+                       $"<p>Test name: <b>{testName}</b></p>" +
+                       $"<p>You can download the result file at: <a href='{pdfUrl}'>{pdfUrl}</a></p>";
 
             await _emailService.SendEmailAsync(request.ToEmail, subject, body);
         }
@@ -143,15 +157,22 @@ namespace DNA_API1.Services
                 TestName = result.OrderDetail.ServicePackage.ServiceName,
                 ReportDate = result.ReportDate,
                 TestSummary = result.TestSummary,
-                RawDataPath = result.RawDataPath,
-                ReportUrl = result.ReportUrl,
                 ResultStatus = result.ResultStatus,
                 CreateAt = result.CreateAt,
                 Samples = result.OrderDetail.Samples.Select(s => new SampleInfoDTO
                 {
                     SampleId = s.SampleId,
                     SampleStatus = s.SampleStatus,
-                    SampleName = s.SampleType.Name
+                    SampleName = s.SampleType.Name,
+                    Participant = s.Participant == null ? null : new ParticipantInfoDTO
+                    {
+                        ParticipantId = s.Participant.ParticipantId,
+                        FullName = s.Participant.FullName,
+                        Sex = s.Participant.Sex,
+                        BirthDate = s.Participant.BirthDate,
+                        Relationship = s.Participant.Relationship,
+                        Phone = s.Participant.Phone
+                    }
                 }).ToList()
             };
         }
@@ -183,9 +204,8 @@ namespace DNA_API1.Services
                         FullName = s.Participant.FullName,
                         Sex = s.Participant.Sex,
                         BirthDate = s.Participant.BirthDate,
+                        Phone = s.Participant.Phone,
                         Relationship = s.Participant.Relationship,
-                        SampleType = s.SampleType.Name,
-                        CollectedDate = s.CollectedDate
                     })
                     .DistinctBy(p => p.FullName) // Loại bỏ trùng lặp nếu có
                     .ToList(),
@@ -273,27 +293,26 @@ namespace DNA_API1.Services
                         columns.RelativeColumn(); // Birth Date
                         columns.RelativeColumn(); // Phone
                         columns.RelativeColumn(); // Relationship
-                        columns.RelativeColumn(); // NameRelation
                     });
 
                     // Header
                     table.Header(header =>
                     {
-                        header.Cell().Text("Full Name").Bold();
-                        header.Cell().Text("Sex").Bold();
-                        header.Cell().Text("Birth Date").Bold();
-                        header.Cell().Text("Phone").Bold();
-                        header.Cell().Text("Relationship").Bold();
-                        header.Cell().Text("Relation Name").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Full Name").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Sex").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Birth Date").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Phone").Bold();
+                        header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Relationship").Bold();
                     });
 
                     // Data
                     foreach (var participant in data.Participants)
                     {
-                        table.Cell().Text(participant.FullName);
-                        table.Cell().Text(participant.Sex);
-                        table.Cell().Text(participant.BirthDate.HasValue ? participant.BirthDate.Value.ToString("dd/MM/yyyy") : "");
-                        table.Cell().Text(participant.Relationship ?? "");
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.FullName ?? "");
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.Sex ?? "");
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.BirthDate.ToString("dd/MM/yyyy"));
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.Phone ?? "");
+                        table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(participant.Relationship ?? "");
                     }
                 });
 
@@ -314,19 +333,20 @@ namespace DNA_API1.Services
                         // Header
                         table.Header(header =>
                         {
-                            header.Cell().Text("Locus").Bold();
-                            header.Cell().Text("Person A").Bold();
-                            header.Cell().Text("Person B").Bold();
-                            header.Cell().Text("Match").Bold();
+                            header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Locus").Bold();
+                            header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Person A").Bold();
+                            header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Person B").Bold();
+                            header.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text("Match").Bold();
                         });
 
                         // Data
                         foreach (var locus in data.LocusResults)
                         {
-                            table.Cell().Text(locus.LocusName);
-                            table.Cell().Text(locus.PersonAAlleles);
-                            table.Cell().Text(locus.PersonBAlleles);
-                            table.Cell().Text(locus.IsMatch == true ? "Yes" : "No").FontColor(locus.IsMatch == true ? "#008000" : "#FF0000");
+                            table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(locus.LocusName);
+                            table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(locus.PersonAAlleles);
+                            table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(locus.PersonBAlleles);
+                            table.Cell().Border(1).AlignCenter().PaddingVertical(2).PaddingHorizontal(4).Text(locus.IsMatch == true ? "Yes" : "No")
+                                .FontColor(locus.IsMatch == true ? "#008000" : "#FF0000");
                         }
                     });
                 }
