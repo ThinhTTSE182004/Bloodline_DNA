@@ -95,9 +95,14 @@ const Payment = () => {
       sessionStorage.setItem('cart', JSON.stringify(newCart));
       refreshCart();
       
+      // Lấy lại thông tin service đầy đủ từ services context nếu thiếu
+      const selectedServices = bookingData.details.map(detail =>
+        services.find(s => String(s.servicePackageId) === String(detail.servicePackageId))
+      ).filter(Boolean);
+
       sessionStorage.setItem('lastPaidBooking', JSON.stringify({
         ...bookingData,
-        selectedServices: orderSummary,
+        selectedServices,
         paymentMethod,
         paymentDate: new Date().toISOString(),
         orderId: responseData.orderId || `ORD${Date.now().toString().slice(-6)}`
