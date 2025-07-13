@@ -116,6 +116,38 @@ const FillBookingForm = () => {
     }
   };
 
+  function getLocalHour(datetimeStr) {
+    // datetimeStr dạng "2025-07-13T08:00"
+    if (!datetimeStr) return null;
+    const timePart = datetimeStr.split('T')[1];
+    if (!timePart) return null;
+    const [hourStr] = timePart.split(':');
+    return parseInt(hourStr, 10);
+  }
+
+  function isPastDateTimeLocal(datetimeStr) {
+    // Compare local datetime-local string with now (local time)
+    if (!datetimeStr) return true;
+    const [datePart, timePart] = datetimeStr.split('T');
+    if (!datePart || !timePart) return true;
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hour, minute] = timePart.split(':').map(Number);
+    const selected = new Date(year, month - 1, day, hour, minute);
+    const now = new Date();
+    return selected < now;
+  }
+
+  function isTodayLocal(datetimeStr) {
+    if (!datetimeStr) return false;
+    const [datePart] = datetimeStr.split('T');
+    if (!datePart) return false;
+    const today = new Date();
+    const yyyy = today.getFullYear();
+    const mm = String(today.getMonth() + 1).padStart(2, '0');
+    const dd = String(today.getDate()).padStart(2, '0');
+    return datePart === `${yyyy}-${mm}-${dd}`;
+  }
+
   const calculateTotalAmount = () => {
     return selectedServices.reduce((total, service) => total + (service.price || 0), 0).toLocaleString();
   };
@@ -132,11 +164,23 @@ const FillBookingForm = () => {
     if (!formData.bookingDate) {
       newErrors.bookingDate = "Please select booking date.";
     } else {
-      const selectedDate = new Date(formData.bookingDate);
-      const now = new Date();
-      if (selectedDate < now) newErrors.bookingDate = "Booking date cannot be in the past.";
-      const hour = selectedDate.getHours();
-      if (hour < 8 || hour >= 17) newErrors.bookingDate = "Please select a time between 8:00 and 17:00.";
+      // Nếu chọn hôm nay và đã quá 17:00 thì báo lỗi
+      if (isTodayLocal(formData.bookingDate)) {
+        const now = new Date();
+        if (now.getHours() >= 17) {
+          newErrors.bookingDate = "Vui lòng đặt hàng vào ngày hôm sau.";
+        }
+      }
+      if (!newErrors.bookingDate) {
+        if (isPastDateTimeLocal(formData.bookingDate)) {
+          newErrors.bookingDate = "Booking date cannot be in the past.";
+        } else {
+          const hour = getLocalHour(formData.bookingDate);
+          if (!(hour >= 8 && hour < 12 || hour >= 13 && hour < 17)) {
+            newErrors.bookingDate = "Please select a time from 8:00-12:00 or 13:00-17:00.";
+          }
+        }
+      }
     }
     // Address
     if (formData.sampleCollectionMethod === "At Home" && !formData.address.trim()) {
@@ -185,10 +229,9 @@ const FillBookingForm = () => {
     const total = selectedServices.reduce((total, service) => total + (service.price || 0), 0);
 
     // Kiểm tra giờ
-    const selectedDate = new Date(formData.bookingDate);
-    const hour = selectedDate.getHours();
-    if (hour < 8 || hour >= 17) {
-      alert("Vui lòng chọn giờ từ 8:00 đến 17:00.");
+    const hour = getLocalHour(formData.bookingDate);
+    if (!(hour >= 8 && hour < 12 || hour >= 13 && hour < 17)) {
+      alert("Vui lòng chọn giờ từ 8:00-12:00 hoặc 13:00-17:00.");
       return;
     }
 
@@ -253,6 +296,19 @@ const FillBookingForm = () => {
         </main>
       </div>
     );
+  }
+
+  function getBookingMinDate() {
+    const now = new Date();
+    // Nếu đã quá 17:00 thì min là 08:00 ngày mai
+    if (now.getHours() >= 17) {
+      const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0);
+      return tomorrow.toISOString().slice(0, 16);
+    }
+    // Nếu chưa quá 17:00 thì min là giờ hiện tại (local)
+    // Nhưng phải chuyển về local ISO string
+    const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
+    return local.toISOString().slice(0, 16);
   }
 
   return (
@@ -415,11 +471,14 @@ const FillBookingForm = () => {
                     value={formData.bookingDate}
                     onChange={handleChange}
                     onFocus={handleDateTimeFocus}
-                    min={new Date().toISOString().slice(0, 16)}
+                    min={getBookingMinDate()}
                   />
                   {errors.bookingDate && (
                     <div className="text-red-500 text-sm mt-1">{errors.bookingDate}</div>
                   )}
+                  <div className="text-gray-500 text-xs mt-1">
+                    Chỉ đặt lịch từ 8:00-12:00 hoặc 13:00-17:00
+                  </div>
                 </motion.div>
 
                 {/* Address - chỉ hiện khi chọn At Home */}

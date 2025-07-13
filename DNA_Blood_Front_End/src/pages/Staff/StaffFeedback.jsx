@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import StaffNavbar from '../../components/StaffNavbar';
+import { motion } from 'framer-motion';
 
 const SUGGESTIONS = [
   "Thank you for your valuable feedback!",
