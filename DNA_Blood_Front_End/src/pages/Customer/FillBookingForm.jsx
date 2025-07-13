@@ -37,6 +37,7 @@ const FillBookingForm = () => {
   const { cartItems } = useCart();
   const { services } = useServices();
   const [selectedServices, setSelectedServices] = useState([]);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
@@ -119,8 +120,67 @@ const FillBookingForm = () => {
     return selectedServices.reduce((total, service) => total + (service.price || 0), 0).toLocaleString();
   };
 
+  const validate = () => {
+    const newErrors = {};
+    // Test Type
+    if (!formData.testType) newErrors.testType = "Please select test type.";
+    // Sample Collection Method
+    if (!formData.sampleCollectionMethod) newErrors.sampleCollectionMethod = "Please select sample collection method.";
+    // Sample Type
+    if (!formData.sampleType) newErrors.sampleType = "Please select sample type.";
+    // Booking Date
+    if (!formData.bookingDate) {
+      newErrors.bookingDate = "Please select booking date.";
+    } else {
+      const selectedDate = new Date(formData.bookingDate);
+      const now = new Date();
+      if (selectedDate < now) newErrors.bookingDate = "Booking date cannot be in the past.";
+      const hour = selectedDate.getHours();
+      if (hour < 8 || hour >= 17) newErrors.bookingDate = "Please select a time between 8:00 and 17:00.";
+    }
+    // Address
+    if (formData.sampleCollectionMethod === "At Home" && !formData.address.trim()) {
+      newErrors.address = "Please enter address for home collection.";
+    }
+    // Relationship
+    if (!formData.relationshipToPatient) newErrors.relationshipToPatient = "Please select relationship.";
+    // Main Participant
+    if (!formData.mainParticipant.fullName.trim() || formData.mainParticipant.fullName.trim().length < 2)
+      newErrors["mainParticipant.fullName"] = "Please enter full name (at least 2 characters).";
+    if (!formData.mainParticipant.gender) newErrors["mainParticipant.gender"] = "Please select gender.";
+    if (!formData.mainParticipant.dateOfBirth) {
+      newErrors["mainParticipant.dateOfBirth"] = "Please select date of birth.";
+    } else {
+      if (new Date(formData.mainParticipant.dateOfBirth) > new Date())
+        newErrors["mainParticipant.dateOfBirth"] = "Date of birth cannot be in the future.";
+    }
+    if (!formData.mainParticipant.phoneNumber.match(/^0[0-9]{9}$/))
+      newErrors["mainParticipant.phoneNumber"] = "Please enter a valid 10-digit phone number.";
+    if (!formData.mainParticipant.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/))
+      newErrors["mainParticipant.email"] = "Please enter a valid email address.";
+    // Related Participant (nếu relationship khác self và khác rỗng)
+    if (formData.relationshipToPatient && formData.relationshipToPatient !== "self") {
+      if (!formData.relatedParticipant.fullName.trim() || formData.relatedParticipant.fullName.trim().length < 2)
+        newErrors["relatedParticipant.fullName"] = "Please enter full name (at least 2 characters).";
+      if (!formData.relatedParticipant.gender) newErrors["relatedParticipant.gender"] = "Please select gender.";
+      if (!formData.relatedParticipant.dateOfBirth) {
+        newErrors["relatedParticipant.dateOfBirth"] = "Please select date of birth.";
+      } else {
+        if (new Date(formData.relatedParticipant.dateOfBirth) > new Date())
+          newErrors["relatedParticipant.dateOfBirth"] = "Date of birth cannot be in the future.";
+      }
+      if (!formData.relatedParticipant.phoneNumber.match(/^0[0-9]{9}$/))
+        newErrors["relatedParticipant.phoneNumber"] = "Please enter a valid 10-digit phone number.";
+      if (!formData.relatedParticipant.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/))
+        newErrors["relatedParticipant.email"] = "Please enter a valid email address.";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!validate()) return;
 
     const total = selectedServices.reduce((total, service) => total + (service.price || 0), 0);
 
@@ -279,6 +339,9 @@ const FillBookingForm = () => {
                     <option value="Civil">Civil</option>
                     <option value="Legal">Legal</option>
                   </select>
+                  {errors.testType && (
+                    <div className="text-red-500 text-sm mt-1">{errors.testType}</div>
+                  )}
                 </motion.div>
 
                 {/* Sample Collection Method */}
@@ -302,6 +365,9 @@ const FillBookingForm = () => {
                     <option value="At Medical Center">At Medical Center</option>
                     <option value="At Home" disabled={formData.testType === 'Legal'}>At Home</option>
                   </select>
+                  {errors.sampleCollectionMethod && (
+                    <div className="text-red-500 text-sm mt-1">{errors.sampleCollectionMethod}</div>
+                  )}
                 </motion.div>
 
                 {/* Sample Type */}
@@ -326,6 +392,9 @@ const FillBookingForm = () => {
                     <option value="Hair">Hair</option>
                     <option value="Fingernail">Fingernail</option>
                   </select>
+                  {errors.sampleType && (
+                    <div className="text-red-500 text-sm mt-1">{errors.sampleType}</div>
+                  )}
                 </motion.div>
 
                 {/* Booking Date */}
@@ -348,6 +417,9 @@ const FillBookingForm = () => {
                     onFocus={handleDateTimeFocus}
                     min={new Date().toISOString().slice(0, 16)}
                   />
+                  {errors.bookingDate && (
+                    <div className="text-red-500 text-sm mt-1">{errors.bookingDate}</div>
+                  )}
                 </motion.div>
 
                 {/* Address - chỉ hiện khi chọn At Home */}
@@ -370,6 +442,9 @@ const FillBookingForm = () => {
                       value={formData.address}
                       onChange={handleChange}
                     />
+                    {errors.address && (
+                      <div className="text-red-500 text-sm mt-1">{errors.address}</div>
+                    )}
                   </motion.div>
                 )}
 
@@ -396,6 +471,9 @@ const FillBookingForm = () => {
                     <option value="sibling">Sibling</option>
                     <option value="other">Other</option>
                   </select>
+                  {errors.relationshipToPatient && (
+                    <div className="text-red-500 text-sm mt-1">{errors.relationshipToPatient}</div>
+                  )}
                 </motion.div>
               </div>
 
@@ -436,6 +514,9 @@ const FillBookingForm = () => {
                       value={formData.mainParticipant.fullName}
                       onChange={handleChange}
                     />
+                    {errors["mainParticipant.fullName"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["mainParticipant.fullName"]}</div>
+                    )}
                   </motion.div>
 
                   {/* Main Participant Gender */}
@@ -461,6 +542,9 @@ const FillBookingForm = () => {
                       <option value="female">Female</option>
                       <option value="other">Other</option>
                     </select>
+                    {errors["mainParticipant.gender"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["mainParticipant.gender"]}</div>
+                    )}
                   </motion.div>
 
                   {/* Main Participant Date of Birth */}
@@ -482,6 +566,9 @@ const FillBookingForm = () => {
                       value={formData.mainParticipant.dateOfBirth}
                       onChange={handleChange}
                     />
+                    {errors["mainParticipant.dateOfBirth"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["mainParticipant.dateOfBirth"]}</div>
+                    )}
                   </motion.div>
 
                   {/* Main Participant Phone Number */}
@@ -504,6 +591,9 @@ const FillBookingForm = () => {
                       value={formData.mainParticipant.phoneNumber}
                       onChange={handleChange}
                     />
+                    {errors["mainParticipant.phoneNumber"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["mainParticipant.phoneNumber"]}</div>
+                    )}
                   </motion.div>
 
                   {/* Main Participant Email */}
@@ -526,6 +616,9 @@ const FillBookingForm = () => {
                       value={formData.mainParticipant.email}
                       onChange={handleChange}
                     />
+                    {errors["mainParticipant.email"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["mainParticipant.email"]}</div>
+                    )}
                   </motion.div>
                 </div>
               </motion.div>
@@ -567,6 +660,9 @@ const FillBookingForm = () => {
                         value={formData.relatedParticipant.fullName}
                         onChange={handleChange}
                       />
+                      {errors["relatedParticipant.fullName"] && (
+                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.fullName"]}</div>
+                      )}
                     </motion.div>
 
                     {/* Related Participant Gender */}
@@ -592,6 +688,9 @@ const FillBookingForm = () => {
                         <option value="female">Female</option>
                         <option value="other">Other</option>
                       </select>
+                      {errors["relatedParticipant.gender"] && (
+                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.gender"]}</div>
+                      )}
                     </motion.div>
 
                     {/* Related Participant Date of Birth */}
@@ -613,6 +712,9 @@ const FillBookingForm = () => {
                         value={formData.relatedParticipant.dateOfBirth}
                         onChange={handleChange}
                       />
+                      {errors["relatedParticipant.dateOfBirth"] && (
+                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.dateOfBirth"]}</div>
+                      )}
                     </motion.div>
 
                     {/* Related Participant Phone Number */}
@@ -635,6 +737,9 @@ const FillBookingForm = () => {
                         value={formData.relatedParticipant.phoneNumber}
                         onChange={handleChange}
                       />
+                      {errors["relatedParticipant.phoneNumber"] && (
+                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.phoneNumber"]}</div>
+                      )}
                     </motion.div>
 
                     {/* Related Participant Email */}
@@ -657,6 +762,9 @@ const FillBookingForm = () => {
                         value={formData.relatedParticipant.email}
                         onChange={handleChange}
                       />
+                      {errors["relatedParticipant.email"] && (
+                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.email"]}</div>
+                      )}
                     </motion.div>
                   </div>
                 </motion.div>

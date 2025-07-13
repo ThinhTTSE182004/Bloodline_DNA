@@ -84,5 +84,24 @@ namespace DNA_Blood_API.Controllers
             await _blogService.DeleteBlogAsync(id);
             return Ok(new { message = "Blog deleted successfully" });
         }
+
+        // PUBLIC: Get all blogs (guest)
+        [AllowAnonymous]
+        [HttpGet("public-blogs")]
+        public async Task<IActionResult> GetAllBlogsPublic()
+        {
+            var blogs = await _blogService.GetAllBlogsAsync();
+            return Ok(blogs);
+        }
+
+        // PUBLIC: Get blog by id (guest)
+        [AllowAnonymous]
+        [HttpGet("public-blogs/{id}")]
+        public async Task<IActionResult> GetBlogByIdPublic(int id)
+        {
+            var blog = await _blogService.GetBlogByIdAsync(id);
+            if (blog == null) return NotFound();
+            return Ok(blog);
+        }
     }
 } 
