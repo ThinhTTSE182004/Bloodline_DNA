@@ -3,9 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import {
   FiEdit, FiTrash2, FiPlusCircle, FiEye, FiCheck, FiPause, FiArrowLeft,
   FiBold, FiItalic, FiUnderline, FiLink, FiImage, 
-  FiAlignLeft, FiAlignCenter, FiAlignRight, FiAlignJustify, FiList
+  FiAlignLeft, FiAlignCenter, FiAlignRight, FiAlignJustify, FiList,
+  FiSearch, FiFilter, FiX, FiCalendar, FiUser, FiClock
 } from 'react-icons/fi';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import AdminNavbar from '../../components/AdminNavbar';
@@ -52,9 +53,20 @@ const formatDate = (dateString) => {
 const AdminBlogList = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [editBlog, setEditBlog] = useState(null); // Blog đang edit
+  const [viewBlog, setViewBlog] = useState(null); // Blog đang xem chi tiết
   const [blogs, setBlogs] = useState([]); // Dữ liệu blog từ API
+  const [filteredBlogs, setFilteredBlogs] = useState([]);
   const [loading, setLoading] = useState(true); // Loading state
   const [error, setError] = useState(null); // Error state
+  
+  // Search and filter states
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [dateFilter, setDateFilter] = useState('all');
+  const [authorFilter, setAuthorFilter] = useState('');
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState('newest');
+  
   const navigate = useNavigate();
 
   // Fetch blogs từ API
@@ -76,6 +88,7 @@ const AdminBlogList = () => {
 
       const data = await response.json();
       setBlogs(data);
+      setFilteredBlogs(data);
       setError(null);
     } catch (err) {
       console.error('Error fetching blogs:', err);
@@ -89,6 +102,85 @@ const AdminBlogList = () => {
   useEffect(() => {
     fetchBlogs();
   }, []);
+
+  // Filter and search blogs
+  useEffect(() => {
+    let filtered = [...blogs];
+
+    // Search by title
+    if (searchTerm) {
+      filtered = filtered.filter(blog =>
+        blog.title.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+    }
+
+    // Filter by status (if blogs have a status field)
+    if (statusFilter !== 'all') {
+      filtered = filtered.filter(blog => blog.status === statusFilter);
+    }
+
+    // Filter by author
+    if (authorFilter) {
+      filtered = filtered.filter(blog =>
+        blog.authorId.toString().includes(authorFilter) ||
+        (blog.authorName && blog.authorName.toLowerCase().includes(authorFilter.toLowerCase()))
+      );
+    }
+
+    // Filter by date
+    if (dateFilter !== 'all') {
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+      const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+      filtered = filtered.filter(blog => {
+        const blogDate = new Date(blog.createdAt);
+        switch (dateFilter) {
+          case 'today':
+            return blogDate >= today;
+          case 'week':
+            return blogDate >= weekAgo;
+          case 'month':
+            return blogDate >= monthAgo;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Sort blogs
+    filtered.sort((a, b) => {
+      const dateA = new Date(a.createdAt);
+      const dateB = new Date(b.createdAt);
+      
+      switch (sortBy) {
+        case 'newest':
+          return dateB - dateA;
+        case 'oldest':
+          return dateA - dateB;
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'author':
+          return (a.authorName || a.authorId).toString().localeCompare((b.authorName || b.authorId).toString());
+        default:
+          return dateB - dateA;
+      }
+    });
+
+    setFilteredBlogs(filtered);
+  }, [blogs, searchTerm, statusFilter, dateFilter, authorFilter, sortBy]);
+
+  // Clear all filters
+  const clearFilters = () => {
+    setSearchTerm('');
+    setDateFilter('all');
+    setAuthorFilter('');
+    setSortBy('newest');
+  };
+
+  // Check if any filter is active
+  const hasActiveFilters = searchTerm || dateFilter !== 'all' || authorFilter || sortBy !== 'newest';
 
   // Hàm xóa blog
   const handleDeleteBlog = async (blogId) => {
@@ -266,12 +358,187 @@ const AdminBlogList = () => {
     );
   };
 
+  // Popup View Blog Card
+  const ViewBlogCard = ({ blog, onClose }) => {
+    const [imageError, setImageError] = useState(false);
+    
+    // Extract first image from content if exists
+    const extractImageFromContent = (content) => {
+      const imgRegex = /<img[^>]+src="([^">]+)"/g;
+      const match = imgRegex.exec(content);
+      return match ? match[1] : null;
+    };
+
+    // Ưu tiên lấy blog.imageUrl, nếu không có thì mới lấy ảnh trong content
+    const blogImage = blog.imageUrl || extractImageFromContent(blog.content) || '/img/blog-default.jpg';
+
+    return (
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
+        {/* Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-100/70 via-white/60 to-green-100/70 backdrop-blur-md" onClick={onClose} />
+        
+        <motion.div
+          initial={{ opacity: 0, y: 40, scale: 0.9 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: 40, scale: 0.9 }}
+          transition={{ duration: 0.4, type: "spring", stiffness: 300 }}
+          className="w-full max-w-4xl mx-4 bg-white/95 shadow-2xl rounded-3xl border border-blue-100 z-10 max-h-[90vh] overflow-hidden"
+        >
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-gray-100">
+            <motion.h2
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="text-2xl sm:text-3xl font-extrabold text-blue-700 drop-shadow-lg"
+            >
+              Blog Details
+            </motion.h2>
+            <motion.button
+              whileHover={{ scale: 1.1, backgroundColor: '#fecaca' }}
+              className="p-2 rounded-full bg-red-50 text-red-600 shadow hover:bg-red-100 transition"
+              onClick={onClose}
+              title="Close"
+            >
+              <FiX className="text-xl" />
+            </motion.button>
+          </div>
+
+          {/* Content */}
+          <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
+            {/* Blog Image */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3, duration: 0.5 }}
+              className="mb-6"
+            >
+              <div className="relative w-full h-64 rounded-2xl overflow-hidden shadow-lg">
+                {!imageError ? (
+                  <img
+                    src={blogImage}
+                    alt={blog.title}
+                    className="w-full h-full object-cover"
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-blue-100 to-green-100 flex items-center justify-center">
+                    <div className="text-center">
+                      <FiImage className="text-6xl text-gray-400 mx-auto mb-2" />
+                      <p className="text-gray-500">No image available</p>
+                    </div>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+              </div>
+            </motion.div>
+
+            {/* Blog Info */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4, duration: 0.5 }}
+              className="space-y-6"
+            >
+              {/* Title */}
+              <div>
+                <h1 className="text-3xl font-bold text-gray-800 mb-2 leading-tight">
+                  {blog.title}
+                </h1>
+                <div className="flex items-center gap-4 text-sm text-gray-600">
+                  <div className="flex items-center gap-1">
+                    <FiUser className="text-gray-400" />
+                    <span>Author ID: {blog.authorId}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <FiCalendar className="text-gray-400" />
+                    <span>Created: {formatDate(blog.createdAt)}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Blog ID */}
+              <div className="bg-gray-50 rounded-xl p-4">
+                <div className="flex items-center gap-2 text-sm text-gray-600">
+                  <span className="font-medium">Blog ID:</span>
+                  <code className="bg-white px-2 py-1 rounded border text-blue-600">
+                    {blog.blogId}
+                  </code>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div>
+                <h3 className="text-lg font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                  <FiEdit className="text-blue-600" />
+                  Content
+                </h3>
+                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                  <div 
+                    className="prose prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{ __html: blog.content || '<p>No content available</p>' }}
+                  />
+                </div>
+              </div>
+
+              {/* Actions */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="flex flex-wrap gap-3 pt-4 border-t border-gray-100"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.05, backgroundColor: '#fde68a' }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    setEditBlog(blog);
+                    onClose();
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-yellow-500 text-white rounded-xl hover:bg-yellow-600 transition-all shadow"
+                >
+                  <FiEdit className="text-lg" />
+                  Edit Blog
+                </motion.button>
+                
+                <motion.button
+                  whileHover={{ scale: 1.05, backgroundColor: '#fecaca' }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => {
+                    onClose();
+                    handleDeleteBlog(blog.blogId);
+                  }}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow"
+                >
+                  <FiTrash2 className="text-lg" />
+                  Delete Blog
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.05, backgroundColor: '#e0e7ff' }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => navigate(`/blog/${blog.blogId}`)}
+                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow"
+                >
+                  <FiEye className="text-lg" />
+                  View Public Page
+                </motion.button>
+              </motion.div>
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
+    );
+  };
+
   return (
     <>
       <AdminNavbar onSidebarToggle={() => setSidebarOpen(true)} />
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {/* Popup Edit Card */}
       {editBlog && <EditBlogCard blog={editBlog} onClose={() => setEditBlog(null)} />}
+      {/* Popup View Card */}
+      {viewBlog && <ViewBlogCard blog={viewBlog} onClose={() => setViewBlog(null)} />}
       {/* Sửa placeholder React Quill bằng style nội tuyến */}
       <style>{`
         .ql-editor.ql-blank::before {
@@ -289,7 +556,7 @@ const AdminBlogList = () => {
           transition={{ duration: 0.5 }}
           className="w-full max-w-[95vw] mx-auto bg-white shadow-2xl rounded-3xl p-10"
         >
-          {/* Tiêu đề + nút tạo mới */}
+          {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
             <motion.h1
               initial={{ opacity: 0, x: -20 }}
@@ -309,6 +576,153 @@ const AdminBlogList = () => {
               Create
             </motion.button>
           </div>
+
+          {/* Search and Filter Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3, duration: 0.5 }}
+            className="mb-8 space-y-4"
+          >
+            {/* Search Bar */}
+            <div className="relative">
+              <FiSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-xl" />
+              <input
+                type="text"
+                placeholder="Search blogs by title..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all"
+              />
+              {searchTerm && (
+                <button
+                  onClick={() => setSearchTerm('')}
+                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                >
+                  <FiX className="text-xl" />
+                </button>
+              )}
+            </div>
+
+            {/* Filter Controls */}
+            <div className="flex flex-wrap items-center gap-4">
+              {/* Filter Toggle */}
+              <motion.button
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all ${
+                  showFilters 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                <FiFilter className="text-lg" />
+                Filters
+                {hasActiveFilters && (
+                  <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                    {[searchTerm, dateFilter, authorFilter].filter(Boolean).length}
+                  </span>
+                )}
+              </motion.button>
+
+              {/* Clear Filters */}
+              {hasActiveFilters && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={clearFilters}
+                  className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition-all"
+                >
+                  <FiX className="text-lg" />
+                  Clear
+                </motion.button>
+              )}
+
+              {/* Results Count */}
+              <div className="ml-auto text-sm text-gray-600">
+                Showing {filteredBlogs.length} of {blogs.length} blogs
+              </div>
+            </div>
+
+            {/* Advanced Filters */}
+            <AnimatePresence>
+              {showFilters && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-6 bg-gray-50 rounded-2xl"
+                >
+                  {/* Status Filter - Disabled since no status field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-500 mb-2">
+                      <FiCheck className="inline mr-2" />
+                      Status (Coming Soon)
+                    </label>
+                    <select
+                      disabled
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl bg-gray-50 text-gray-400 cursor-not-allowed"
+                    >
+                      <option value="all">All Status</option>
+                    </select>
+                  </div>
+
+                  {/* Date Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FiCalendar className="inline mr-2" />
+                      Date Range
+                    </label>
+                    <select
+                      value={dateFilter}
+                      onChange={(e) => setDateFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    >
+                      <option value="all">All Time</option>
+                      <option value="today">Today</option>
+                      <option value="week">Last 7 Days</option>
+                      <option value="month">Last 30 Days</option>
+                    </select>
+                  </div>
+
+                  {/* Author Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FiUser className="inline mr-2" />
+                      Author
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Search by author..."
+                      value={authorFilter}
+                      onChange={(e) => setAuthorFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    />
+                  </div>
+
+                  {/* Sort By */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <FiClock className="inline mr-2" />
+                      Sort By
+                    </label>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400"
+                    >
+                      <option value="newest">Newest First</option>
+                      <option value="oldest">Oldest First</option>
+                      <option value="title">Title A-Z</option>
+                      <option value="author">Author A-Z</option>
+                    </select>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.div>
 
           {/* Loading State */}
           {loading && (
@@ -341,8 +755,29 @@ const AdminBlogList = () => {
             </motion.div>
           )}
 
-          {/* Bảng quản lý blog */}
-          {!loading && !error && (
+          {/* No Results */}
+          {!loading && !error && filteredBlogs.length === 0 && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-center py-12"
+            >
+              <div className="text-gray-500 text-lg mb-4">
+                {hasActiveFilters ? 'No blogs match your filters.' : 'No blogs found.'}
+              </div>
+              {hasActiveFilters && (
+                <button
+                  onClick={clearFilters}
+                  className="bg-blue-600 text-white px-6 py-2 rounded-xl hover:bg-blue-700 transition-colors"
+                >
+                  Clear Filters
+                </button>
+              )}
+            </motion.div>
+          )}
+
+          {/* Blog Table */}
+          {!loading && !error && filteredBlogs.length > 0 && (
             <div>
               <motion.table
                 initial={{ opacity: 0 }}
@@ -360,54 +795,49 @@ const AdminBlogList = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {blogs.length === 0 ? (
-                    <tr>
-                      <td colSpan="5" className="p-8 text-center text-gray-500">
-                        No blogs found. Create your first blog!
-                      </td>
-                    </tr>
-                  ) : (
-                    blogs.map((blog, index) => (
-                      <motion.tr
-                        key={blog.blogId}
-                        whileHover={{ scale: 1.01, backgroundColor: '#f0fdf4', boxShadow: '0 2px 8px #22c55e22' }}
-                        className="border-b transition-all duration-200"
-                      >
-                        <td className="p-3">{index + 1}</td>
-                        <td className="p-3 font-medium">{blog.title}</td>
-                        <td className="p-3">{formatDate(blog.createdAt)}</td>
+                  {filteredBlogs.map((blog, index) => (
+                    <motion.tr
+                      key={blog.blogId}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: index * 0.1 }}
+                      whileHover={{ scale: 1.01, backgroundColor: '#f0fdf4', boxShadow: '0 2px 8px #22c55e22' }}
+                      className="border-b transition-all duration-200"
+                    >
+                      <td className="p-3">{index + 1}</td>
+                      <td className="p-3 font-medium">{blog.title}</td>
+                                              <td className="p-3">{formatDate(blog.createdAt)}</td>
                         <td className="p-3">{blog.authorId}</td>
                         <td className="p-3">
-                          <div className="flex gap-2 flex-wrap">
-                            <motion.button
+                        <div className="flex gap-2 flex-wrap">
+                                                      <motion.button
                               whileHover={{ scale: 1.15, backgroundColor: '#bbf7d0' }}
                               className="bg-gray-200 hover:bg-gray-300 text-gray-700 p-2 rounded"
-                              title="View"
-                              onClick={() => navigate(`/blog/${blog.blogId}`)}
+                              title="View Details"
+                              onClick={() => setViewBlog(blog)}
                             >
                               <FiEye />
                             </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.15, backgroundColor: '#fde68a' }}
-                              className="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded"
-                              title="Edit"
-                              onClick={() => setEditBlog(blog)}
-                            >
-                              <FiEdit />
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.15, backgroundColor: '#fecaca' }}
-                              className="bg-red-600 hover:bg-red-700 text-white p-2 rounded"
-                              title="Delete"
-                              onClick={() => handleDeleteBlog(blog.blogId)}
-                            >
-                              <FiTrash2 />
-                            </motion.button>
-                          </div>
-                        </td>
-                      </motion.tr>
-                    ))
-                  )}
+                          <motion.button
+                            whileHover={{ scale: 1.15, backgroundColor: '#fde68a' }}
+                            className="bg-yellow-400 hover:bg-yellow-500 text-white p-2 rounded"
+                            title="Edit"
+                            onClick={() => setEditBlog(blog)}
+                          >
+                            <FiEdit />
+                          </motion.button>
+                          <motion.button
+                            whileHover={{ scale: 1.15, backgroundColor: '#fecaca' }}
+                            className="bg-red-600 hover:bg-red-700 text-white p-2 rounded"
+                            title="Delete"
+                            onClick={() => handleDeleteBlog(blog.blogId)}
+                          >
+                            <FiTrash2 />
+                          </motion.button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
                 </tbody>
               </motion.table>
             </div>
