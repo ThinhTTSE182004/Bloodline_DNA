@@ -24,7 +24,8 @@ namespace DNA_API1.Services
                 Title = b.Title,
                 Content = b.Content,
                 AuthorId = b.AuthorId,
-                CreatedAt = b.CreatedAt
+                CreatedAt = b.CreatedAt,
+                ImageUrl = b.ImageUrl 
             });
         }
 
@@ -38,7 +39,8 @@ namespace DNA_API1.Services
                 Title = b.Title,
                 Content = b.Content,
                 AuthorId = b.AuthorId,
-                CreatedAt = b.CreatedAt
+                CreatedAt = b.CreatedAt,
+                ImageUrl = b.ImageUrl
             };
         }
 
@@ -49,7 +51,8 @@ namespace DNA_API1.Services
                 Title = blogCreateDto.Title,
                 Content = blogCreateDto.Content,
                 AuthorId = authorId,
-                CreatedAt = System.DateTime.Now
+                CreatedAt = System.DateTime.Now,
+                ImageUrl = blogCreateDto.ImageUrl 
             };
             await _blogRepository.AddAsync(blog);
         }
@@ -61,6 +64,7 @@ namespace DNA_API1.Services
             {
                 blog.Title = blogUpdateDto.Title;
                 blog.Content = blogUpdateDto.Content;
+                blog.ImageUrl = blogUpdateDto.ImageUrl; 
                 await _blogRepository.UpdateAsync(blog);
             }
         }

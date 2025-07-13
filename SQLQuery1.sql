@@ -283,6 +283,7 @@ CREATE TABLE Blog (
     content NVARCHAR(MAX) NOT NULL,
     author_id INT NOT NULL,
     created_at DATETIME DEFAULT GETDATE(),
+	imageUrl NVARCHAR(MAX) NULL,
     FOREIGN KEY (author_id) REFERENCES USERS(user_id)
 );
 

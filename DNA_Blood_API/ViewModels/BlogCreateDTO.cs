@@ -10,5 +10,7 @@ namespace DNA_API1.ViewModels
 
         [Required]
         public string Content { get; set; }
+
+        public string ImageUrl { get; set; }
     }
 } 

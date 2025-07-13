@@ -13,6 +13,7 @@ import Services from './components/Services';
 import FAQ from './components/FAQ';
 import Blog from './components/Blog';
 import Footer from './components/Footer';
+import BlogDetailGuest from './components/BlogDetailGuest';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Profile from './pages/Customer/Profile';
@@ -47,9 +48,10 @@ import AllOrders from './pages/Admin/AllOrders';
 import CustomerLayout from './pages/Customer/CustomerLayout';
 import BlogList from './components/BlogList';
 import BlogDetail from './components/BlogDetail';
-//import AdminBlogList from './pages/Admin/AdminBlogList';
-//import AdminCreateBlog from './pages/Admin/AdminCreateBlog';
+import AdminBlogList from './pages/Admin/AdminBlogList';
+import AdminCreateBlog from './pages/Admin/AdminCreateBlog';
 import Chatbot from './components/ui/Chatbot';
+import BlogListGuest from './components/BlogListGuest';
 // import AdminEditBlog from './pages/Admin/AdminEditBlog'; // [NOTE] Đã comment lại vì file này chưa tồn tại hoặc không cần thiết nếu đã dùng popup edit trong AdminBlogList
 
 
@@ -94,10 +96,10 @@ const App = () => {
                                     <Route path="/login" element={<CustomerLayout><Login /></CustomerLayout>} />
                                     <Route path="/register" element={<CustomerLayout><Register /></CustomerLayout>} />
 
+                                   
                                     {/* Blog Routes - Public */}
-                                    <Route path="/blog" element={<CustomerLayout><BlogList /></CustomerLayout>} />
-                                    <Route path="/blog/:blogId" element={<CustomerLayout><BlogDetail /></CustomerLayout>} />
-
+                                    <Route path="/blog" element={<CustomerLayout><BlogListGuest /></CustomerLayout>} />
+                                    <Route path="/blog/:blogId" element={<CustomerLayout><BlogDetailGuest /></CustomerLayout>} />
                                     {/* Staff Routes */}
                                     <Route path="/staff" element={<Staff />} />
                                     <Route path="/staff/orders" element={<StaffOrder />} />
@@ -118,9 +120,9 @@ const App = () => {
                                     <Route path="/admin/services" element={<ServiceManager />} />
                                     <Route path="/admin/staff-management" element={<StaffManagement />} />
                                     <Route path="/admin/all-orders" element={<AllOrders />} />
-                                    {/*<Route path="/admin/blogs" element={<AdminBlogList />} />*/}
-                                    {/*<Route path="/admin/blogs-create" element={<AdminCreateBlog />} />*/}
-                                    {/* <Route path="/admin/blogs/edit/:id" element={<AdminEditBlog />} /> */} {/* [NOTE] Đã comment lại vì file này chưa tồn tại hoặc không cần thiết nếu đã dùng popup edit trong AdminBlogList */}
+                                    <Route path="/admin/blogs" element={<AdminBlogList />} />
+                                    <Route path="/admin/blogs-create" element={<AdminCreateBlog />} />
+                                    {/*<Route path="/admin/blogs/edit/:id" element={<AdminEditBlog />} /> */} [NOTE] Đã comment lại vì file này chưa tồn tại hoặc không cần thiết nếu đã dùng popup edit trong AdminBlogList
 
 
                                     {/* Other Routes */}
