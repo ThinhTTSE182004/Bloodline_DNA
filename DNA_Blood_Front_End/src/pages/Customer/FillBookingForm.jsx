@@ -477,7 +477,7 @@ const FillBookingForm = () => {
                     <div className="text-red-500 text-sm mt-1">{errors.bookingDate}</div>
                   )}
                   <div className="text-gray-500 text-xs mt-1">
-                    Chỉ đặt lịch từ 8:00-12:00 hoặc 13:00-17:00
+                    Appointments only from 8:00-12:00 or 13:00-17:00
                   </div>
                 </motion.div>
 
