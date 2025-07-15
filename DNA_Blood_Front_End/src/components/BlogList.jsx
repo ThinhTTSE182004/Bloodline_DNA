@@ -14,7 +14,7 @@ const BlogList = () => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://localhost:7113/api/Admin/blogs', {
+        const response = await fetch('/api/Admin/blogs', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json'

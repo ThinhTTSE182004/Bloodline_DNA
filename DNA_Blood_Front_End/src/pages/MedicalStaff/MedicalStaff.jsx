@@ -35,8 +35,8 @@ const MedicalStaff = () => {
       };
 
       const [samplesData, transfersData] = await Promise.all([
-        fetchAPI('https://localhost:7113/api/MedicalStaff/get-sample-by-medicalStaffId'),
-        fetchAPI('https://localhost:7113/api/MedicalStaff/get-sample-transfers-by-medicalStaffId')
+        fetchAPI('/api/MedicalStaff/get-sample-by-medicalStaffId'),
+        fetchAPI('/api/MedicalStaff/get-sample-transfers-by-medicalStaffId')
       ]);
 
       setSamples(samplesData);

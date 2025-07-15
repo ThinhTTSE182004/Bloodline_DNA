@@ -41,7 +41,7 @@ const BlogDetail = () => {
           headers['Authorization'] = `Bearer ${token}`;
         }
         
-        const response = await fetch(`https://localhost:7113/api/Admin/blogs/${blogId}`, {
+        const response = await fetch(`/api/Admin/blogs/${blogId}`, {
           method: 'GET',
           headers
         });
@@ -50,7 +50,7 @@ const BlogDetail = () => {
           // Nếu lỗi 401/403, thử fetch từ danh sách blog chung
           if (response.status === 401 || response.status === 403) {
             console.log('Trying to find blog from public list...');
-            const allBlogsResponse = await fetch('https://localhost:7113/api/Admin/blogs', {
+            const allBlogsResponse = await fetch('/api/Admin/blogs', {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json'
@@ -88,7 +88,7 @@ const BlogDetail = () => {
           
           // Fetch related posts and all posts
           try {
-            const allBlogsResponse = await fetch('https://localhost:7113/api/Admin/blogs', {
+            const allBlogsResponse = await fetch('/api/Admin/blogs', {
               method: 'GET',
               headers: {
                 'Content-Type': 'application/json'

@@ -37,7 +37,7 @@ const WorkAssignment = () => {
   useEffect(() => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     // Medical Staffs
-    fetch('https://localhost:7113/api/ShiftAssignment/medical-staffs', {
+    fetch('/api/ShiftAssignment/medical-staffs', {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(async res => {
@@ -51,7 +51,7 @@ const WorkAssignment = () => {
         console.error('MedicalStaffs API error:', err);
       });
     // Staffs
-    fetch('https://localhost:7113/api/ShiftAssignment/staffs', {
+    fetch('/api/ShiftAssignment/staffs', {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(async res => {
@@ -68,7 +68,7 @@ const WorkAssignment = () => {
 
   useEffect(() => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    fetch('https://localhost:7113/api/WorkShift/WorkShift', {
+    fetch('/api/WorkShift/WorkShift', {
       headers: token ? { 'Authorization': `Bearer ${token}` } : {}
     })
       .then(async res => {
@@ -119,7 +119,7 @@ const WorkAssignment = () => {
     };
     console.log('SuggestAssignments body:', body);
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-    fetch('https://localhost:7113/api/ShiftAssignment/SuggestAssignments', {
+    fetch('/api/ShiftAssignment/SuggestAssignments', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -143,7 +143,7 @@ const WorkAssignment = () => {
     const fetchAllAssignments = async () => {
       try {
         const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-        const response = await fetch('https://localhost:7113/api/ShiftAssignment/AllAssignments', {
+        const response = await fetch('/api/ShiftAssignment/AllAssignments', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         
@@ -154,11 +154,11 @@ const WorkAssignment = () => {
         const data = await response.json();
         
         // Fetch staff and medical staff data to determine staff types
-        const staffsResponse = await fetch('https://localhost:7113/api/ShiftAssignment/staffs', {
+        const staffsResponse = await fetch('/api/ShiftAssignment/staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         
-        const medicalStaffsResponse = await fetch('https://localhost:7113/api/ShiftAssignment/medical-staffs', {
+        const medicalStaffsResponse = await fetch('/api/ShiftAssignment/medical-staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         
@@ -192,7 +192,7 @@ const WorkAssignment = () => {
   const handleAccept = async (assignment) => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch('https://localhost:7113/api/ShiftAssignment', {
+      const res = await fetch('/api/ShiftAssignment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -231,7 +231,7 @@ const WorkAssignment = () => {
         maxShiftPerMonth
       };
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch('https://localhost:7113/api/ShiftAssignment/SuggestAssignments', {
+      const res = await fetch('/api/ShiftAssignment/SuggestAssignments', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -255,7 +255,7 @@ const WorkAssignment = () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       for (const a of suggestedAssignments) {
-        await fetch('https://localhost:7113/api/ShiftAssignment', {
+        await fetch('/api/ShiftAssignment', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

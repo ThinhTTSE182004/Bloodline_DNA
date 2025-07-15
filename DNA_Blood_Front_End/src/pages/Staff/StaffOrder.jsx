@@ -43,9 +43,9 @@ const StaffOrder = () => {
       };
 
       const [ordersData, samplesData, transfersData] = await Promise.all([
-        fetchAPI('https://localhost:7113/api/Staff/assigned-order-details'),
-        fetchAPI('https://localhost:7113/api/Staff/get-sample-by-staffId'),
-        fetchAPI('https://localhost:7113/api/Staff/get-sample-transfers-by-staffId')
+        fetchAPI('/api/Staff/assigned-order-details'),
+        fetchAPI('/api/Staff/get-sample-by-staffId'),
+        fetchAPI('/api/Staff/get-sample-transfers-by-staffId')
       ]);
 
       setAssignedOrders(ordersData);
@@ -94,7 +94,7 @@ const StaffOrder = () => {
       }
       // Gọi API cho từng transferId trong nhóm
       await Promise.all(transferIds.map(async (transferId) => {
-      const response = await fetch(`https://localhost:7113/api/Staff/${action}/${transferId}`, {
+      const response = await fetch(`/api/Staff/${action}/${transferId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -135,7 +135,7 @@ const StaffOrder = () => {
         return;
       }
 
-      const response = await fetch(`https://localhost:7113/api/Staff/update-sample/${sampleId}`, {
+      const response = await fetch(`/api/Staff/update-sample/${sampleId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

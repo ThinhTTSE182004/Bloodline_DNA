@@ -52,7 +52,7 @@ const Profile = () => {
 
       console.log('Token being used:', token);
 
-      const response = await fetch('https://localhost:7113/api/UserProfile/GetUserProfile', {
+      const response = await fetch('/api/UserProfile/GetUserProfile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
@@ -124,7 +124,7 @@ const Profile = () => {
       const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('https://localhost:7113/api/UserProfile/GetOrderHistory', {
+      const response = await fetch('/api/UserProfile/GetOrderHistory', {
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
           'Content-Type': 'application/json'
@@ -153,7 +153,7 @@ const Profile = () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
-      const response = await fetch('https://localhost:7113/api/UserProfile/Results', {
+      const response = await fetch('/api/UserProfile/Results', {
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
           'Content-Type': 'application/json'
@@ -173,7 +173,7 @@ const Profile = () => {
     try {
       const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
-      const response = await fetch(`https://localhost:7113/api/UserProfile/GetOrderDetail?orderId=${orderId}`, {
+      const response = await fetch(`/api/UserProfile/GetOrderDetail?orderId=${orderId}`, {
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
           'Content-Type': 'application/json'
@@ -193,7 +193,7 @@ const Profile = () => {
     try {
       const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('https://localhost:7113/api/UserProfile/feedback-list', {
+      const res = await fetch('/api/UserProfile/feedback-list', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -269,7 +269,7 @@ const Profile = () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       // SỬA ĐƯỜNG DẪN API TẠI ĐÂY
-      const res = await fetch(`https://localhost:7113/api/UserProfile/Results/${resultId}/download-pdf`, {
+      const res = await fetch(`/api/UserProfile/Results/${resultId}/download-pdf`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -316,7 +316,7 @@ const Profile = () => {
   //     const tokenData = JSON.parse(atob(token.split('.')[1]));
   //     const userId = tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
 
-  //     const response = await fetch(`https://localhost:7113/api/MedicalStaff/test-notification/${userId}`, {
+  //     const response = await fetch(`/api/MedicalStaff/test-notification/${userId}`, {
   //       method: 'POST',
   //       headers: {
   //         'Authorization': `Bearer ${token.trim()}`,
@@ -627,7 +627,7 @@ const Profile = () => {
                               setShareStatus(s => ({ ...s, [orderResults[0].resultId]: { loading: true, message: '' } }));
                               try {
                                 const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-                                const res = await fetch('https://localhost:7113/api/UserProfile/ShareResult', {
+                                const res = await fetch('/api/UserProfile/ShareResult', {
                                   method: 'POST',
                                   headers: {
                                     'Content-Type': 'application/json',
@@ -849,7 +849,7 @@ const Profile = () => {
                   setFeedbackMsg('');
                   try {
                     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-                    const res = await fetch('https://localhost:7113/api/UserProfile/Feedback', {
+                    const res = await fetch('/api/UserProfile/Feedback', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',
