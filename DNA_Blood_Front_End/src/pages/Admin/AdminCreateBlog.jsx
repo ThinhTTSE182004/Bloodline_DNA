@@ -94,7 +94,7 @@ const AdminCreateBlog = () => {
     setPosting(true);
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch('https://localhost:7113/api/Admin/blogs', {
+      const res = await fetch('/api/Admin/blogs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

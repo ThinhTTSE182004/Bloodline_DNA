@@ -41,14 +41,14 @@ const StaffManagement = () => {
       
       try {
         // Fetch Medical Staffs
-        const medRes = await fetch('https://localhost:7113/api/ShiftAssignment/medical-staffs', {
+        const medRes = await fetch('/api/ShiftAssignment/medical-staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         const medData = medRes.ok ? await medRes.json() : [];
         setMedicalStaffs(Array.isArray(medData) ? medData : []);
 
         // Fetch Staffs
-        const staffRes = await fetch('https://localhost:7113/api/ShiftAssignment/staffs', {
+        const staffRes = await fetch('/api/ShiftAssignment/staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         const staffData = staffRes.ok ? await staffRes.json() : [];

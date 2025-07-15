@@ -62,9 +62,9 @@ const MedicalStaffOrder = () => {
       };
 
       const [samplesData, transfersData, ordersData] = await Promise.all([
-        fetchAPI('https://localhost:7113/api/MedicalStaff/get-sample-by-medicalStaffId'),
-        fetchAPI('https://localhost:7113/api/MedicalStaff/get-sample-transfers-by-medicalStaffId'),
-        fetchAPI('https://localhost:7113/api/MedicalStaff/order-details')
+        fetchAPI('/api/MedicalStaff/get-sample-by-medicalStaffId'),
+        fetchAPI('/api/MedicalStaff/get-sample-transfers-by-medicalStaffId'),
+        fetchAPI('/api/MedicalStaff/order-details')
       ]);
 
       setSamples(samplesData);
@@ -101,7 +101,7 @@ const MedicalStaffOrder = () => {
         navigate('/login');
         return;
       }
-      const response = await fetch(`https://localhost:7113/api/MedicalStaff/${action}/${id}`, {
+      const response = await fetch(`/api/MedicalStaff/${action}/${id}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}` },
       });
@@ -158,7 +158,7 @@ const MedicalStaffOrder = () => {
 
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch('https://localhost:7113/api/MedicalStaff/add-result', {
+      const response = await fetch('/api/MedicalStaff/add-result', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

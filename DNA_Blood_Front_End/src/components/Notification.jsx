@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCheckCircle, FaExclamationCircle, FaTimes } from 'react-icons/fa';
+import { FaCheckCircle, FaExclamationCircle, FaTimes, FaFileAlt } from 'react-icons/fa';
 
 const Notification = ({ message, type = 'success', onClose, duration = 3000 }) => {
   React.useEffect(() => {
@@ -24,6 +24,8 @@ const Notification = ({ message, type = 'success', onClose, duration = 3000 }) =
         return <FaCheckCircle className="w-6 h-6 text-green-500" />;
       case 'error':
         return <FaExclamationCircle className="w-6 h-6 text-red-500" />;
+      case 'result':
+        return <FaFileAlt className="w-6 h-6 text-blue-500" />;
       default:
         return <FaCheckCircle className="w-6 h-6 text-blue-500" />;
     }
@@ -35,6 +37,8 @@ const Notification = ({ message, type = 'success', onClose, duration = 3000 }) =
         return 'bg-green-50 border-green-200';
       case 'error':
         return 'bg-red-50 border-red-200';
+      case 'result':
+        return 'bg-blue-50 border-blue-200';
       default:
         return 'bg-blue-50 border-blue-200';
     }

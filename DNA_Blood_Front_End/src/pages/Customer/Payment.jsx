@@ -71,7 +71,7 @@ const Payment = () => {
 
       console.log('Final Order Data to be sent:', JSON.stringify(finalOrderData, null, 2));
 
-      const response = await fetch('https://localhost:7113/api/Order/CreateOrder', {
+      const response = await fetch('/api/Order/CreateOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

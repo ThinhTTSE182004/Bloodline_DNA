@@ -7,5 +7,14 @@ export default defineConfig({
     global: 'window',
     'jQuery': 'window.jQuery',
     '$': 'window.jQuery'
+  },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'https://localhost:7113',
+        changeOrigin: true,
+        secure: false,
+      }
+    },
   }
 });

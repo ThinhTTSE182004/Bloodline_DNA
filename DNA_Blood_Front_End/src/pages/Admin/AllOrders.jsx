@@ -43,7 +43,7 @@ const AllOrders = () => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     
     try {
-      const response = await fetch('https://localhost:7113/api/Order/all-orders', {
+      const response = await fetch('/api/Order/all-orders', {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       
@@ -66,7 +66,7 @@ const AllOrders = () => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     
     try {
-      const response = await fetch('https://localhost:7113/api/Order/update-payment-status', {
+      const response = await fetch('/api/Order/update-payment-status', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
