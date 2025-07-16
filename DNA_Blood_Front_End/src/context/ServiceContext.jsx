@@ -14,7 +14,7 @@ export const ServiceProvider = ({ children }) => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
-        const response = await fetch('https://localhost:7113/api/Service/GetAllServiceWithPrice');
+        const response = await fetch('/api/Service/GetAllServiceWithPrice');
         if (!response.ok) {
           throw new Error('Failed to fetch services');
         }

@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import { NotificationContainer, Alert } from '../components/Notification';
 
 const NotificationContext = createContext();
 
@@ -9,17 +7,8 @@ export const useNotification = () => {
 };
 
 export const NotificationProvider = ({ children }) => {
-  const [notifications, setNotifications] = useState([]);
+  // Nếu bạn vẫn muốn giữ alert toàn cục, giữ lại logic này, nếu không thì bỏ luôn:
   const [alert, setAlert] = useState(null);
-
-  const addNotification = (message, type = 'success', duration = 3000) => {
-    const id = uuidv4();
-    setNotifications(prev => [...prev, { id, message, type, duration }]);
-  };
-
-  const removeNotification = (id) => {
-    setNotifications(prev => prev.filter(notification => notification.id !== id));
-  };
 
   const showAlert = (message, type = 'error') => {
     setAlert({ message, type });
@@ -30,8 +19,6 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const value = {
-    addNotification,
-    removeNotification,
     showAlert,
     hideAlert
   };
@@ -39,17 +26,14 @@ export const NotificationProvider = ({ children }) => {
   return (
     <NotificationContext.Provider value={value}>
       {children}
-      <NotificationContainer
-        notifications={notifications}
-        removeNotification={removeNotification}
-      />
-      {alert && (
+      {/* Nếu muốn giữ Alert toàn cục thì giữ lại đoạn dưới, nếu không thì bỏ luôn */}
+      {/* {alert && (
         <Alert
           message={alert.message}
           type={alert.type}
           onClose={hideAlert}
         />
-      )}
+      )} */}
     </NotificationContext.Provider>
   );
 }; 

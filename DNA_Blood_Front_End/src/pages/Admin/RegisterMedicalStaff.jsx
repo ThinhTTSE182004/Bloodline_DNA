@@ -36,7 +36,7 @@ const RegisterMedicalStaff = () => {
     setMedicalMsg('');
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch('https://localhost:7113/api/Auth/registerForMedicalStaff', {
+      const res = await fetch('/api/Auth/registerForMedicalStaff', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

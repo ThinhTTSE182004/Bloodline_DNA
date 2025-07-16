@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using DNA_API1.Hubs;
 
 namespace DNA_API1.Controllers
 {
@@ -17,13 +19,15 @@ namespace DNA_API1.Controllers
         private readonly ISampleTransferService _sampleTransferService;
         private readonly IResultService _resultService;
         private readonly IOrderDetailService _orderDetailService;
+        private readonly IHubContext<UserHub> _hubContext;
 
-        public MedicalStaffController(ISampleService sampleService, ISampleTransferService sampleTransferService, IResultService resultService, IOrderDetailService orderDetailService)
+        public MedicalStaffController(ISampleService sampleService, ISampleTransferService sampleTransferService, IResultService resultService, IOrderDetailService orderDetailService, IHubContext<UserHub> hubContext)
         {
             _sampleService = sampleService;
             _sampleTransferService = sampleTransferService;
             _resultService = resultService;
             _orderDetailService = orderDetailService;
+            _hubContext = hubContext;
         }
         // Nhận mẫu: cập nhật trạng thái Sample.Status = "Processing"
         [HttpPut("receive-sample/{sampleId}")]
@@ -78,6 +82,16 @@ namespace DNA_API1.Controllers
         {
             var result = await _orderDetailService.UpdateOrderDetailStatusIfAllSamplesCompletedAsync(orderDetailId);
             if (!result) return NotFound("OrderDetail không tồn tại hoặc chưa đủ điều kiện.");
+
+            // Sau khi update thành công, lấy orderDetail để lấy userId
+            var orderDetail = await _orderDetailService.GetOrderDetailByIdAsync(orderDetailId);
+            if (orderDetail != null && orderDetail.Order != null)
+            {
+                var userId = orderDetail.Order.CustomerId;
+                var message = $"Order #{orderDetail.Order.OrderId} The test results are available!";
+                await _hubContext.Clients.Group($"User_{userId}").SendAsync("ReceiveResultNotification", orderDetail.Order.OrderId.ToString(), message);
+            }
+
             return Ok("Ok");
         }
 

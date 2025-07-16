@@ -5,6 +5,7 @@ import signalRService from '../../services/signalRService.js';
 import { motion } from 'framer-motion';
 import { Avatar, AvatarImage, AvatarFallback } from '../../components/ui/avatar';
 import { FaDownload } from 'react-icons/fa';
+import { useNotification } from '../../context/NotificationContext';
 
 // Hàm sinh màu dựa trên tên user
 function getColorClassFromName(name) {
@@ -13,7 +14,7 @@ function getColorClassFromName(name) {
     "bg-purple-500", "bg-pink-500", "bg-indigo-500", "bg-teal-500",
     "bg-orange-500", "bg-lime-500", "bg-cyan-500", "bg-amber-500",
     "bg-rose-500", "bg-fuchsia-500", "bg-violet-500", "bg-emerald-500",
-    "bg-sky-500", "bg-slate-500", "bg-neutral-500", "bg-stone-500"
+    "bg-skimage.png-500", "bg-slate-500", "bg-neutral-500", "bg-stone-500"
   ];
   if (!name) return "bg-gray-400";
   const charCode = name.charCodeAt(0);
@@ -36,6 +37,8 @@ const Profile = () => {
   const [feedbackResponseModal, setFeedbackResponseModal] = useState({ open: false, feedbacks: [], loading: false, error: '', orderId: null });
   const [feedbackList, setFeedbackList] = useState([]);
   const navigate = useNavigate();
+  const { addNotification } = useNotification();
+  const [user, setUser] = useState(null);
 
   const fetchProfile = useCallback(async () => {
     try {
@@ -49,7 +52,7 @@ const Profile = () => {
 
       console.log('Token being used:', token);
 
-      const response = await fetch('https://localhost:7113/api/UserProfile/GetUserProfile', {
+      const response = await fetch('/api/UserProfile/GetUserProfile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
@@ -121,7 +124,7 @@ const Profile = () => {
       const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
 
-      const response = await fetch('https://localhost:7113/api/UserProfile/GetOrderHistory', {
+      const response = await fetch('/api/UserProfile/GetOrderHistory', {
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
           'Content-Type': 'application/json'
@@ -150,7 +153,7 @@ const Profile = () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
-      const response = await fetch('https://localhost:7113/api/UserProfile/Results', {
+      const response = await fetch('/api/UserProfile/Results', {
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
           'Content-Type': 'application/json'
@@ -170,7 +173,7 @@ const Profile = () => {
     try {
       const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
-      const response = await fetch(`https://localhost:7113/api/UserProfile/GetOrderDetail?orderId=${orderId}`, {
+      const response = await fetch(`/api/UserProfile/GetOrderDetail?orderId=${orderId}`, {
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
           'Content-Type': 'application/json'
@@ -190,7 +193,7 @@ const Profile = () => {
     try {
       const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       if (!token) return;
-      const res = await fetch('https://localhost:7113/api/UserProfile/feedback-list', {
+      const res = await fetch('/api/UserProfile/feedback-list', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -214,6 +217,23 @@ const Profile = () => {
       signalRService.stopConnection();
     };
   }, [fetchProfile]);
+
+  useEffect(() => {
+    // Lấy thông tin user từ localStorage hoặc sessionStorage
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    if (token) {
+      try {
+        const tokenData = JSON.parse(atob(token.split('.')[1]));
+        setUser({
+          id: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'],
+          name: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name'],
+          email: tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/email']
+        });
+      } catch (error) {
+        console.error('Error parsing token:', error);
+      }
+    }
+  }, []);
 
   const setupSignalR = async () => {
     try {
@@ -249,7 +269,7 @@ const Profile = () => {
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       // SỬA ĐƯỜNG DẪN API TẠI ĐÂY
-      const res = await fetch(`https://localhost:7113/api/UserProfile/Results/${resultId}/download-pdf`, {
+      const res = await fetch(`/api/UserProfile/Results/${resultId}/download-pdf`, {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token}`
@@ -280,6 +300,40 @@ const Profile = () => {
       alert('Download failed: ' + err.message);
     }
   };
+
+  const testNotification = () => {
+    addNotification('Đây là test notification cho kết quả xét nghiệm!', 'result', 5000);
+  };
+
+  // const testBackendNotification = async () => {
+  //   try {
+  //     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+  //     if (!token) {
+  //       addNotification('Vui lòng đăng nhập để test notification', 'error', 3000);
+  //       return;
+  //     }
+
+  //     const tokenData = JSON.parse(atob(token.split('.')[1]));
+  //     const userId = tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
+
+  //     const response = await fetch(`/api/MedicalStaff/test-notification/${userId}`, {
+  //       method: 'POST',
+  //       headers: {
+  //         'Authorization': `Bearer ${token.trim()}`,
+  //         'Content-Type': 'application/json'
+  //       }
+  //     });
+
+  //     if (response.ok) {
+  //       addNotification('Test notification đã được gửi từ backend!', 'success', 3000);
+  //     } else {
+  //       addNotification('Không thể gửi test notification từ backend', 'error', 3000);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error testing backend notification:', error);
+  //     addNotification('Lỗi khi test notification từ backend', 'error', 3000);
+  //   }
+  // };
 
   if (loading) {
     return (
@@ -451,6 +505,32 @@ const Profile = () => {
                   <p className="text-gray-900 font-medium cursor-default">{userProfile.phone}</p>
                 </div>
               </motion.div>
+              
+              {/* Test Notification Button */}
+              {/**
+<motion.div 
+  initial={{ opacity: 0, x: -30 }}
+  whileInView={{ opacity: 1, x: 0 }}
+  viewport={{ once: true }}
+  transition={{ duration: 0.8, delay: 1.0 }}
+  className="flex items-center p-4 bg-blue-50 rounded-lg transform hover:bg-blue-100">
+  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-6 h-6 mr-3 text-blue-500">
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75m-3-7.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285z" />
+  </svg>
+  <div className="flex-1">
+    <p className="text-sm text-gray-500 cursor-default">Test Notification</p>
+    <p className="text-gray-900 font-medium cursor-default">Kiểm tra notification system</p>
+  </div>
+  <div className="flex gap-2">
+    <button
+      onClick={testNotification}
+      className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transform transition-all duration-300 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+    >
+      Test Local
+    </button>
+  </div>
+</motion.div>
+                */}
             </div>
           </motion.div>
 
@@ -547,7 +627,7 @@ const Profile = () => {
                               setShareStatus(s => ({ ...s, [orderResults[0].resultId]: { loading: true, message: '' } }));
                               try {
                                 const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-                                const res = await fetch('https://localhost:7113/api/UserProfile/ShareResult', {
+                                const res = await fetch('/api/UserProfile/ShareResult', {
                                   method: 'POST',
                                   headers: {
                                     'Content-Type': 'application/json',
@@ -769,7 +849,7 @@ const Profile = () => {
                   setFeedbackMsg('');
                   try {
                     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-                    const res = await fetch('https://localhost:7113/api/UserProfile/Feedback', {
+                    const res = await fetch('/api/UserProfile/Feedback', {
                       method: 'POST',
                       headers: {
                         'Content-Type': 'application/json',

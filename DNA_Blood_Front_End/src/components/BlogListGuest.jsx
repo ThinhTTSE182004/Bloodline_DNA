@@ -13,7 +13,7 @@ const BlogListGuest = () => {
     const fetchBlogs = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://localhost:7113/api/Admin/public-blogs');
+        const response = await fetch('/api/Admin/public-blogs');
         if (!response.ok) throw new Error('Failed to fetch blogs');
         const data = await response.json();
         setBlogs(data);

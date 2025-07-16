@@ -74,7 +74,7 @@ const AdminBlogList = () => {
     try {
       setLoading(true);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch('https://localhost:7113/api/Admin/blogs', {
+      const response = await fetch('/api/Admin/blogs', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -190,7 +190,7 @@ const AdminBlogList = () => {
 
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`https://localhost:7113/api/Admin/blogs/${blogId}`, {
+      const response = await fetch(`/api/Admin/blogs/${blogId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -231,7 +231,7 @@ const AdminBlogList = () => {
           title,
           content
         };
-        const response = await fetch(`https://localhost:7113/api/Admin/blogs/${blog.blogId}`, {
+        const response = await fetch(`/api/Admin/blogs/${blog.blogId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -242,7 +242,7 @@ const AdminBlogList = () => {
         if (!response.ok) {
           const errorText = await response.text();
           if (response.status === 405) {
-            const postResponse = await fetch(`https://localhost:7113/api/Admin/blogs/${blog.blogId}`, {
+            const postResponse = await fetch(`/api/Admin/blogs/${blog.blogId}`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

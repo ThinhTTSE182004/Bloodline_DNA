@@ -103,7 +103,7 @@ const CreateWorkShift = () => {
     }
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch('https://localhost:7113/api/WorkShift/CreateWorkShift', {
+      const res = await fetch('/api/WorkShift/CreateWorkShift', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
