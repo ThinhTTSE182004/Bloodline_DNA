@@ -223,6 +223,11 @@ const AdminBlogList = () => {
         alert('Please enter both title and content!');
         return;
       }
+      // Nếu không thay đổi gì thì chỉ đóng popup, không gọi API
+      if (title === blog.title && content === blog.content) {
+        onClose();
+        return;
+      }
       try {
         setLoading(true);
         const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -338,8 +343,10 @@ const AdminBlogList = () => {
               whileHover={{ scale: 1.08, backgroundColor: '#4ade80' }}
               whileTap={{ scale: 0.97 }}
               onClick={handleUpdate}
-              disabled={loading}
-              className={`px-6 py-3 rounded-full bg-green-600 hover:bg-green-700 text-white font-semibold text-lg shadow transition-all ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={loading || (title === blog.title && content === blog.content)}
+              className={`px-6 py-3 rounded-full bg-green-600 hover:bg-green-700 text-white font-semibold text-lg shadow transition-all ${
+                loading || (title === blog.title && content === blog.content) ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               {loading ? 'Updating...' : 'Update'}
             </motion.button>
