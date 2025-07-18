@@ -253,6 +253,10 @@ const AdminBlogList = () => {
         alert('Please enter both title and content!');
         return;
       }
+      if (!imageUrl) {
+        alert('Please select a thumbnail image!');
+        return;
+      }
       if (title === blog.title && content === blog.content && imageUrl === (blog.imageUrl || '')) {
         onClose();
         return;
@@ -428,9 +432,9 @@ const AdminBlogList = () => {
               whileHover={{ scale: 1.08, backgroundColor: '#4ade80' }}
               whileTap={{ scale: 0.97 }}
               onClick={handleUpdate}
-              disabled={loading || (title === blog.title && content === blog.content && imageUrl === (blog.imageUrl || ''))}
+              disabled={loading || !imageUrl || (title === blog.title && content === blog.content && imageUrl === (blog.imageUrl || ''))}
               className={`px-6 py-3 rounded-full bg-green-600 hover:bg-green-700 text-white font-semibold text-lg shadow transition-all ${
-                loading || (title === blog.title && content === blog.content && imageUrl === (blog.imageUrl || '')) ? 'opacity-50 cursor-not-allowed' : ''
+                loading || !imageUrl || (title === blog.title && content === blog.content && imageUrl === (blog.imageUrl || '')) ? 'opacity-50 cursor-not-allowed' : ''
               }`}
             >
               {loading ? 'Updating...' : 'Update'}
