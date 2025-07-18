@@ -91,6 +91,10 @@ const AdminCreateBlog = () => {
       alert('Please enter both title and content!');
       return;
     }
+    if (!imageUrl) {
+      alert('Please select a thumbnail image!');
+      return;
+    }
     setPosting(true);
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -254,9 +258,9 @@ const AdminCreateBlog = () => {
             whileTap={{ scale: 0.97 }}
             onClick={handleSubmit}
             className={`px-10 py-3 rounded-full bg-blue-700 hover:bg-blue-800 text-white font-bold text-xl shadow-lg transition-all flex items-center gap-3
-              ${posting || uploading || !title || !content ? 'opacity-60 cursor-not-allowed' : ''}
+              ${posting || uploading || !title || !content || !imageUrl ? 'opacity-60 cursor-not-allowed' : ''}
             `}
-            disabled={posting || uploading || !title || !content}
+            disabled={posting || uploading || !title || !content || !imageUrl}
           >
             {posting && (
               <svg className="animate-spin h-6 w-6 text-white" viewBox="0 0 24 24">
