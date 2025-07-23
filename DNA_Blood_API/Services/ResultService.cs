@@ -377,7 +377,7 @@ namespace DNA_API1.Services
                 row.ConstantItem(200).Column(col =>
                 {
                     col.Item().AlignRight().Text("Authorized Signature:").FontSize(10);
-                    col.Item().AlignRight().Text("________________________").FontSize(12);
+                    col.Item().AlignRight().Height(60).Image("img/signature.png", ImageScaling.FitWidth);
                 });
             });
         }
