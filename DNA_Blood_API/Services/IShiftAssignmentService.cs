@@ -17,6 +17,7 @@ namespace DNA_Blood_API.Services
 
         Task<List<MedicalStaffSimpleDTO>> GetMedicalStaffsAsync();
         Task<List<UserSimpleDTO>> GetStaffsAsync();
+        Task<List<WorkShiftAssignmentDTO>> GetWorkShiftsByUserAndMonthAsync(int userId, int month, int year);
     }
 
     public class ShiftAssignmentCreateOrUpdateDTO

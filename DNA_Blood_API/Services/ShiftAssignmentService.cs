@@ -12,14 +12,17 @@ namespace DNA_Blood_API.Services
         private readonly IRepository<ShiftAssignment> _shiftAssignmentRepository;
         private readonly IUserRepository _userRepository;
         private readonly IUserProfileRepository _userProfileRepository;
+        private readonly ShiftAssignmentRepository _shiftAssignmentRepositoryCustom;
         public ShiftAssignmentService(
             IRepository<ShiftAssignment> shiftAssignmentRepository,
             IUserRepository userRepository,
-            IUserProfileRepository userProfileRepository)
+            IUserProfileRepository userProfileRepository,
+            ShiftAssignmentRepository shiftAssignmentRepositoryCustom)
         {
             _shiftAssignmentRepository = shiftAssignmentRepository;
             _userRepository = userRepository;
             _userProfileRepository = userProfileRepository;
+            _shiftAssignmentRepositoryCustom = shiftAssignmentRepositoryCustom;
         }
         public async Task<IEnumerable<ShiftAssignment>> GetAllAsync()
         {
@@ -244,6 +247,11 @@ namespace DNA_Blood_API.Services
                 Name = u.Name,
                 RoleId = u.RoleId ?? 0
             }).ToList();
+        }
+
+        public async Task<List<WorkShiftAssignmentDTO>> GetWorkShiftsByUserAndMonthAsync(int userId, int month, int year)
+        {
+            return await _shiftAssignmentRepositoryCustom.GetWorkShiftsByUserAndMonthAsync(userId, month, year);
         }
     }
 } 

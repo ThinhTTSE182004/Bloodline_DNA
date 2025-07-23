@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using DNA_Blood_API.Services;
 
 namespace DNA_API1.Controllers
 {
@@ -19,7 +20,8 @@ namespace DNA_API1.Controllers
         private readonly IOrderDetailService _orderDetailService;
         private readonly IFeedbackResponseService _feedbackResponseService;
         private readonly IFeedbackService _feedbackService;
-        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService, IFeedbackResponseService feedbackResponseService, IFeedbackService feedbackService)
+        private readonly IShiftAssignmentService _shiftAssignmentService;
+        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService, IFeedbackResponseService feedbackResponseService, IFeedbackService feedbackService, IShiftAssignmentService shiftAssignmentService)
         {
             _orderService = orderService;
             _sampleService = sampleService;
@@ -27,6 +29,7 @@ namespace DNA_API1.Controllers
             _orderDetailService = orderDetailService;
             _feedbackResponseService = feedbackResponseService;
             _feedbackService = feedbackService;
+            _shiftAssignmentService = shiftAssignmentService;
         }
        
         // Danh sách mẫu xét nghiệm cần ghi nhận theo nhân viên phụ trách (loại, kit, trạng thái)
@@ -110,6 +113,17 @@ namespace DNA_API1.Controllers
         {
             var feedbacks = await _feedbackService.GetAllWithResponsesAsync();
             return Ok(feedbacks);
+        }
+
+        [HttpGet("work-schedule")]
+        public async Task<IActionResult> GetWorkSchedule([FromQuery] int? month, [FromQuery] int? year)
+        {
+            var staffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var now = DateTime.Now;
+            int m = month ?? now.Month;
+            int y = year ?? now.Year;
+            var shifts = await _shiftAssignmentService.GetWorkShiftsByUserAndMonthAsync(staffId, m, y);
+            return Ok(shifts);
         }
     }
 }
