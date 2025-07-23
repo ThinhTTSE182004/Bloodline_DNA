@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MedicalStaffNavbar from '../../components/MedicalStaffNavbar';
+import MedicalStaffNavbar from '../../components/medicalStaff/MedicalStaffNavbar';
 import { useNavigate } from 'react-router-dom';
 import { FaChartPie, FaTags, FaCheckCircle, FaSpinner, FaVials } from 'react-icons/fa';
 import { Pie } from 'react-chartjs-2';

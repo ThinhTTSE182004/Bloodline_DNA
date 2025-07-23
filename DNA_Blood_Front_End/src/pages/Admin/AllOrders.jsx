@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 import { FaSearch, FaFilter, FaCheck, FaClock, FaMoneyBillWave, FaCreditCard, FaHome, FaHospital } from 'react-icons/fa';
 import { motion } from 'framer-motion';
 

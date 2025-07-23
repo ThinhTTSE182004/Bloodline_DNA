@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MedicalStaffNavbar from '../../components/MedicalStaffNavbar';
+import MedicalStaffNavbar from '../../components/medicalStaff/MedicalStaffNavbar';
 import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaSpinner, FaExclamationTriangle, FaCheck, FaFlask, FaCheckCircle, FaPlusCircle } from 'react-icons/fa';
 import { motion } from 'framer-motion';

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import Navbar from '../../components/Navbar';
+import Navbar from '../../components/customer/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaTrash, FaShoppingBag, FaShieldAlt, FaTruck, FaHeadphones } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
-import ServiceDetail from '../../components/ServiceDetail';
+import ServiceDetail from '../../components/customer/ServiceDetail';
 import { motion } from 'framer-motion';
 
 const Cart = () => {

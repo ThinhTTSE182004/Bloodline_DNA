@@ -15,17 +15,10 @@ import {
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
-import { 
-  Avatar, 
-  AvatarFallback, 
-  AvatarImage,
-  Badge,
-  Button,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "./ui"
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 // Expandable Assignment Card Component
 export default function ExpandableAssignmentCard({ 

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar';
+import Navbar from '../../components/customer/Navbar';
 import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaMoneyBillWave, FaUniversity, FaCheckCircle, FaUser, FaTransgender, FaCalendarAlt, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUsers, FaUserFriends } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';

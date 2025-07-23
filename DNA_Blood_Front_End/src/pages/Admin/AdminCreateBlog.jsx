@@ -4,8 +4,8 @@ import 'react-quill/dist/quill.snow.css';
 import { FiArrowLeft, FiDownload, FiX } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import AdminSidebar from '../../components/AdminSidebar';
-import AdminNavbar from '../../components/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
 
 const AdminCreateBlog = () => {
   const [title, setTitle] = useState('');

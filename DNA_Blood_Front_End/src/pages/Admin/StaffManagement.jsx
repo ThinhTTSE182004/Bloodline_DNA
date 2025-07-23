@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { FaUsers, FaUserMd, FaUserTie, FaChartBar, FaSearch, FaFilter } from 'react-icons/fa';
 import { motion } from 'framer-motion';

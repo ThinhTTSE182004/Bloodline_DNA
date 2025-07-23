@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { FaRegCalendarAlt } from 'react-icons/fa';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
-import Calendar from '../../components/Calendar';
-import ExpandableAssignmentCard from '../../components/ExpandableAssignmentCard';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
+import Calendar from '../../components/admin/Calendar';
+import ExpandableAssignmentCard from '../../components/admin/ExpandableAssignmentCard';
 import { motion } from 'framer-motion';
 
 

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaDna, FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/fa';
-import { useServices } from '../context/ServiceContext';
-import { useCart } from '../context/CartContext';
+import { useServices } from '../../context/ServiceContext';
+import { useCart } from '../../context/CartContext';
 import { motion } from 'framer-motion';
-import ServiceDetail from './ServiceDetail';
+import ServiceDetail from '../customer/ServiceDetail';
 
 const Services = () => {
   const { services, loading, error } = useServices();

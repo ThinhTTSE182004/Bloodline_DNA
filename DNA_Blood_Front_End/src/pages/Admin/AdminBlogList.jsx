@@ -9,8 +9,8 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 
 const quillModules = {
   toolbar: [

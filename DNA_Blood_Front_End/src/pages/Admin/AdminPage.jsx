@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from 'recharts';
 import { motion } from 'framer-motion';
 

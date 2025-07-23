@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaShoppingCart, FaBars, FaTimes, FaUser, FaSignOutAlt, FaBell } from 'react-icons/fa';
 // import { FaDna } from "react-icons/fa6";
-import { useCart } from '../context/CartContext';
-import signalRService from '../services/signalRService';
+import { useCart } from '../../context/CartContext';
+import signalRService from '../../services/signalRService';
 
 // Thêm hàm tự decode JWT lấy userId
 function getUserIdFromToken(token) {

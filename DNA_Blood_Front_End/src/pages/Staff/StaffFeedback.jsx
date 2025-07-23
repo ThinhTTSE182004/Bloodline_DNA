@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import StaffNavbar from '../../components/StaffNavbar';
+import StaffNavbar from '../../components/staff/StaffNavbar';
 import { motion } from 'framer-motion';
 
 const SUGGESTIONS = [

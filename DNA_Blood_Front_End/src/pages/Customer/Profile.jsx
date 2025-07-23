@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Navbar from '../../components/Navbar';
+import Navbar from '../../components/customer/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import signalRService from '../../services/signalRService.js';
 import { motion } from 'framer-motion';

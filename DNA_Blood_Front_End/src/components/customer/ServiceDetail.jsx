@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { FaTimes, FaShoppingCart } from 'react-icons/fa';
-import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './ui/card';
+import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from '../ui/card';
 
 const ServiceDetail = ({ service, onClose, onAddToCart }) => {
   useEffect(() => {
