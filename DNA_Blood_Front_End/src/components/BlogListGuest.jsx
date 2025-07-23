@@ -16,6 +16,8 @@ const BlogListGuest = () => {
         const response = await fetch('/api/Admin/public-blogs');
         if (!response.ok) throw new Error('Failed to fetch blogs');
         const data = await response.json();
+        // Sắp xếp blog mới nhất lên đầu
+        data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setBlogs(data);
         setError('');
       } catch (err) {
