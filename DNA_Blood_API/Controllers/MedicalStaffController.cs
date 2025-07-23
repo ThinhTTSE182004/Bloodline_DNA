@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using DNA_API1.Hubs;
+using DNA_Blood_API.Services;
 
 namespace DNA_API1.Controllers
 {
@@ -20,14 +21,16 @@ namespace DNA_API1.Controllers
         private readonly IResultService _resultService;
         private readonly IOrderDetailService _orderDetailService;
         private readonly IHubContext<UserHub> _hubContext;
+        private readonly IShiftAssignmentService _shiftAssignmentService;
 
-        public MedicalStaffController(ISampleService sampleService, ISampleTransferService sampleTransferService, IResultService resultService, IOrderDetailService orderDetailService, IHubContext<UserHub> hubContext)
+        public MedicalStaffController(ISampleService sampleService, ISampleTransferService sampleTransferService, IResultService resultService, IOrderDetailService orderDetailService, IHubContext<UserHub> hubContext, IShiftAssignmentService shiftAssignmentService)
         {
             _sampleService = sampleService;
             _sampleTransferService = sampleTransferService;
             _resultService = resultService;
             _orderDetailService = orderDetailService;
             _hubContext = hubContext;
+            _shiftAssignmentService = shiftAssignmentService;
         }
         // Nhận mẫu: cập nhật trạng thái Sample.Status = "Processing"
         [HttpPut("receive-sample/{sampleId}")]
@@ -148,6 +151,17 @@ namespace DNA_API1.Controllers
                     details = ex.InnerException?.Message
                 });
             }
+        }
+
+        [HttpGet("work-schedule")]
+        public async Task<IActionResult> GetWorkSchedule([FromQuery] int? month, [FromQuery] int? year)
+        {
+            var medicalStaffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var now = DateTime.Now;
+            int m = month ?? now.Month;
+            int y = year ?? now.Year;
+            var shifts = await _shiftAssignmentService.GetWorkShiftsByUserAndMonthAsync(medicalStaffId, m, y);
+            return Ok(shifts);
         }
     }
 }
