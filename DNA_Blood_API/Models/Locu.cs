@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace DNA_API1.Models;
 
-[Index("LocusName", Name = "UQ__Locus__66D38AD387EE9295", IsUnique = true)]
+[Index("LocusName", Name = "UQ__Locus__66D38AD34E3D3636", IsUnique = true)]
 public partial class Locu
 {
     [Key]

@@ -111,6 +111,8 @@ namespace DNA_API1
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
             builder.Services.AddScoped<IBlogRepository, BlogRepository>();
+            builder.Services.AddScoped<ISampleVerificationImageRepository, SampleVerificationImageRepository>();
+
 
             // Service Registration
             builder.Services.AddScoped<IAuthService, AuthService>();
@@ -134,6 +136,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<IAdminDashboardService, AdminDashboardService>();
             builder.Services.AddScoped<IBlogService, BlogService>();
+            builder.Services.AddScoped<ISampleVerificationImageService, SampleVerificationImageService>();
 
             // Add SignalR
             builder.Services.AddSignalR();

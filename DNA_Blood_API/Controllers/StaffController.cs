@@ -19,7 +19,8 @@ namespace DNA_API1.Controllers
         private readonly IOrderDetailService _orderDetailService;
         private readonly IFeedbackResponseService _feedbackResponseService;
         private readonly IFeedbackService _feedbackService;
-        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService, IFeedbackResponseService feedbackResponseService, IFeedbackService feedbackService)
+        private readonly ISampleVerificationImageService _sampleVerificationImageService;
+        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService, IFeedbackResponseService feedbackResponseService, IFeedbackService feedbackService, ISampleVerificationImageService sampleVerificationImageService)
         {
             _orderService = orderService;
             _sampleService = sampleService;
@@ -27,6 +28,7 @@ namespace DNA_API1.Controllers
             _orderDetailService = orderDetailService;
             _feedbackResponseService = feedbackResponseService;
             _feedbackService = feedbackService;
+            _sampleVerificationImageService = sampleVerificationImageService;
         }
        
         // Danh sách mẫu xét nghiệm cần ghi nhận theo nhân viên phụ trách (loại, kit, trạng thái)
@@ -110,6 +112,26 @@ namespace DNA_API1.Controllers
         {
             var feedbacks = await _feedbackService.GetAllWithResponsesAsync();
             return Ok(feedbacks);
+        }
+
+
+        // Upload ảnh xác minh mẫu
+        [HttpPost("upload-sample-verification-image")]
+        public async Task<IActionResult> UploadSampleVerificationImage([FromBody] SampleVerificationImageCreateDTO model)
+        {
+            var staffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var result = await _sampleVerificationImageService.UploadVerificationImageAsync(model, staffId);
+            if (!result.Success)
+                return StatusCode(result.StatusCode, new { message = result.Message });
+            return Ok(new { message = "Upload ảnh xác minh thành công." });
+        }
+
+        // Lấy danh sách ảnh xác minh của một sample
+        [HttpGet("sample-verification-images/{sampleId}")]
+        public async Task<IActionResult> GetSampleVerificationImages(int sampleId)
+        {
+            var images = await _sampleVerificationImageService.GetImagesBySampleIdAsync(sampleId);
+            return Ok(images);
         }
     }
 }

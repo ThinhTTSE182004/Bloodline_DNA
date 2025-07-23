@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("USERS")]
-[Index("Email", Name = "UQ__USERS__AB6E61647B102011", IsUnique = true)]
+[Index("Email", Name = "UQ__USERS__AB6E6164B111E97D", IsUnique = true)]
 public partial class User
 {
     [Key]
@@ -42,6 +42,9 @@ public partial class User
     [Column("updated_at", TypeName = "datetime")]
     public DateTime? UpdatedAt { get; set; }
 
+    [InverseProperty("Author")]
+    public virtual ICollection<Blog> Blogs { get; set; } = new List<Blog>();
+
     [InverseProperty("Manager")]
     public virtual ICollection<DeliveryTask> DeliveryTaskManagers { get; set; } = new List<DeliveryTask>();
 
@@ -73,6 +76,12 @@ public partial class User
     [InverseProperty("Staff")]
     public virtual ICollection<SampleTransfer> SampleTransferStaffs { get; set; } = new List<SampleTransfer>();
 
+    [InverseProperty("CapturedByNavigation")]
+    public virtual ICollection<SampleVerificationImage> SampleVerificationImageCapturedByNavigations { get; set; } = new List<SampleVerificationImage>();
+
+    [InverseProperty("VerifiedByNavigation")]
+    public virtual ICollection<SampleVerificationImage> SampleVerificationImageVerifiedByNavigations { get; set; } = new List<SampleVerificationImage>();
+
     [InverseProperty("Staff")]
     public virtual ICollection<Sample> Samples { get; set; } = new List<Sample>();
 
@@ -81,6 +90,4 @@ public partial class User
 
     [InverseProperty("User")]
     public virtual UserProfile UserProfile { get; set; }
-    [InverseProperty("User")]
-    public virtual ICollection<Blog> Blogs { get; set; } = new List<Blog>();
 }

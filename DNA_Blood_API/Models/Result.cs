@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Result")]
-[Index("OrderDetailId", Name = "UQ__Result__3C5A408151FE55D9", IsUnique = true)]
+[Index("OrderDetailId", Name = "UQ__Result__3C5A40816793A28D", IsUnique = true)]
 public partial class Result
 {
     [Key]
@@ -22,6 +22,14 @@ public partial class Result
 
     [Column("test_summary", TypeName = "text")]
     public string TestSummary { get; set; }
+
+    [Column("raw_data_path")]
+    [StringLength(255)]
+    [Unicode(false)]
+    public string RawDataPath { get; set; }
+
+    [Column("report_url")]
+    public string ReportUrl { get; set; }
 
     [Required]
     [Column("result_status")]

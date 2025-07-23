@@ -55,6 +55,9 @@ public partial class Sample
     [InverseProperty("Samples")]
     public virtual SampleType SampleType { get; set; }
 
+    [InverseProperty("Sample")]
+    public virtual ICollection<SampleVerificationImage> SampleVerificationImages { get; set; } = new List<SampleVerificationImage>();
+
     [ForeignKey("StaffId")]
     [InverseProperty("Samples")]
     public virtual User Staff { get; set; }

@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Service_package")]
-[Index("ServiceName", Name = "UQ__Service___4A8EDF39258594C2", IsUnique = true)]
+[Index("ServiceName", Name = "UQ__Service___4A8EDF39069335A6", IsUnique = true)]
 public partial class ServicePackage
 {
     [Key]

@@ -15,6 +15,8 @@ public partial class BloodlineDnaContext : DbContext
     {
     }
 
+    public virtual DbSet<Blog> Blogs { get; set; }
+
     public virtual DbSet<ChooseMethod> ChooseMethods { get; set; }
 
     public virtual DbSet<CollectionMethod> CollectionMethods { get; set; }
@@ -53,6 +55,8 @@ public partial class BloodlineDnaContext : DbContext
 
     public virtual DbSet<SampleType> SampleTypes { get; set; }
 
+    public virtual DbSet<SampleVerificationImage> SampleVerificationImages { get; set; }
+
     public virtual DbSet<ServicePackage> ServicePackages { get; set; }
 
     public virtual DbSet<ServicePrice> ServicePrices { get; set; }
@@ -69,13 +73,22 @@ public partial class BloodlineDnaContext : DbContext
 
     public virtual DbSet<WorkShift> WorkShifts { get; set; }
 
-    public virtual DbSet<Blog> Blogs { get; set; }
-
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         => optionsBuilder.UseSqlServer("name=Default");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Blog>(entity =>
+        {
+            entity.HasKey(e => e.BlogId).HasName("PK__Blog__2975AA28EB4CD1EB");
+
+            entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
+
+            entity.HasOne(d => d.Author).WithMany(p => p.Blogs)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Blog__author_id__30C33EC3");
+        });
+
         modelBuilder.Entity<ChooseMethod>(entity =>
         {
             entity.HasOne(d => d.CollectionMethod).WithMany().HasConstraintName("FK__Choose_me__colle__66603565");
@@ -85,7 +98,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<CollectionMethod>(entity =>
         {
-            entity.HasKey(e => e.CollectionMethodId).HasName("PK__Collecti__1B185E4714ABAD2E");
+            entity.HasKey(e => e.CollectionMethodId).HasName("PK__Collecti__1B185E4760380B4A");
 
             entity.Property(e => e.CollectionMethodId).ValueGeneratedNever();
 
@@ -96,7 +109,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<Delivery>(entity =>
         {
-            entity.HasKey(e => e.DeliveryId).HasName("PK__Delivery__1C5CF4F57977FA40");
+            entity.HasKey(e => e.DeliveryId).HasName("PK__Delivery__1C5CF4F5190C66C0");
 
             entity.HasOne(d => d.Order).WithOne(p => p.Delivery)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -105,7 +118,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<DeliveryTask>(entity =>
         {
-            entity.HasKey(e => e.TaskId).HasName("PK__Delivery__0492148D203B93C6");
+            entity.HasKey(e => e.TaskId).HasName("PK__Delivery__0492148DBF5D57A3");
 
             entity.Property(e => e.AssignedAt).HasDefaultValueSql("(getdate())");
 
@@ -124,7 +137,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<Feedback>(entity =>
         {
-            entity.HasKey(e => e.FeedbackId).HasName("PK__Feedback__7A6B2B8C74CB9385");
+            entity.HasKey(e => e.FeedbackId).HasName("PK__Feedback__7A6B2B8C34CFA624");
 
             entity.Property(e => e.CreateAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.UpdateAt).HasDefaultValueSql("(getdate())");
@@ -136,7 +149,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<FeedbackResponse>(entity =>
         {
-            entity.HasKey(e => e.ResponseId).HasName("PK__Feedback__EBECD8965D68ACD8");
+            entity.HasKey(e => e.ResponseId).HasName("PK__Feedback__EBECD8965A556C82");
 
             entity.Property(e => e.CreateAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.UpdateAt).HasDefaultValueSql("(getdate())");
@@ -152,12 +165,12 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<Locu>(entity =>
         {
-            entity.HasKey(e => e.LocusId).HasName("PK__Locus__28DB691E4FEA3140");
+            entity.HasKey(e => e.LocusId).HasName("PK__Locus__28DB691EBA5DC6E3");
         });
 
         modelBuilder.Entity<Order>(entity =>
         {
-            entity.HasKey(e => e.OrderId).HasName("PK__Orders__465962299AAC0767");
+            entity.HasKey(e => e.OrderId).HasName("PK__Orders__46596229EEEAC129");
 
             entity.Property(e => e.CreateAt).HasDefaultValueSql("(getdate())");
 
@@ -172,7 +185,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<OrderDetail>(entity =>
         {
-            entity.HasKey(e => e.OrderDetailId).HasName("PK__Order_de__3C5A40806B72521D");
+            entity.HasKey(e => e.OrderDetailId).HasName("PK__Order_de__3C5A4080DD9F5FD7");
 
             entity.HasOne(d => d.MedicalStaff).WithMany(p => p.OrderDetails)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -189,12 +202,12 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<Participant>(entity =>
         {
-            entity.HasKey(e => e.ParticipantId).HasName("PK__Particip__4E03780668D3B615");
+            entity.HasKey(e => e.ParticipantId).HasName("PK__Particip__4E0378063FA0B602");
         });
 
         modelBuilder.Entity<PasswordResetToken>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Password__3213E83F570662B2");
+            entity.HasKey(e => e.Id).HasName("PK__Password__3213E83FF9DC30A8");
 
             entity.Property(e => e.IsUsed).HasDefaultValue(false);
 
@@ -205,7 +218,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<Payment>(entity =>
         {
-            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__ED1FC9EA97C2E49D");
+            entity.HasKey(e => e.PaymentId).HasName("PK__Payment__ED1FC9EA9211CE91");
 
             entity.Property(e => e.PaymentDate).HasDefaultValueSql("(getdate())");
 
@@ -216,12 +229,12 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<Permission>(entity =>
         {
-            entity.HasKey(e => e.PermissionId).HasName("PK__Permissi__E5331AFAF4248803");
+            entity.HasKey(e => e.PermissionId).HasName("PK__Permissi__E5331AFA16E7C7D4");
         });
 
         modelBuilder.Entity<Result>(entity =>
         {
-            entity.HasKey(e => e.ResultId).HasName("PK__Result__AFB3C31679D0F6BB");
+            entity.HasKey(e => e.ResultId).HasName("PK__Result__AFB3C3168AE55C98");
 
             entity.Property(e => e.CreateAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.ReportDate).HasDefaultValueSql("(getdate())");
@@ -234,7 +247,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<Role>(entity =>
         {
-            entity.HasKey(e => e.RoleId).HasName("PK__Roles__760965CC378488A2");
+            entity.HasKey(e => e.RoleId).HasName("PK__Roles__760965CCF7E948F4");
 
             entity.HasMany(d => d.Permissions).WithMany(p => p.Roles)
                 .UsingEntity<Dictionary<string, object>>(
@@ -249,7 +262,7 @@ public partial class BloodlineDnaContext : DbContext
                         .HasConstraintName("FK__Role_Perm__role___534D60F1"),
                     j =>
                     {
-                        j.HasKey("RoleId", "PermissionId").HasName("PK__Role_Per__C85A54637093A0EF");
+                        j.HasKey("RoleId", "PermissionId").HasName("PK__Role_Per__C85A546320099DCD");
                         j.ToTable("Role_Permission");
                         j.IndexerProperty<int>("RoleId").HasColumnName("role_id");
                         j.IndexerProperty<int>("PermissionId").HasColumnName("permission_id");
@@ -258,7 +271,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<Sample>(entity =>
         {
-            entity.HasKey(e => e.SampleId).HasName("PK__samples__84ACF7BAE6BE64D0");
+            entity.HasKey(e => e.SampleId).HasName("PK__samples__84ACF7BA3A682DBD");
 
             entity.HasOne(d => d.OrderDetail).WithMany(p => p.Samples)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -277,7 +290,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<SampleKit>(entity =>
         {
-            entity.HasKey(e => e.SampleKitId).HasName("PK__Sample_k__0BEC49D5B43CC85F");
+            entity.HasKey(e => e.SampleKitId).HasName("PK__Sample_k__0BEC49D57CF43E59");
 
             entity.Property(e => e.CreateAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.UpdateAt).HasDefaultValueSql("(getdate())");
@@ -293,7 +306,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<SampleTransfer>(entity =>
         {
-            entity.HasKey(e => e.TransferId).HasName("PK__Sample_t__78E6FD33554D245E");
+            entity.HasKey(e => e.TransferId).HasName("PK__Sample_t__78E6FD33F869DB2D");
 
             entity.Property(e => e.TransferDate).HasDefaultValueSql("(getdate())");
 
@@ -312,17 +325,34 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<SampleType>(entity =>
         {
-            entity.HasKey(e => e.SampleTypeId).HasName("PK__Sample_t__52C648963A3F0B93");
+            entity.HasKey(e => e.SampleTypeId).HasName("PK__Sample_t__52C64896E955C99F");
+        });
+
+        modelBuilder.Entity<SampleVerificationImage>(entity =>
+        {
+            entity.HasKey(e => e.VerificationImageId).HasName("PK__Sample_V__6CC5FB4ACB21A1E5");
+
+            entity.Property(e => e.VerificationStatus).HasDefaultValue("Pending verification");
+
+            entity.HasOne(d => d.CapturedByNavigation).WithMany(p => p.SampleVerificationImageCapturedByNavigations)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Sample_Ve__captu__57DD0BE4");
+
+            entity.HasOne(d => d.Sample).WithMany(p => p.SampleVerificationImages)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__Sample_Ve__sampl__56E8E7AB");
+
+            entity.HasOne(d => d.VerifiedByNavigation).WithMany(p => p.SampleVerificationImageVerifiedByNavigations).HasConstraintName("FK__Sample_Ve__verif__58D1301D");
         });
 
         modelBuilder.Entity<ServicePackage>(entity =>
         {
-            entity.HasKey(e => e.ServicePackageId).HasName("PK__Service___96859327F959D9F0");
+            entity.HasKey(e => e.ServicePackageId).HasName("PK__Service___96859327A6B5B2BA");
         });
 
         modelBuilder.Entity<ServicePrice>(entity =>
         {
-            entity.HasKey(e => e.ServicePriceId).HasName("PK__Service___B715FBB72F20A1AE");
+            entity.HasKey(e => e.ServicePriceId).HasName("PK__Service___B715FBB748EED527");
 
             entity.Property(e => e.ServicePriceId).ValueGeneratedNever();
 
@@ -333,7 +363,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<ShiftAssignment>(entity =>
         {
-            entity.HasKey(e => e.AssignmentId).HasName("PK__ShiftAss__DA89181425FE74B8");
+            entity.HasKey(e => e.AssignmentId).HasName("PK__ShiftAss__DA89181405811561");
 
             entity.HasOne(d => d.Shift).WithMany(p => p.ShiftAssignments)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -346,7 +376,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<TestLocusResult>(entity =>
         {
-            entity.HasKey(e => e.TestLocusId).HasName("PK__Test_Loc__73699DAE14CEBC5E");
+            entity.HasKey(e => e.TestLocusId).HasName("PK__Test_Loc__73699DAE00802BB3");
 
             entity.HasOne(d => d.Locus).WithMany(p => p.TestLocusResults)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -359,14 +389,14 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<TestType>(entity =>
         {
-            entity.HasKey(e => e.TestTypeId).HasName("PK__TestType__9BB8764671502B4C");
+            entity.HasKey(e => e.TestTypeId).HasName("PK__TestType__9BB876460193CA03");
 
             entity.Property(e => e.TestTypeId).ValueGeneratedNever();
         });
 
         modelBuilder.Entity<User>(entity =>
         {
-            entity.HasKey(e => e.UserId).HasName("PK__USERS__B9BE370F406DA482");
+            entity.HasKey(e => e.UserId).HasName("PK__USERS__B9BE370F16BA532B");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
@@ -376,7 +406,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<UserProfile>(entity =>
         {
-            entity.HasKey(e => e.ProfileId).HasName("PK__User_pro__AEBB701FA4084492");
+            entity.HasKey(e => e.ProfileId).HasName("PK__User_pro__AEBB701FFE2FBE58");
 
             entity.Property(e => e.CreatedAt).HasDefaultValueSql("(getdate())");
             entity.Property(e => e.UpdatedAt).HasDefaultValueSql("(getdate())");
@@ -388,18 +418,7 @@ public partial class BloodlineDnaContext : DbContext
 
         modelBuilder.Entity<WorkShift>(entity =>
         {
-            entity.HasKey(e => e.ShiftId).HasName("PK__WorkShif__7B267220E12C8F89");
-        });
-
-        modelBuilder.Entity<Blog>(entity =>
-        {
-            entity.HasKey(e => e.BlogId).HasName("PK_Blog");
-
-            entity.HasOne(d => d.User)
-                .WithMany(p => p.Blogs)
-                .HasForeignKey(d => d.AuthorId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Blog_User");
+            entity.HasKey(e => e.ShiftId).HasName("PK__WorkShif__7B267220982AB62D");
         });
 
         OnModelCreatingPartial(modelBuilder);

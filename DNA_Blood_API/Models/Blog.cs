@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -6,7 +7,6 @@ using Microsoft.EntityFrameworkCore;
 namespace DNA_API1.Models;
 
 [Table("Blog")]
-[Index("AuthorId", Name = "IX_Blog_AuthorId")]
 public partial class Blog
 {
     [Key]
@@ -25,14 +25,13 @@ public partial class Blog
     [Column("author_id")]
     public int AuthorId { get; set; }
 
-    [Column("created_at")]
+    [Column("created_at", TypeName = "datetime")]
     public DateTime CreatedAt { get; set; }
 
-    // Thêm thuộc tính này để lưu link ảnh Cloudinary
     [Column("imageUrl")]
     public string ImageUrl { get; set; }
 
     [ForeignKey("AuthorId")]
     [InverseProperty("Blogs")]
-    public virtual User User { get; set; }
-} 
+    public virtual User Author { get; set; }
+}

@@ -88,12 +88,17 @@ const Payment = () => {
 
       const responseData = await response.json();
       console.log('API Success Response:', responseData);
-
+      
       const paidIds = orderSummary.map(item => item.servicePackageId);
-      const allCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+      const allCart = JSON.parse(localStorage.getItem('cart')) || [];
       const newCart = allCart.filter(item => !paidIds.includes(item.servicePackageId));
-      sessionStorage.setItem('cart', JSON.stringify(newCart));
+      localStorage.setItem('cart', JSON.stringify(newCart));
       refreshCart();
+      //const paidIds = orderSummary.map(item => item.servicePackageId);
+      //const allCart = JSON.parse(sessionStorage.getItem('cart')) || [];
+      //const newCart = allCart.filter(item => !paidIds.includes(item.servicePackageId));
+      //sessionStorage.setItem('cart', JSON.stringify(newCart));
+      //refreshCart();
       
       sessionStorage.setItem('lastPaidBooking', JSON.stringify({
         ...bookingData,
