@@ -111,12 +111,12 @@ namespace DNA_API1
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
             builder.Services.AddScoped<IBlogRepository, BlogRepository>();
-<<<<<<< HEAD
+
             builder.Services.AddScoped<ISampleVerificationImageRepository, SampleVerificationImageRepository>();
 
-=======
+
             builder.Services.AddScoped<ShiftAssignmentRepository>();
->>>>>>> 788d39b6cc660691a256916ff4054668e272a6c4
+
 
             // Service Registration
             builder.Services.AddScoped<IAuthService, AuthService>();

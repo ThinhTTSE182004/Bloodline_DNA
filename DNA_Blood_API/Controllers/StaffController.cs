@@ -20,13 +20,12 @@ namespace DNA_API1.Controllers
         private readonly IOrderDetailService _orderDetailService;
         private readonly IFeedbackResponseService _feedbackResponseService;
         private readonly IFeedbackService _feedbackService;
-<<<<<<< HEAD
+
         private readonly ISampleVerificationImageService _sampleVerificationImageService;
-        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService, IFeedbackResponseService feedbackResponseService, IFeedbackService feedbackService, ISampleVerificationImageService sampleVerificationImageService)
-=======
+
         private readonly IShiftAssignmentService _shiftAssignmentService;
-        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService, IFeedbackResponseService feedbackResponseService, IFeedbackService feedbackService, IShiftAssignmentService shiftAssignmentService)
->>>>>>> 788d39b6cc660691a256916ff4054668e272a6c4
+        public StaffController(IOrderService orderService, ISampleService sampleService, ISampleTransferService sampleTransferService, IOrderDetailService orderDetailService, IFeedbackResponseService feedbackResponseService, IFeedbackService feedbackService, ISampleVerificationImageService sampleVerificationImageService, IShiftAssignmentService shiftAssignmentService)
+
         {
             _orderService = orderService;
             _sampleService = sampleService;
@@ -34,13 +33,13 @@ namespace DNA_API1.Controllers
             _orderDetailService = orderDetailService;
             _feedbackResponseService = feedbackResponseService;
             _feedbackService = feedbackService;
-<<<<<<< HEAD
+
             _sampleVerificationImageService = sampleVerificationImageService;
-=======
+
             _shiftAssignmentService = shiftAssignmentService;
->>>>>>> 788d39b6cc660691a256916ff4054668e272a6c4
+
         }
-       
+
         // Danh sách mẫu xét nghiệm cần ghi nhận theo nhân viên phụ trách (loại, kit, trạng thái)
         [HttpGet("get-sample-by-staffId")]
         public async Task<IActionResult> GetSamplesToRecord()
@@ -124,7 +123,7 @@ namespace DNA_API1.Controllers
             return Ok(feedbacks);
         }
 
-<<<<<<< HEAD
+
 
         // Upload ảnh xác minh mẫu
         [HttpPost("upload-sample-verification-image")]
@@ -143,7 +142,8 @@ namespace DNA_API1.Controllers
         {
             var images = await _sampleVerificationImageService.GetImagesBySampleIdAsync(sampleId);
             return Ok(images);
-=======
+            
+        }
         [HttpGet("work-schedule")]
         public async Task<IActionResult> GetWorkSchedule([FromQuery] int? month, [FromQuery] int? year)
         {
@@ -153,7 +153,7 @@ namespace DNA_API1.Controllers
             int y = year ?? now.Year;
             var shifts = await _shiftAssignmentService.GetWorkShiftsByUserAndMonthAsync(staffId, m, y);
             return Ok(shifts);
->>>>>>> 788d39b6cc660691a256916ff4054668e272a6c4
+
         }
     }
 }
