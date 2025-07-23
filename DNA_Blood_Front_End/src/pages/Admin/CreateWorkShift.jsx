@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 import { motion } from 'framer-motion';
 
 const shiftOptions = [
@@ -103,7 +103,7 @@ const CreateWorkShift = () => {
     }
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch('https://localhost:7113/api/WorkShift/CreateWorkShift', {
+      const res = await fetch('/api/WorkShift/CreateWorkShift', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

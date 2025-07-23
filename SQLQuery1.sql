@@ -3,6 +3,8 @@ DROP DATABASE Bloodline_DNA;
 
 CREATE DATABASE Bloodline_DNA;
 
+USE Bloodline_DNA;
+
 ALTER DATABASE Bloodline_DNA SET SINGLE_USER WITH ROLLBACK IMMEDIATE;
 
 CREATE TABLE Roles (
@@ -10,10 +12,6 @@ CREATE TABLE Roles (
     role_name VARCHAR(50) UNIQUE NOT NULL
 )
 
-CREATE TABLE Permission (
-    permission_id INT IDENTITY(1,1) PRIMARY KEY,
-    permission_name VARCHAR(100) UNIQUE NOT NULL
-)
 
 CREATE TABLE WorkShift (
     shift_id  INT IDENTITY(1,1) PRIMARY KEY,
@@ -63,14 +61,6 @@ YearsOfExperience INT,
 created_at DATETIME DEFAULT GETDATE(),
 updated_at DATETIME DEFAULT GETDATE(),
 FOREIGN KEY (user_id) REFERENCES USERS(user_id)
-)
-
-CREATE TABLE Role_Permission (
-    role_id INT,
-    permission_id INT,
-    PRIMARY KEY (role_id, permission_id),
-    FOREIGN KEY (role_id) REFERENCES Roles(role_id),
-    FOREIGN KEY (permission_id) REFERENCES Permission(permission_id)
 )
 
 CREATE TABLE Participant (

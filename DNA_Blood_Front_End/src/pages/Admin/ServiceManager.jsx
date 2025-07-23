@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 import { motion } from 'framer-motion';
 
 const ServiceManager = () => {
@@ -22,7 +22,7 @@ const ServiceManager = () => {
     setError('');
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch('https://localhost:7113/api/Service/GetAllServiceWithPrice', {
+      const res = await fetch('/api/Service/GetAllServiceWithPrice', {
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
       if (!res.ok) throw new Error(await res.text());
@@ -42,7 +42,7 @@ const ServiceManager = () => {
     setError('');
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch(`https://localhost:7113/api/Service/DeleteServicePackage?id=${id}`, {
+      const res = await fetch(`/api/Service/DeleteServicePackage?id=${id}`, {
         method: 'DELETE',
         headers: token ? { 'Authorization': `Bearer ${token}` } : {}
       });
@@ -62,12 +62,12 @@ const ServiceManager = () => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     try {
       await Promise.all([
-        fetch(`https://localhost:7113/api/ServicePackage/UpdateServicePackage?id=${servicePackageId}`, {
+        fetch(`/api/ServicePackage/UpdateServicePackage?id=${servicePackageId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
           body: JSON.stringify({ serviceName, category, description, duration, processingTimeMinutes })
         }),
-        fetch(`https://localhost:7113/api/ServicePackage/UpdatePrice?servicePackageId=${servicePackageId}`, {
+        fetch(`/api/ServicePackage/UpdatePrice?servicePackageId=${servicePackageId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
           body: JSON.stringify({ price })
@@ -87,7 +87,7 @@ const ServiceManager = () => {
     setCreateError('');
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     try {
-      const res = await fetch('https://localhost:7113/api/ServicePackage/CreateServicePackage', {
+      const res = await fetch('/api/ServicePackage/CreateServicePackage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', ...(token ? { 'Authorization': `Bearer ${token}` } : {}) },
         body: JSON.stringify(createData)

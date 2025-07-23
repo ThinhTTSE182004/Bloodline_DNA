@@ -4,13 +4,13 @@ import {
   FiEdit, FiTrash2, FiPlusCircle, FiEye, FiCheck, FiPause, FiArrowLeft,
   FiBold, FiItalic, FiUnderline, FiLink, FiImage, 
   FiAlignLeft, FiAlignCenter, FiAlignRight, FiAlignJustify, FiList,
-  FiSearch, FiFilter, FiX, FiCalendar, FiUser, FiClock
+  FiSearch, FiFilter, FiX, FiCalendar, FiUser, FiClock, FiDownload
 } from 'react-icons/fi';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 
 const quillModules = {
   toolbar: [
@@ -74,7 +74,7 @@ const AdminBlogList = () => {
     try {
       setLoading(true);
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch('https://localhost:7113/api/Admin/blogs', {
+      const response = await fetch('/api/Admin/blogs', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -190,7 +190,7 @@ const AdminBlogList = () => {
 
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const response = await fetch(`https://localhost:7113/api/Admin/blogs/${blogId}`, {
+      const response = await fetch(`/api/Admin/blogs/${blogId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -215,12 +215,50 @@ const AdminBlogList = () => {
   const EditBlogCard = ({ blog, onClose }) => {
     const [title, setTitle] = useState(blog.title);
     const [content, setContent] = useState(blog.content || '<p>Blog content...</p>');
+    const [imageUrl, setImageUrl] = useState(blog.imageUrl || '');
     const [loading, setLoading] = useState(false);
     const [isFocused, setIsFocused] = useState(false);
+    const [uploading, setUploading] = useState(false);
+    const fileInputRef = React.useRef();
+
+    // Đồng bộ imageUrl với blog.imageUrl khi blog thay đổi
+    useEffect(() => {
+      setImageUrl(blog.imageUrl || '');
+    }, [blog.imageUrl]);
+
+    // Hàm upload ảnh lên Cloudinary
+    const uploadImageToCloudinary = async (file) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('upload_preset', 'blog_unsigned'); // Đổi thành preset của bạn nếu khác
+      const res = await fetch('https://api.cloudinary.com/v1_1/duqp1ecoj/image/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      return data.secure_url;
+    };
+
+    const handleImageChange = async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      setUploading(true);
+      const url = await uploadImageToCloudinary(file);
+      setImageUrl(url);
+      setUploading(false);
+    };
 
     const handleUpdate = async () => {
       if (!title || !content) {
         alert('Please enter both title and content!');
+        return;
+      }
+      if (!imageUrl) {
+        alert('Please select a thumbnail image!');
+        return;
+      }
+      if (title === blog.title && content === blog.content && imageUrl === (blog.imageUrl || '')) {
+        onClose();
         return;
       }
       try {
@@ -229,9 +267,10 @@ const AdminBlogList = () => {
         const requestBody = {
           blogId: blog.blogId,
           title,
-          content
+          content,
+          imageUrl // Gửi kèm link ảnh đại diện
         };
-        const response = await fetch(`https://localhost:7113/api/Admin/blogs/${blog.blogId}`, {
+        const response = await fetch(`/api/Admin/blogs/${blog.blogId}`, {
           method: 'PUT',
           headers: {
             'Content-Type': 'application/json',
@@ -242,7 +281,7 @@ const AdminBlogList = () => {
         if (!response.ok) {
           const errorText = await response.text();
           if (response.status === 405) {
-            const postResponse = await fetch(`https://localhost:7113/api/Admin/blogs/${blog.blogId}`, {
+            const postResponse = await fetch(`/api/Admin/blogs/${blog.blogId}`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -309,6 +348,61 @@ const AdminBlogList = () => {
             onChange={(e) => setTitle(e.target.value)}
             className="w-full border border-blue-200 rounded-2xl px-5 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow transition-all text-lg"
           />
+          {/* Thumbnail image upload - giống AdminCreateBlog */}
+          <div className="flex flex-col items-center justify-center mt-2 mb-4 w-full">
+            <div className="flex flex-col items-center gap-2 w-full">
+              {/* Custom upload button */}
+              {!imageUrl && (
+                <button
+                  type="button"
+                  className="flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold shadow border border-blue-200 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400"
+                  onClick={() => fileInputRef.current.click()}
+                  disabled={uploading}
+                >
+                  <FiDownload className="text-xl" />
+                  Change thumbnail image
+                </button>
+              )}
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleImageChange}
+                disabled={uploading}
+              />
+              {uploading && (
+                <div className="flex items-center gap-2 text-blue-600 font-medium animate-pulse">
+                  <svg className="animate-spin h-5 w-5 text-blue-500" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                  </svg>
+                  Đang tải ảnh...
+                </div>
+              )}
+              {imageUrl && (
+                <div className="mt-1 border-2 border-blue-200 rounded-2xl p-2 bg-blue-50 shadow-md flex flex-col items-center relative">
+                  <img
+                    src={imageUrl}
+                    alt="Blog thumbnail"
+                    className="max-w-[180px] max-h-[140px] rounded-xl shadow-lg transition-transform duration-300 hover:scale-105 cursor-pointer border border-blue-300"
+                    style={{ objectFit: 'cover' }}
+                    title="Click để xem lớn"
+                    onClick={() => window.open(imageUrl, '_blank')}
+                  />
+                  <span className="text-xs text-gray-500 mt-1">Thumbnail preview</span>
+                  <button
+                    className="absolute top-2 right-2 bg-white/80 hover:bg-red-100 text-red-500 rounded-full p-1 shadow transition"
+                    title="Xóa ảnh"
+                    onClick={() => setImageUrl('')}
+                    type="button"
+                  >
+                    <FiX className="text-lg" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
           {/* Content Editor Card */}
           <div className={`w-full flex flex-col h-[300px] bg-white rounded-3xl border transition-all duration-300 ${isFocused ? 'border-blue-400 shadow-2xl ring-2 ring-blue-200' : 'border-blue-100 shadow'} quill-placeholder-indent`}>
             <div className="flex flex-col p-6 quill-fix-placeholder
@@ -338,8 +432,10 @@ const AdminBlogList = () => {
               whileHover={{ scale: 1.08, backgroundColor: '#4ade80' }}
               whileTap={{ scale: 0.97 }}
               onClick={handleUpdate}
-              disabled={loading}
-              className={`px-6 py-3 rounded-full bg-green-600 hover:bg-green-700 text-white font-semibold text-lg shadow transition-all ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+              disabled={loading || !imageUrl || (title === blog.title && content === blog.content && imageUrl === (blog.imageUrl || ''))}
+              className={`px-6 py-3 rounded-full bg-green-600 hover:bg-green-700 text-white font-semibold text-lg shadow transition-all ${
+                loading || !imageUrl || (title === blog.title && content === blog.content && imageUrl === (blog.imageUrl || '')) ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
               {loading ? 'Updating...' : 'Update'}
             </motion.button>

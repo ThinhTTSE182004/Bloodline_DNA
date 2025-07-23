@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaDna, FaChevronLeft, FaChevronRight, FaArrowRight } from 'react-icons/fa';
-import { useServices } from '../context/ServiceContext';
-import { useCart } from '../context/CartContext';
+import { useServices } from '../../context/ServiceContext';
+import { useCart } from '../../context/CartContext';
 import { motion } from 'framer-motion';
-import ServiceDetail from './ServiceDetail';
+import ServiceDetail from '../customer/ServiceDetail';
 
 const Services = () => {
   const { services, loading, error } = useServices();
@@ -71,6 +71,12 @@ const Services = () => {
   // Create a circular array by duplicating services
   const circularServices = [...services, ...services.slice(0, 3)];
 
+  // Gom className cho card dịch vụ để dễ chỉnh sửa
+  const cardClass = [
+    "flex-none w-[320px] h-[320px] bg-white rounded-2xl shadow-lg overflow-hidden",
+    "hover:scale-105 transition-transform duration-300 flex flex-col"
+  ].join(' ');
+
   return (
     <section id="services" className="py-16 bg-gray-50 w-full">
       <div className="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
@@ -116,7 +122,7 @@ const Services = () => {
           </button>
 
           {/* Services Carousel */}
-          <div className="relative w-full overflow-hidden">
+          <div className="relative w-full overflow-hidden px-4 py-6">
             <div 
               className={`flex gap-6 transition-transform duration-500 ease-in-out ${isTransitioning ? 'transform-gpu' : ''}`}
               style={{
@@ -127,38 +133,38 @@ const Services = () => {
               {circularServices.map((service, index) => (
                 <div
                   key={`${service.servicePackageId}-${index}`}
-                  className="flex-none w-[400px] h-[500px] bg-white rounded-lg shadow-md overflow-hidden hover:scale-105 transition-transform duration-300 flex flex-col"
+                  className={cardClass}
                 >
-                  <div className="h-48 w-full overflow-hidden">
+                  {/* Ảnh dịch vụ */}
+                  <div className="w-full aspect-square overflow-hidden bg-gray-100 flex items-center justify-center">
                     <img
                       src="/img/DNA.png"
                       alt={service.serviceName}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover transition-transform duration-300"
                     />
                   </div>
-                  <div className="p-6 flex flex-col flex-grow">
+                  {/* Nội dung dịch vụ */}
+                  <div className="p-4 flex flex-col flex-grow justify-between">
                     <span
                       onClick={() => handleViewDetails(service)}
-                      className="text-xl font-semibold text-gray-900 mb-2 hover:text-blue-600 transition-colors duration-300 block cursor-pointer"
+                      className="text-base font-semibold text-gray-900 mb-1 hover:text-blue-600 transition-colors duration-300 block cursor-pointer"
                       role="button"
                       tabIndex={0}
                     >
                       {service.serviceName}
                     </span>
-                    <div className="text-blue-600 font-semibold text-lg mb-3 cursor-default">
+                    <div className="text-blue-600 font-semibold text-base mb-2 cursor-default">
                       ${service.price.toLocaleString()}
                     </div>
-                    <div className="text-base text-gray-500 mb-4 line-clamp-2 flex-grow">
+                    <div className="text-sm text-gray-500 mb-2 line-clamp-2 min-h-[36px]">
                       {service.description || "Professional DNA testing service with accurate results and detailed analysis."}
                     </div>
-                    <div className="flex gap-2 mt-auto">
-                      <button
-                        onClick={() => handleAddToCart(service)}
-                        className="flex-1 bg-blue-600 text-white py-2 px-4 rounded-full hover:bg-blue-700 transition text-base font-semibold"
-                      >
-                        Add to Cart
-                      </button>
-                    </div>
+                    <button
+                      onClick={() => handleAddToCart(service)}
+                      className="w-full bg-blue-600 text-white py-2 px-3 rounded-full hover:bg-blue-700 transition text-sm font-semibold mt-auto"
+                    >
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               ))}

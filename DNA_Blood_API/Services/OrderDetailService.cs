@@ -20,6 +20,8 @@ namespace DNA_API1.Services
         {
             var orderDetail = await _context.OrderDetails
                 .Include(od => od.Samples)
+                .Include(od => od.Order)
+                    .ThenInclude(o => o.OrderDetails)
                 .FirstOrDefaultAsync(od => od.OrderDetailId == orderDetailId);
 
             if (orderDetail == null) return false;
@@ -29,9 +31,28 @@ namespace DNA_API1.Services
             {
                 orderDetail.Status = "Completed";
                 await _context.SaveChangesAsync();
+                
+                // Kiểm tra xem tất cả OrderDetails của Order này đã hoàn thành chưa
+                if (orderDetail.Order != null && orderDetail.Order.OrderDetails != null)
+                {
+                    var allOrderDetailsCompleted = orderDetail.Order.OrderDetails.All(od => od.Status == "Completed");
+                    if (allOrderDetailsCompleted)
+                    {
+                        orderDetail.Order.OrderStatus = "Order completed";
+                        await _context.SaveChangesAsync();
+                    }
+                }
+                
                 return true;
             }
             return false;
+        }
+
+        public async Task<OrderDetail?> GetOrderDetailByIdAsync(int orderDetailId)
+        {
+            return await _context.OrderDetails
+                .Include(od => od.Order)
+                .FirstOrDefaultAsync(od => od.OrderDetailId == orderDetailId);
         }
 
         public async Task<IEnumerable<MedicalStaffOrderDetailDTO>> GetOrderDetailsByMedicalStaffIdAsync(int medicalStaffId)

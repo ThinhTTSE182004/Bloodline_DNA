@@ -11,7 +11,7 @@ const BlogDetailGuest = () => {
   useEffect(() => {
     const fetchBlog = async () => {
       try {
-        const response = await fetch(`https://localhost:7113/api/Admin/public-blogs/${blogId}`);
+        const response = await fetch(`/api/Admin/public-blogs/${blogId}`);
         if (!response.ok) throw new Error('Failed to fetch blog');
         const data = await response.json();
         setPost(data);

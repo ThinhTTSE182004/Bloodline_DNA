@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 import { PieChart, Pie, Cell, Legend, ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar } from 'recharts';
 import { motion } from 'framer-motion';
 
@@ -27,22 +27,22 @@ const AdminPage = () => {
       const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       try {
         // Medical Staffs
-        const medRes = await fetch('https://localhost:7113/api/ShiftAssignment/medical-staffs', {
+        const medRes = await fetch('/api/ShiftAssignment/medical-staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         setMedicalStaffs(medRes.ok ? await medRes.json() : []);
         // Staffs
-        const staffRes = await fetch('https://localhost:7113/api/ShiftAssignment/staffs', {
+        const staffRes = await fetch('/api/ShiftAssignment/staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         setStaffs(staffRes.ok ? await staffRes.json() : []);
         // WorkShifts
-        const shiftRes = await fetch('https://localhost:7113/api/WorkShift/WorkShift', {
+        const shiftRes = await fetch('/api/WorkShift/WorkShift', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         setWorkShifts(shiftRes.ok ? await shiftRes.json() : []);
         // Services
-        const serviceRes = await fetch('https://localhost:7113/api/Service/GetAllServiceWithPrice', {
+        const serviceRes = await fetch('/api/Service/GetAllServiceWithPrice', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         setServices(serviceRes.ok ? await serviceRes.json() : []);
@@ -103,7 +103,7 @@ const AdminPage = () => {
         const fromDate = new Date(selectedYear, selectedMonth, day, 0, 0, 0).toISOString();
         const toDate = new Date(selectedYear, selectedMonth, day, 23, 59, 59).toISOString();
         try {
-          const res = await fetch('https://localhost:7113/api/Admin/dashboard', {
+          const res = await fetch('/api/Admin/dashboard', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

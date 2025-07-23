@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { FaTachometerAlt, FaUserPlus, FaUserMd, FaCalendarAlt, FaListAlt, FaUsersCog, FaClipboardList, FaBoxOpen, FaEye, FaShoppingCart, FaChevronDown, FaChevronUp, FaBars, FaTimes, FaPlusCircle } from 'react-icons/fa';
-import { Card, CardHeader, CardContent } from './ui';
-import { Avatar, AvatarImage } from './ui';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from './ui';
+import { Card, CardHeader, CardContent } from '../ui/card';
+import { Avatar, AvatarImage } from '../ui/avatar';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 // Sidebar Component
 const Sidebar = ({ width = "270px", children, isOpen, onClose }) => {

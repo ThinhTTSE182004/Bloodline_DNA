@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar';
+import Navbar from '../../components/customer/Navbar';
 import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaMoneyBillWave, FaUniversity, FaCheckCircle, FaUser, FaTransgender, FaCalendarAlt, FaPhone, FaEnvelope, FaMapMarkerAlt, FaUsers, FaUserFriends } from 'react-icons/fa';
 import { useCart } from '../../context/CartContext';
@@ -71,7 +71,7 @@ const Payment = () => {
 
       console.log('Final Order Data to be sent:', JSON.stringify(finalOrderData, null, 2));
 
-      const response = await fetch('https://localhost:7113/api/Order/CreateOrder', {
+      const response = await fetch('/api/Order/CreateOrder', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -100,9 +100,14 @@ const Payment = () => {
       //sessionStorage.setItem('cart', JSON.stringify(newCart));
       //refreshCart();
       
+      // Lấy lại thông tin service đầy đủ từ services context nếu thiếu
+      const selectedServices = bookingData.details.map(detail =>
+        services.find(s => String(s.servicePackageId) === String(detail.servicePackageId))
+      ).filter(Boolean);
+
       sessionStorage.setItem('lastPaidBooking', JSON.stringify({
         ...bookingData,
-        selectedServices: orderSummary,
+        selectedServices,
         paymentMethod,
         paymentDate: new Date().toISOString(),
         orderId: responseData.orderId || `ORD${Date.now().toString().slice(-6)}`

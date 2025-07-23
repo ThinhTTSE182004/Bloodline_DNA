@@ -1,11 +1,11 @@
 import React, { useState, useRef } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-import { FiArrowLeft } from 'react-icons/fi';
+import { FiArrowLeft, FiDownload, FiX } from 'react-icons/fi';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import AdminSidebar from '../../components/AdminSidebar';
-import AdminNavbar from '../../components/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
 
 const AdminCreateBlog = () => {
   const [title, setTitle] = useState('');
@@ -57,22 +57,18 @@ const AdminCreateBlog = () => {
   };
 };
 
+  // Bỏ custom handler cho image để loại trừ lỗi
   const quillModules = {
-    toolbar: {
-      container: [
-        [{ 'header': [1, 2, 3, false] }],
-        ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'align': [] }],
-        ['link', 'image', 'video'],
-        ['undo', 'redo'],
-        ['clean']
-      ],
-      handlers: {
-        image: imageHandler
-      }
-    },
+    toolbar: [
+      [{ 'header': [1, 2, 3, false] }],
+      ['bold', 'italic', 'underline', 'strike', 'blockquote', 'code-block'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'align': [] }],
+      ['link', 'image', 'video'],
+      ['undo', 'redo'],
+      ['clean']
+    ],
     history: {
       delay: 1000,
       maxStack: 100,
@@ -95,10 +91,14 @@ const AdminCreateBlog = () => {
       alert('Please enter both title and content!');
       return;
     }
+    if (!imageUrl) {
+      alert('Please select a thumbnail image!');
+      return;
+    }
     setPosting(true);
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch('https://localhost:7113/api/Admin/blogs', {
+      const res = await fetch('/api/Admin/blogs', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -135,7 +135,7 @@ const AdminCreateBlog = () => {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-2xl bg-white/95 shadow-2xl rounded-3xl px-8 py-8 border border-blue-100 backdrop-blur-md mt-4 relative z-10 flex flex-col gap-4"
+        className="w-full max-w-6xl mx-auto bg-white/95 shadow-2xl rounded-3xl p-10 border border-blue-100 z-10 flex flex-col gap-4"
       >
         {/* Header */}
         <div className="flex items-center gap-4 mb-2">
@@ -156,7 +156,7 @@ const AdminCreateBlog = () => {
             Create New Blog Post
           </motion.h2>
         </div>
-        {/* Title */}
+        {/* Blog Title */}
         <motion.input
           whileFocus={{ borderColor: '#2563eb' }}
           type="text"
@@ -165,88 +165,111 @@ const AdminCreateBlog = () => {
           onChange={(e) => setTitle(e.target.value)}
           className="w-full border border-blue-200 rounded-2xl px-6 py-4 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow transition-all text-xl font-semibold mb-1"
         />
-        {/* Card nội dung liền mạch */}
-        <div className="bg-white rounded-2xl shadow border border-blue-100 px-4 py-6 flex flex-col gap-4">
-          {/* Editor giữ nguyên */}
-          <div style={{ padding: 0 }}>
+        {/* Thumbnail image upload - moved up */}
+        <div className="flex flex-col items-center justify-center mt-2 mb-0 w-full">
+          <div className="flex flex-col items-center gap-2 w-full">
+            {/* Custom upload button */}
+            {!imageUrl && (
+              <button
+                type="button"
+                className="flex items-center gap-2 px-6 py-3 rounded-xl bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold shadow border border-blue-200 transition cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onClick={() => document.getElementById('blog-thumbnail-input').click()}
+                disabled={uploading}
+              >
+                <FiDownload className="text-xl" />
+                Choose thumbnail image
+              </button>
+            )}
+            <input
+              id="blog-thumbnail-input"
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                setUploading(true);
+                const url = await uploadImageToCloudinary(file);
+                setImageUrl(url);
+                setUploading(false);
+              }}
+              disabled={uploading}
+            />
+            {uploading && (
+              <div className="flex items-center gap-2 text-blue-600 font-medium animate-pulse">
+                <svg className="animate-spin h-5 w-5 text-blue-500" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+                Uploading...
+              </div>
+            )}
+            {imageUrl && (
+              <div className="mt-1 border-2 border-blue-200 rounded-2xl p-2 bg-blue-50 shadow-md flex flex-col items-center relative">
+                <img
+                  src={imageUrl}
+                  alt="Blog thumbnail"
+                  className="max-w-[180px] max-h-[140px] rounded-xl shadow-lg transition-transform duration-300 hover:scale-105 cursor-pointer border border-blue-300"
+                  style={{ objectFit: 'cover' }}
+                  title="Click to view larger"
+                  onClick={() => window.open(imageUrl, '_blank')}
+                />
+                <span className="text-xs text-gray-500 mt-1">Preview image</span>
+                <button
+                  className="absolute top-2 right-2 bg-white/80 hover:bg-red-100 text-red-500 rounded-full p-1 shadow transition"
+                  title="Remove image"
+                  onClick={() => setImageUrl('')}
+                  type="button"
+                >
+                  <FiX className="text-lg" />
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+        {/* Editor ReactQuill giống hệt AdminBlogList update, card co giãn theo nội dung */}
+        <div className={`w-full flex flex-col bg-white rounded-3xl border transition-all duration-300 ${isFocused ? 'border-blue-400 shadow-2xl ring-2 ring-blue-200' : 'border-blue-100 shadow'} quill-placeholder-indent`}>
+          <div className="flex flex-col p-6 quill-fix-placeholder
+            [&_.ql-toolbar]:flex [&_.ql-toolbar]:flex-nowrap [&_.ql-toolbar]:items-center
+            [&_.ql-toolbar]:gap-2 [&_.ql-toolbar]:text-xl
+            [&_.ql-toolbar]:min-h-[56px] [&_.ql-toolbar]:py-3
+            [&_.ql-toolbar]:border-0 [&_.ql-toolbar]:rounded-none [&_.ql-toolbar]:bg-transparent
+            [&_.ql-toolbar]:border-b [&_.ql-toolbar]:border-blue-100
+            [&_.ql-container]:min-h-[200px] [&_.ql-container]:overflow-y-auto [&_.ql-container]:overflow-x-hidden [&_.ql-container]:border-0
+            [&_.ql-editor]:rounded-none [&_.ql-editor]:bg-transparent [&_.ql-editor]:pt-3 [&_.ql-editor]:px-6 [&_.ql-editor]:pb-3 [&_.ql-editor]:break-words [&_.ql-editor]:whitespace-pre-line [&_.ql-editor]:text-lg">
             <ReactQuill
               ref={quillRef}
               theme="snow"
               value={content || ''}
               onChange={setContent}
               placeholder="Write your blog content here..."
+              className="h-full min-h-[150px] w-full flex-1"
+              modules={quillModules}
+              formats={quillFormats}
+              onFocus={() => setIsFocused(true)}
+              onBlur={() => setIsFocused(false)}
             />
           </div>
-          {/* Ảnh đại diện */}
-          <div className="flex flex-col items-center justify-center mt-2 mb-0">
-            <label className="block font-bold mb-2 text-base text-blue-700 text-center">Blog profile picture (optional):</label>
-            <div className="flex flex-col items-center gap-2 w-full">
-              <input
-                type="file"
-                accept="image/*"
-                className="file:mr-3 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition"
-                onChange={async (e) => {
-                  const file = e.target.files[0];
-                  if (!file) return;
-                  setUploading(true);
-                  const url = await uploadImageToCloudinary(file);
-                  setImageUrl(url);
-                  setUploading(false);
-                }}
-                disabled={uploading}
-              />
-              {uploading && (
-                <div className="flex items-center gap-2 text-blue-600 font-medium animate-pulse">
-                  <svg className="animate-spin h-5 w-5 text-blue-500" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                  </svg>
-                 Uploading...
-                </div>
-              )}
-              {imageUrl && (
-                <div className="mt-1 border-2 border-blue-200 rounded-2xl p-2 bg-blue-50 shadow-md flex flex-col items-center relative">
-                  <img
-                    src={imageUrl}
-                    alt="Blog thumbnail"
-                    className="max-w-[180px] max-h-[140px] rounded-xl shadow-lg transition-transform duration-300 hover:scale-105 cursor-pointer border border-blue-300"
-                    style={{ objectFit: 'cover' }}
-                    title="Click để xem lớn"
-                    onClick={() => window.open(imageUrl, '_blank')}
-                  />
-                  <span className="text-xs text-gray-500 mt-1">Preview image</span>
-                  <button
-                    className="absolute top-2 right-2 bg-white/80 hover:bg-red-100 text-red-500 rounded-full p-1 shadow transition"
-                    title="Xóa ảnh"
-                    onClick={() => setImageUrl('')}
-                    type="button"
-                  >
-                    &times;
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-          {/* Nút Post ngoài card */}
-          <div className="w-full flex justify-end mt-4">
-            <motion.button
-              whileHover={{ scale: 1.08, backgroundColor: '#2563eb' }}
-              whileTap={{ scale: 0.97 }}
-              onClick={handleSubmit}
-              className={`px-10 py-3 rounded-full bg-blue-700 hover:bg-blue-800 text-white font-bold text-xl shadow-lg transition-all flex items-center gap-3
-                ${posting || uploading || !title || !content ? 'opacity-60 cursor-not-allowed' : ''}
-              `}
-              disabled={posting || uploading || !title || !content}
-            >
-              {posting && (
-                <svg className="animate-spin h-6 w-6 text-white" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                </svg>
-              )}
-              Post
-            </motion.button>
-          </div>
+        </div>
+        {/* Nút Post ngoài card */}
+        <div className="w-full flex justify-end mt-4">
+          <motion.button
+            whileHover={{ scale: 1.08, backgroundColor: '#2563eb' }}
+            whileTap={{ scale: 0.97 }}
+            onClick={handleSubmit}
+            className={`px-10 py-3 rounded-full bg-blue-700 hover:bg-blue-800 text-white font-bold text-xl shadow-lg transition-all flex items-center gap-3
+              ${posting || uploading || !title || !content || !imageUrl ? 'opacity-60 cursor-not-allowed' : ''}
+            `}
+            disabled={posting || uploading || !title || !content || !imageUrl}
+          >
+            {posting && (
+              <svg className="animate-spin h-6 w-6 text-white" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+              </svg>
+            )}
+            Post
+          </motion.button>
         </div>
       </motion.div>
       {/* Sửa placeholder React Quill bằng style nội tuyến */}

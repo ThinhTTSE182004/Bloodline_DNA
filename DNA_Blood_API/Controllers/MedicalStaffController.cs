@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using DNA_API1.Hubs;
+using DNA_Blood_API.Services;
 
 namespace DNA_API1.Controllers
 {
@@ -17,13 +20,17 @@ namespace DNA_API1.Controllers
         private readonly ISampleTransferService _sampleTransferService;
         private readonly IResultService _resultService;
         private readonly IOrderDetailService _orderDetailService;
+        private readonly IHubContext<UserHub> _hubContext;
+        private readonly IShiftAssignmentService _shiftAssignmentService;
 
-        public MedicalStaffController(ISampleService sampleService, ISampleTransferService sampleTransferService, IResultService resultService, IOrderDetailService orderDetailService)
+        public MedicalStaffController(ISampleService sampleService, ISampleTransferService sampleTransferService, IResultService resultService, IOrderDetailService orderDetailService, IHubContext<UserHub> hubContext, IShiftAssignmentService shiftAssignmentService)
         {
             _sampleService = sampleService;
             _sampleTransferService = sampleTransferService;
             _resultService = resultService;
             _orderDetailService = orderDetailService;
+            _hubContext = hubContext;
+            _shiftAssignmentService = shiftAssignmentService;
         }
         // Nhận mẫu: cập nhật trạng thái Sample.Status = "Processing"
         [HttpPut("receive-sample/{sampleId}")]
@@ -78,6 +85,16 @@ namespace DNA_API1.Controllers
         {
             var result = await _orderDetailService.UpdateOrderDetailStatusIfAllSamplesCompletedAsync(orderDetailId);
             if (!result) return NotFound("OrderDetail không tồn tại hoặc chưa đủ điều kiện.");
+
+            // Sau khi update thành công, lấy orderDetail để lấy userId
+            var orderDetail = await _orderDetailService.GetOrderDetailByIdAsync(orderDetailId);
+            if (orderDetail != null && orderDetail.Order != null)
+            {
+                var userId = orderDetail.Order.CustomerId;
+                var message = $"Order #{orderDetail.Order.OrderId} The test results are available!";
+                await _hubContext.Clients.Group($"User_{userId}").SendAsync("ReceiveResultNotification", orderDetail.Order.OrderId.ToString(), message);
+            }
+
             return Ok("Ok");
         }
 
@@ -134,6 +151,17 @@ namespace DNA_API1.Controllers
                     details = ex.InnerException?.Message
                 });
             }
+        }
+
+        [HttpGet("work-schedule")]
+        public async Task<IActionResult> GetWorkSchedule([FromQuery] int? month, [FromQuery] int? year)
+        {
+            var medicalStaffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var now = DateTime.Now;
+            int m = month ?? now.Month;
+            int y = year ?? now.Year;
+            var shifts = await _shiftAssignmentService.GetWorkShiftsByUserAndMonthAsync(medicalStaffId, m, y);
+            return Ok(shifts);
         }
     }
 }

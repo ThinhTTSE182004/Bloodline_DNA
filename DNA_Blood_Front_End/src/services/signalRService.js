@@ -207,6 +207,16 @@ class SignalRService {
             console.error('[SignalR] Error joining Admin group:', err);
         }
     }
+
+    onResultNotification(callback) {
+        console.log('[SignalR] Registering result notification callback');
+        this.on('ReceiveResultNotification', callback);
+    }
+
+    offResultNotification(callback) {
+        console.log('[SignalR] Unregistering result notification callback');
+        this.off('ReceiveResultNotification', callback);
+    }
 }
 
 export default new SignalRService(); 

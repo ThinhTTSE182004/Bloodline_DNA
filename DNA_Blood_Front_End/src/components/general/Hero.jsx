@@ -91,7 +91,7 @@ const Hero = () => {
           >
             <div className="relative w-full h-[400px] md:h-[500px] rounded-2xl overflow-hidden shadow-2xl transform hover:scale-105 transition-all duration-700">
               <img
-                src="/img/Hero.png"
+                src="public/img/Hero.png"
                 alt="DNA Testing"
                 className="w-full h-full object-cover transform hover:scale-110 transition-transform duration-700 opacity-85"
               />

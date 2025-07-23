@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import StaffNavbar from '../../components/StaffNavbar';
+import StaffNavbar from '../../components/staff/StaffNavbar';
 import { useNavigate } from 'react-router-dom';
 import { FaClipboardList, FaEdit, FaSpinner, FaExclamationTriangle, FaChartPie, FaTags, FaShippingFast, FaCheckCircle } from 'react-icons/fa';
 import { Pie } from 'react-chartjs-2';
@@ -48,9 +48,9 @@ const Staff = () => {
       };
 
       const [ordersData, samplesData, transfersData] = await Promise.all([
-        fetchAPI('https://localhost:7113/api/Staff/assigned-order-details'),
-        fetchAPI('https://localhost:7113/api/Staff/get-sample-by-staffId'),
-        fetchAPI('https://localhost:7113/api/Staff/get-sample-transfers-by-staffId')
+        fetchAPI('/api/Staff/assigned-order-details'),
+        fetchAPI('/api/Staff/get-sample-by-staffId'),
+        fetchAPI('/api/Staff/get-sample-transfers-by-staffId')
       ]);
 
       setAssignedOrders(ordersData);
@@ -90,7 +90,7 @@ const Staff = () => {
         setUpdateError('Sample status is required');
         return;
       }
-      const response = await fetch(`https://localhost:7113/api/Staff/update-sample/${sampleId}`, {
+      const response = await fetch(`/api/Staff/update-sample/${sampleId}`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

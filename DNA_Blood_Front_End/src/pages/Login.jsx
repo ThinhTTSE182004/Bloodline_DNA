@@ -10,7 +10,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('https://localhost:7113/api/Auth/login', {
+      const response = await fetch('/api/Auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -153,7 +153,7 @@ const Login = () => {
             type="button"
             className="mt-4 w-full flex items-center justify-center gap-2 bg-white border border-gray-300 text-gray-700 py-3 px-4 rounded-md hover:bg-gray-50 transition-colors duration-300"
             onClick={() => {
-              window.location.href = 'https://localhost:7113/api/Auth/google-login';
+              window.location.href = '/api/Auth/google-login';
             }}
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">

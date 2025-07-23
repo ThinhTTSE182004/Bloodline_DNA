@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import Navbar from '../../components/Navbar';
+import Navbar from '../../components/customer/Navbar';
 import { useNavigate } from 'react-router-dom';
 import signalRService from '../../services/signalRService.js';
 import { motion } from 'framer-motion';
@@ -25,7 +25,7 @@ const AccountSetting = () => {
         return;
       }
 
-      const response = await fetch('https://localhost:7113/api/UserProfile/GetUserProfile', {
+      const response = await fetch('/api/UserProfile/GetUserProfile', {
         method: 'GET',
         headers: {
           'Authorization': `Bearer ${token.trim()}`,
@@ -121,7 +121,7 @@ const AccountSetting = () => {
         return;
       }
 
-      const response = await fetch('https://localhost:7113/api/UserProfile/UpdateUserProfile', {
+      const response = await fetch('/api/UserProfile/UpdateUserProfile', {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token.trim()}`,

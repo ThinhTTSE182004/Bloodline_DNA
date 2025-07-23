@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import Navbar from '../../components/Navbar';
+import Navbar from '../../components/customer/Navbar';
 import { FaSearch, FaCalendarAlt, FaFilter, FaDna, FaShoppingCart } from 'react-icons/fa';
-import ServiceDetail from '../../components/ServiceDetail';
+import ServiceDetail from '../../components/customer/ServiceDetail';
 import { useCart } from '../../context/CartContext';
 import { useServices } from '../../context/ServiceContext';
 import { motion } from 'framer-motion';
@@ -166,30 +166,47 @@ const ServicePage = () => {
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center"
+            >
               {services.map((service) => (
-                <div key={service.servicePackageId} className="bg-white shadow rounded-lg overflow-hidden">
-                  {/* Service Image */}
-                  <div className="h-48 w-full overflow-hidden">
+                <div
+                  key={service.servicePackageId}
+                  className="flex-none w-[400px] h-[400px] bg-white rounded-2xl shadow-lg overflow-hidden hover:scale-105 transition-transform duration-300 flex flex-col mx-auto"
+                >
+                  {/* Ảnh dịch vụ */}
+                  <div className="w-full aspect-square overflow-hidden bg-gray-100 flex items-center justify-center">
                     <img
-                      src="\img\DNA.png"
+                      src="/img/DNA.png"
                       alt={service.serviceName}
-                      className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                      className="w-full h-full object-cover transition-transform duration-300"
                     />
                   </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2">{service.serviceName}</h3>
-                    <p className="text-lg font-bold text-blue-600 mb-4 cursor-default">${service.price.toLocaleString()}</p>
-                    <div className="flex gap-3">
+                  {/* Nội dung dịch vụ */}
+                  <div className="p-4 flex flex-col flex-grow justify-between">
+                    <span
+                      onClick={() => handleOpenDetailModal(service)}
+                      className="text-base font-semibold text-gray-900 mb-1 hover:text-blue-600 transition-colors duration-300 block cursor-pointer"
+                      role="button"
+                      tabIndex={0}
+                    >
+                      {service.serviceName}
+                    </span>
+                    <div className="text-blue-600 font-semibold text-base mb-2 cursor-default">
+                      ${service.price.toLocaleString()}
+                    </div>
+                    <div className="text-sm text-gray-500 mb-2 line-clamp-2 min-h-[36px]">
+                      {service.description || "Professional DNA testing service with accurate results and detailed analysis."}
+                    </div>
+                    <div className="flex gap-2 mt-auto">
                       <button
                         onClick={() => handleOpenDetailModal(service)}
-                        className="flex-1 px-4 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-300"
+                        className="flex-1 px-3 py-2 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition-colors duration-300 text-sm"
                       >
                         More Details
                       </button>
                       <button
                         onClick={() => handleAddToCart(service)}
-                        className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center"
+                        className="flex-1 px-3 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors duration-300 flex items-center justify-center text-sm font-semibold"
                       >
                         <FaShoppingCart className="w-5 h-5 mr-2" />
                         Add to Cart

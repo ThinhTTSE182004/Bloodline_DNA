@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 import { motion } from 'framer-motion';
 
 const RegisterMedicalStaff = () => {
@@ -36,7 +36,7 @@ const RegisterMedicalStaff = () => {
     setMedicalMsg('');
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      const res = await fetch('https://localhost:7113/api/Auth/registerForMedicalStaff', {
+      const res = await fetch('/api/Auth/registerForMedicalStaff', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

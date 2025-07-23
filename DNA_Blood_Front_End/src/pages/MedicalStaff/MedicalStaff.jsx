@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import MedicalStaffNavbar from '../../components/MedicalStaffNavbar';
+import MedicalStaffNavbar from '../../components/medicalStaff/MedicalStaffNavbar';
 import { useNavigate } from 'react-router-dom';
 import { FaChartPie, FaTags, FaCheckCircle, FaSpinner, FaVials } from 'react-icons/fa';
 import { Pie } from 'react-chartjs-2';
@@ -35,8 +35,8 @@ const MedicalStaff = () => {
       };
 
       const [samplesData, transfersData] = await Promise.all([
-        fetchAPI('https://localhost:7113/api/MedicalStaff/get-sample-by-medicalStaffId'),
-        fetchAPI('https://localhost:7113/api/MedicalStaff/get-sample-transfers-by-medicalStaffId')
+        fetchAPI('/api/MedicalStaff/get-sample-by-medicalStaffId'),
+        fetchAPI('/api/MedicalStaff/get-sample-transfers-by-medicalStaffId')
       ]);
 
       setSamples(samplesData);

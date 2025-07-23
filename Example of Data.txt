@@ -4,61 +4,61 @@ Bộ Dữ liệu mẫu cho Staff
 [
   {
     "username": "Nguyễn Văn An",
-    "password": "12345678",
+    "password": "123456",
     "email": "nguyenvanan@gmail.com",
     "phone": "0912345678"
   },
   {
     "username": "Trần Thị Thùy",
-    "password": "password123",
+    "password": "123456",
     "email": "tranthithuy@yahoo.com",
     "phone": "0908765432"
   },
   {
     "username": "Lê Minh Thư",
-    "password": "thu12345",
+    "password": "123456",
     "email": "leminhthu@hotmail.com",
     "phone": "0987654321"
   },
   {
     "username": "Phạm Thanh Sơn",
-    "password": "son12345",
+    "password": "123456",
     "email": "phamthanhson@outlook.com",
     "phone": "0923456789"
   },
   {
     "username": "Hoàng Thị Ma",
-    "password": "ma123456",
+    "password": "123456",
     "email": "hoangthima@gmail.com",
     "phone": "0965432109"
   },
   {
     "username": "Đoàn Văn Khánh",
-    "password": "khanhpassword",
+    "password": "123456",
     "email": "doanvankhanh@mail.com",
     "phone": "0901234567"
   },
   {
     "username": "Ngô Thị Thảo",
-    "password": "password2023",
+    "password": "123456",
     "email": "ngothithao@outlook.com",
     "phone": "0912349876"
   },
   {
     "username": "Vương Thanh Hà",
-    "password": "thanhha123",
+    "password": "123456",
     "email": "vuongthanhha@yahoo.com",
     "phone": "0923456789"
   },
   {
     "username": "Trần Như Quyền",
-    "password": "quyenpassword",
+    "password": "123456",
     "email": "trannhuquyen@gmail.com",
     "phone": "0945678901"
   },
   {
     "username": "Phan Thị Thùy",
-    "password": "thuy56789",
+    "password": "123456",
     "email": "phanthithuy@hotmail.com",
     "phone": "0981234567"
   }
@@ -69,7 +69,7 @@ Bộ Dữ Liệu Cho Medical Staff
 [
   {
     "username": "Nguyễn Thị Lan",
-    "password": "12345678",
+    "password": "123456",
     "email": "nguyenthilan@gmail.com",
     "phone": "0912345678",
     "yoe": 5,
@@ -77,7 +77,7 @@ Bộ Dữ Liệu Cho Medical Staff
   },
   {
     "username": "Trần Minh Tú",
-    "password": "password123",
+    "password": "123456",
     "email": "tranminhtu@yahoo.com",
     "phone": "0908765432",
     "yoe": 3,
@@ -85,7 +85,7 @@ Bộ Dữ Liệu Cho Medical Staff
   },
   {
     "username": "Lê Thị Hương",
-    "password": "thu12345",
+    "password": "123456",
     "email": "lethihuong@hotmail.com",
     "phone": "0987654321",
     "yoe": 2,
@@ -93,7 +93,7 @@ Bộ Dữ Liệu Cho Medical Staff
   },
   {
     "username": "Phạm Quang Huy",
-    "password": "son12345",
+    "password": "123456",
     "email": "phamquanghuy@outlook.com",
     "phone": "0923456789",
     "yoe": 8,
@@ -101,7 +101,7 @@ Bộ Dữ Liệu Cho Medical Staff
   },
   {
     "username": "Hoàng Thanh Mai",
-    "password": "ma123456",
+    "password": "123456",
     "email": "hoangthanhmai@gmail.com",
     "phone": "0965432109",
     "yoe": 6,
@@ -109,7 +109,7 @@ Bộ Dữ Liệu Cho Medical Staff
   },
   {
     "username": "Đoàn Bích Liên",
-    "password": "khanhpassword",
+    "password": "123456",
     "email": "doanbichlien@mail.com",
     "phone": "0901234567",
     "yoe": 4,
@@ -117,7 +117,7 @@ Bộ Dữ Liệu Cho Medical Staff
   },
   {
     "username": "Ngô Thiên Kim",
-    "password": "password2023",
+    "password": "123456",
     "email": "ngothienkim@outlook.com",
     "phone": "0912349876",
     "yoe": 7,
@@ -125,7 +125,7 @@ Bộ Dữ Liệu Cho Medical Staff
   },
   {
     "username": "Vương Hồng Hà",
-    "password": "thanhha123",
+    "password": "123456",
     "email": "vuonghongha@yahoo.com",
     "phone": "0923456789",
     "yoe": 9,
@@ -133,7 +133,7 @@ Bộ Dữ Liệu Cho Medical Staff
   },
   {
     "username": "Trần Quang Hạ",
-    "password": "quyenpassword",
+    "password": "123456",
     "email": "tranquangha@gmail.com",
     "phone": "0945678901",
     "yoe": 1,
@@ -141,7 +141,7 @@ Bộ Dữ Liệu Cho Medical Staff
   },
   {
     "username": "Phan Thị Yến",
-    "password": "thuy56789",
+    "password": "123456",
     "email": "phanthiyen@hotmail.com",
     "phone": "0981234567",
     "yoe": 3,

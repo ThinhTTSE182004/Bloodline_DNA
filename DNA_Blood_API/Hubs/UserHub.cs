@@ -17,6 +17,13 @@ namespace DNA_API1.Hubs
         {
             await Groups.AddToGroupAsync(Context.ConnectionId, "Admin");
         }
+
+        // Method để gửi notification cho customer khi có kết quả mới
+        public async Task SendResultNotification(int userId, string orderId, string message)
+        {
+            await Clients.Group($"User_{userId}").SendAsync("ReceiveResultNotification", orderId, message);
+        }
+
         public override async Task OnConnectedAsync()
         {
             Console.WriteLine($"[SignalR] New connection: {Context.ConnectionId}");

@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FaShoppingCart, FaBars, FaTimes, FaUser, FaSignOutAlt, FaBell } from 'react-icons/fa';
 // import { FaDna } from "react-icons/fa6";
-import { useCart } from '../context/CartContext';
-import signalRService from '../services/signalRService';
+import { useCart } from '../../context/CartContext';
+import signalRService from '../../services/signalRService';
 
 // Thêm hàm tự decode JWT lấy userId
 function getUserIdFromToken(token) {
@@ -64,10 +64,27 @@ export default function Navbar() {
   console.log('[Navbar] Received PaymentSuccess:', data);
 }, []);
 
+// Thêm callback cho notification result
+const handleResultNotification = useCallback((orderId, message) => {
+  setNotifications(prev => {
+    const newList = [...prev, { orderId, message, type: 'result' }];
+    return newList;
+  });
+  setUnreadCount(prev => {
+    const newCount = prev + 1;
+    localStorage.setItem('unreadCount', newCount);
+    return newCount;
+  });
+}, []);
+
 useEffect(() => {
   signalRService.on('PaymentSuccess', handlePaymentSuccess);
-  return () => signalRService.off('PaymentSuccess', handlePaymentSuccess);
-}, [handlePaymentSuccess]);
+  signalRService.on('ReceiveResultNotification', handleResultNotification);
+  return () => {
+    signalRService.off('PaymentSuccess', handlePaymentSuccess);
+    signalRService.off('ReceiveResultNotification', handleResultNotification);
+  };
+}, [handlePaymentSuccess, handleResultNotification]);
 
   // Kiểm tra trạng thái đăng nhập ban đầu và lắng nghe login/logout
   useEffect(() => {

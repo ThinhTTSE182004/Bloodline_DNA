@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import Navbar from '../../components/Navbar';
+import Navbar from '../../components/customer/Navbar';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaCheckCircle, FaUser, FaEnvelope, FaPhone, FaMapMarkerAlt, FaCalendarAlt, FaTransgender, FaUsers, FaUserFriends, FaChevronDown, FaChevronUp, FaReceipt, FaShoppingBag } from 'react-icons/fa';
 import { motion } from 'framer-motion';
@@ -15,7 +15,18 @@ const PaymentSuccess = () => {
     const sessionBooking = JSON.parse(sessionStorage.getItem('lastPaidBooking'));
     if (sessionBooking) {
       setUserDetails(sessionBooking);
-      setServices(sessionBooking.selectedServices || []);
+      // Nếu thiếu selectedServices, thử lấy từ details + services context
+      if (sessionBooking.selectedServices && sessionBooking.selectedServices.length > 0) {
+        setServices(sessionBooking.selectedServices);
+      } else if (sessionBooking.details && window.servicesList) {
+        // window.servicesList là biến tạm, bạn có thể truyền qua context hoặc localStorage
+        const fallbackServices = sessionBooking.details.map(detail =>
+          window.servicesList.find(s => String(s.servicePackageId) === String(detail.servicePackageId))
+        ).filter(Boolean);
+        setServices(fallbackServices);
+      } else {
+        setServices([]);
+      }
       return;
     }
 

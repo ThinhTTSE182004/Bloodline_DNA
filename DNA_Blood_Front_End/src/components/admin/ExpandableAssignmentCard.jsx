@@ -15,17 +15,10 @@ import {
 } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
 
-import { 
-  Avatar, 
-  AvatarFallback, 
-  AvatarImage,
-  Badge,
-  Button,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
-} from "./ui"
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
+import { Badge } from '../ui/badge';
+import { Button } from '../ui/button';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/tooltip';
 
 // Expandable Assignment Card Component
 export default function ExpandableAssignmentCard({ 
@@ -51,17 +44,17 @@ export default function ExpandableAssignmentCard({
         const headers = token ? { 'Authorization': `Bearer ${token}` } : {}
         
         // Fetch assignments
-        const assignmentsResponse = await fetch('https://localhost:7113/api/ShiftAssignment/AllAssignments', {
+        const assignmentsResponse = await fetch('/api/ShiftAssignment/AllAssignments', {
           headers
         })
         
         // Fetch staffs
-        const staffsResponse = await fetch('https://localhost:7113/api/ShiftAssignment/staffs', {
+        const staffsResponse = await fetch('/api/ShiftAssignment/staffs', {
           headers
         })
         
         // Fetch medical staffs
-        const medicalStaffsResponse = await fetch('https://localhost:7113/api/ShiftAssignment/medical-staffs', {
+        const medicalStaffsResponse = await fetch('/api/ShiftAssignment/medical-staffs', {
           headers
         })
         

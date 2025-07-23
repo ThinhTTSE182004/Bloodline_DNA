@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import AdminNavbar from '../../components/AdminNavbar';
-import AdminSidebar from '../../components/AdminSidebar';
+import AdminNavbar from '../../components/admin/AdminNavbar';
+import AdminSidebar from '../../components/admin/AdminSidebar';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import { FaUsers, FaUserMd, FaUserTie, FaChartBar, FaSearch, FaFilter } from 'react-icons/fa';
 import { motion } from 'framer-motion';
@@ -41,14 +41,14 @@ const StaffManagement = () => {
       
       try {
         // Fetch Medical Staffs
-        const medRes = await fetch('https://localhost:7113/api/ShiftAssignment/medical-staffs', {
+        const medRes = await fetch('/api/ShiftAssignment/medical-staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         const medData = medRes.ok ? await medRes.json() : [];
         setMedicalStaffs(Array.isArray(medData) ? medData : []);
 
         // Fetch Staffs
-        const staffRes = await fetch('https://localhost:7113/api/ShiftAssignment/staffs', {
+        const staffRes = await fetch('/api/ShiftAssignment/staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         const staffData = staffRes.ok ? await staffRes.json() : [];

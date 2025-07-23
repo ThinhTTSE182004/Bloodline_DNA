@@ -12,7 +12,7 @@ import {
   FaTimes,
   FaBell,
 } from "react-icons/fa";
-import signalRService from '../services/signalRService';
+import signalRService from '../../services/signalRService';
 
 // Toast notification component
 function Toast({ message, onClose }) {
