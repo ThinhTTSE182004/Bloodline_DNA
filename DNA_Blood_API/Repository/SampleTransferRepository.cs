@@ -148,5 +148,11 @@ public class SampleTransferRepository : ISampleTransferRepository
             })
             .ToListAsync();
     }
+
+    public async Task<bool> IsSampleAssignedToMedicalStaffAsync(int sampleId, int medicalStaffId)
+    {
+        return await _context.SampleTransfers
+            .AnyAsync(st => st.SampleId == sampleId && st.MedicalStaffId == medicalStaffId);
+    }
 }
 

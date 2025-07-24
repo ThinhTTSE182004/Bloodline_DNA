@@ -1,6 +1,7 @@
 ﻿using DNA_API1.Models;
 using DNA_API1.Repository;
 using DNA_API1.ViewModels;
+using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace DNA_API1.Services
@@ -43,6 +44,11 @@ namespace DNA_API1.Services
         public async Task<StatusChangeResult> UpdateSampleTransferStatusAsync(int transferId, string newStatus)
         {
             return await _repository.UpdateSampleTransferStatusAsync(transferId, newStatus);
+        }
+
+        public async Task<bool> IsSampleAssignedToMedicalStaff(int sampleId, int medicalStaffId)
+        {
+            return await _repository.IsSampleAssignedToMedicalStaffAsync(sampleId, medicalStaffId);
         }
     }
 }

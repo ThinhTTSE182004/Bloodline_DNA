@@ -1,6 +1,7 @@
 ﻿using DNA_API1.Models;
 using DNA_API1.Repository;
 using DNA_API1.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace DNA_API1.Services
 {
@@ -15,11 +16,22 @@ namespace DNA_API1.Services
     {
         private readonly ISampleService _sampleService;
         private readonly ISampleVerificationImageRepository _repository;
+        private readonly IUserRepository _userRepository;
+        private readonly ISampleTransferService _sampleTransferService;
+        private readonly ISampleVerificationImageRepository _sampleVerificationImageRepository;
 
-        public SampleVerificationImageService(ISampleService sampleService, ISampleVerificationImageRepository repository)
+        public SampleVerificationImageService(
+            ISampleService sampleService,
+            ISampleVerificationImageRepository repository,
+            IUserRepository userRepository,
+            ISampleTransferService sampleTransferService
+        )
         {
             _sampleService = sampleService;
             _repository = repository;
+            _userRepository = userRepository;
+            _sampleTransferService = sampleTransferService;
+            _sampleVerificationImageRepository = repository;
         }
 
         public async Task<UploadResult> UploadVerificationImageAsync(SampleVerificationImageCreateDTO model, int staffId)
@@ -47,6 +59,52 @@ namespace DNA_API1.Services
         public async Task<IEnumerable<SampleVerificationImage>> GetImagesBySampleIdAsync(int sampleId)
         {
             return await _repository.GetBySampleIdAsync(sampleId);
+        }
+
+        public async Task<IEnumerable<SampleVerificationImageDTO>> GetImageVMsBySampleIdAsync(int sampleId)
+        {
+            var images = await _repository.GetBySampleIdWithSampleAndParticipantAsync(sampleId);
+
+            var userIds = images
+                .SelectMany(img => new[] { img.CapturedBy }
+                    .Concat(img.VerifiedBy.HasValue ? new[] { img.VerifiedBy.Value } : Array.Empty<int>()))
+                .Distinct()
+                .ToList();
+
+            var users = await _userRepository.GetUserNamesByIdsAsync(userIds);
+
+            return images.Select(img => new SampleVerificationImageDTO
+            {
+                VerificationImageId = img.VerificationImageId,
+                SampleId = img.SampleId,
+                ImageUrl = img.ImageUrl,
+                CaptureTime = img.CaptureTime,
+                CapturedBy = img.CapturedBy,
+                CapturedByName = users.ContainsKey(img.CapturedBy) ? users[img.CapturedBy] : null,
+                VerificationType = img.VerificationType,
+                VerifiedBy = img.VerifiedBy,
+                VerifiedByName = img.VerifiedBy.HasValue && users.ContainsKey(img.VerifiedBy.Value) ? users[img.VerifiedBy.Value] : null,
+                VerificationStatus = img.VerificationStatus,
+                Note = img.Note,
+                ParticipantId = img.Sample.ParticipantId,
+                ParticipantName = img.Sample.Participant?.FullName // hoặc .Name tùy model
+            });
+        }
+
+        public async Task<bool> VerifyImageAsync(int verificationImageId, SampleVerificationImageVerifyDTO model, int medicalStaffId)
+        {
+            var image = await _repository.GetByIdAsync(verificationImageId);
+            if (image == null) return false;
+
+            var isAssigned = await _sampleTransferService.IsSampleAssignedToMedicalStaff(image.SampleId, medicalStaffId);
+            if (!isAssigned) return false;
+
+            image.VerificationStatus = model.VerificationStatus;
+            image.Note = model.Note;
+            image.VerifiedBy = medicalStaffId;
+
+            await _repository.UpdateAsync(image);
+            return true;
         }
     }
 }

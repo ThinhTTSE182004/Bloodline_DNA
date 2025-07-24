@@ -170,7 +170,6 @@ FOREIGN KEY (order_detail_id) REFERENCES Order_detail(order_detail_id)
 CREATE TABLE Sample_Verification_Image (
     verification_image_id INT IDENTITY(1,1) PRIMARY KEY, 
     sample_id INT NOT NULL,
-    participant_id INT NULL,
     image_url NVARCHAR(500) NOT NULL,
     capture_time DATETIME NOT NULL,
     captured_by INT NOT NULL,
@@ -180,7 +179,6 @@ CREATE TABLE Sample_Verification_Image (
     note NVARCHAR(500) NULL,
 
     FOREIGN KEY (sample_id) REFERENCES samples(sample_id),
-    FOREIGN KEY (participant_id) REFERENCES Participant(participant_id),
     FOREIGN KEY (captured_by) REFERENCES USERS(user_id),
     FOREIGN KEY (verified_by) REFERENCES USERS(user_id)
 );

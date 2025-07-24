@@ -140,7 +140,7 @@ namespace DNA_API1.Controllers
         [HttpGet("sample-verification-images/{sampleId}")]
         public async Task<IActionResult> GetSampleVerificationImages(int sampleId)
         {
-            var images = await _sampleVerificationImageService.GetImagesBySampleIdAsync(sampleId);
+            var images = await _sampleVerificationImageService.GetImageVMsBySampleIdAsync(sampleId);
             return Ok(images);
             
         }

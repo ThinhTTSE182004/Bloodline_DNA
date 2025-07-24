@@ -22,8 +22,16 @@ namespace DNA_API1.Controllers
         private readonly IOrderDetailService _orderDetailService;
         private readonly IHubContext<UserHub> _hubContext;
         private readonly IShiftAssignmentService _shiftAssignmentService;
+        private readonly ISampleVerificationImageService _sampleVerificationImageService;
 
-        public MedicalStaffController(ISampleService sampleService, ISampleTransferService sampleTransferService, IResultService resultService, IOrderDetailService orderDetailService, IHubContext<UserHub> hubContext, IShiftAssignmentService shiftAssignmentService)
+        public MedicalStaffController(
+            ISampleService sampleService,
+            ISampleTransferService sampleTransferService,
+            IResultService resultService,
+            IOrderDetailService orderDetailService,
+            IHubContext<UserHub> hubContext,
+            IShiftAssignmentService shiftAssignmentService,
+            ISampleVerificationImageService sampleVerificationImageService) // <-- Sửa dòng này
         {
             _sampleService = sampleService;
             _sampleTransferService = sampleTransferService;
@@ -31,6 +39,7 @@ namespace DNA_API1.Controllers
             _orderDetailService = orderDetailService;
             _hubContext = hubContext;
             _shiftAssignmentService = shiftAssignmentService;
+            _sampleVerificationImageService = sampleVerificationImageService;
         }
         // Nhận mẫu: cập nhật trạng thái Sample.Status = "Processing"
         [HttpPut("receive-sample/{sampleId}")]
@@ -162,6 +171,27 @@ namespace DNA_API1.Controllers
             int y = year ?? now.Year;
             var shifts = await _shiftAssignmentService.GetWorkShiftsByUserAndMonthAsync(medicalStaffId, m, y);
             return Ok(shifts);
+        }
+
+        [HttpGet("sample-images/{sampleId}")]
+        public async Task<IActionResult> GetSampleImagesBySampleId(int sampleId)
+        {
+            var medicalStaffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+         
+            var imageVMs = await _sampleVerificationImageService.GetImageVMsBySampleIdAsync(sampleId);
+            return Ok(imageVMs);
+        }
+
+        [HttpPost("verify-sample-image/{verificationImageId}")]
+        public async Task<IActionResult> VerifySampleImage(int verificationImageId, [FromBody] SampleVerificationImageVerifyDTO model)
+        {
+            var medicalStaffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+
+            var success = await _sampleVerificationImageService.VerifyImageAsync(verificationImageId, model, medicalStaffId);
+            if (!success)
+                return StatusCode(403, new { message = "Bạn không có quyền xác nhận ảnh này hoặc ảnh không tồn tại." });
+
+            return Ok(new { message = "Xác nhận ảnh thành công." });
         }
     }
 }

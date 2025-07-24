@@ -142,6 +142,7 @@ namespace DNA_API1
             builder.Services.AddScoped<IBlogService, BlogService>();
             builder.Services.AddScoped<ISampleVerificationImageService, SampleVerificationImageService>();
 
+
             // Add SignalR
             builder.Services.AddSignalR();
 

@@ -6,6 +6,9 @@ namespace DNA_API1.Services
     public interface ISampleVerificationImageService
     {
         Task<UploadResult> UploadVerificationImageAsync(SampleVerificationImageCreateDTO model, int staffId);
-        Task<IEnumerable<SampleVerificationImage>> GetImagesBySampleIdAsync(int sampleId);
+
+        Task<IEnumerable<SampleVerificationImageDTO>> GetImageVMsBySampleIdAsync(int sampleId);
+
+        Task<bool> VerifyImageAsync(int verificationImageId, SampleVerificationImageVerifyDTO model, int medicalStaffId);
     }
 }
