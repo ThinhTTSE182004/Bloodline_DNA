@@ -31,7 +31,7 @@ namespace DNA_API1.Controllers
             IOrderDetailService orderDetailService,
             IHubContext<UserHub> hubContext,
             IShiftAssignmentService shiftAssignmentService,
-            ISampleVerificationImageService sampleVerificationImageService) // <-- Sửa dòng này
+            ISampleVerificationImageService sampleVerificationImageService) 
         {
             _sampleService = sampleService;
             _sampleTransferService = sampleTransferService;
@@ -73,7 +73,8 @@ namespace DNA_API1.Controllers
         [HttpPut("confirm-sample-transfer-received/{transferId}")]
         public async Task<IActionResult> ConfirmSampleTransferReceived(int transferId)
         {
-            var result = await _sampleTransferService.ConfirmSampleTransferReceivedAsync(transferId);
+            var medicalStaffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier).Value);
+            var result = await _sampleTransferService.ConfirmSampleTransferReceivedAsync(transferId, medicalStaffId);
             if (!result.Success) return BadRequest(result.Message);
             return Ok(result.Message);
         }

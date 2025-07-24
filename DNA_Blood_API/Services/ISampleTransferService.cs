@@ -8,7 +8,7 @@ namespace DNA_API1.Services
     {
         Task<bool> CreateSampleTransferAsync(SampleTransfer transfer);
         Task<StatusChangeResult> ConfirmSampleTransferAsync(int transferId);
-        Task<StatusChangeResult> ConfirmSampleTransferReceivedAsync(int transferId);
+        Task<StatusChangeResult> ConfirmSampleTransferReceivedAsync(int transferId, int medicalStaffId);
         Task<StatusChangeResult> UpdateSampleTransferStatusAsync(int transferId, string newStatus);
 
         Task<List<SampleTransferDTO>> GetSampleTransfersByStaffIdAsync(int staffId);

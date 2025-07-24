@@ -9,10 +9,15 @@ namespace DNA_API1.Services
    public class SampleTransferService : ISampleTransferService
     {
         private readonly ISampleTransferRepository _repository;
+        private readonly ISampleVerificationImageRepository _imageRepository;
 
-        public SampleTransferService(ISampleTransferRepository repository)
+        public SampleTransferService(
+            ISampleTransferRepository repository,
+            ISampleVerificationImageRepository imageRepository
+        )
         {
             _repository = repository;
+            _imageRepository = imageRepository;
         }
 
         public async Task<bool> CreateSampleTransferAsync(SampleTransfer transfer)
@@ -30,10 +35,26 @@ namespace DNA_API1.Services
         {
             return await _repository.UpdateSampleTransferStatusAsync(transferId, "Delivering Kit");
         }
- 
-        public async Task<StatusChangeResult> ConfirmSampleTransferReceivedAsync(int transferId)
+
+        public async Task<StatusChangeResult> ConfirmSampleTransferReceivedAsync(int transferId, int medicalStaffId)
         {
-            return await _repository.UpdateSampleTransferStatusAsync(transferId, "Received");
+            var transfer = await _repository.GetByIdAsync(transferId);
+            if (transfer == null)
+                return new StatusChangeResult { Success = false, Message = "Sample transfer not found." };
+
+            if (transfer.MedicalStaffId != medicalStaffId)
+                return new StatusChangeResult { Success = false, Message = "You do not have permission to validate this form.." };
+
+            // Kiểm tra đủ 2 ảnh hợp lệ
+            var images = await _imageRepository.GetAllImagesBySampleIdAsync(transfer.SampleId);
+            var hasEnoughValidImages = images.Count(img => img.VerificationStatus == "Valid photo verification") >= 2;
+            if (!hasEnoughValidImages)
+                return new StatusChangeResult { Success = false, Message = "Not enough 2 valid verification photos confirmed." };
+
+            transfer.SampleTransferStatus = "Received";
+            await _repository.UpdateAsync(transfer);
+
+            return new StatusChangeResult { Success = true, Message = "Sample received successfully confirmed." };
         }
 
         public async Task<List<SampleTransferDTO>> GetSampleTransfersByStaffIdAsync(int staffId)

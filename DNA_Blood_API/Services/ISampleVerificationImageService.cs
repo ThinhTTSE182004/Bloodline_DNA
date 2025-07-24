@@ -10,7 +10,10 @@ namespace DNA_API1.Services
         Task<IEnumerable<SampleVerificationImageDTO>> GetImageVMsBySampleIdAsync(int sampleId);
 
         Task<bool> VerifyImageAsync(int verificationImageId, SampleVerificationImageVerifyDTO model, int medicalStaffId);
-
+        // ràng buộc staff khi muốn chuyển sang phòng lab
         Task<bool> HasAtLeastTwoVerificationImagesAsync(int sampleId);
+
+        // Cái này ràng buộc cho medical khi muốn xác nhận đã nhận
+        Task<bool> HasAtLeastTwoValidImagesAsync(int sampleId);
     }
 }

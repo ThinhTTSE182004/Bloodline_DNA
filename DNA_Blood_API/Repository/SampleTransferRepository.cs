@@ -24,6 +24,18 @@ public class SampleTransferRepository : ISampleTransferRepository
         var transfer = await _context.SampleTransfers.FirstOrDefaultAsync(t => t.TransferId == transferId);
         return transfer?.SampleId;
     }
+
+    public async Task<SampleTransfer> GetByIdAsync(int transferId)
+    {
+        return await _context.SampleTransfers.FirstOrDefaultAsync(t => t.TransferId == transferId);
+    }
+
+    public async Task UpdateAsync(SampleTransfer transfer)
+    {
+        _context.SampleTransfers.Update(transfer);
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<StatusChangeResult> UpdateSampleTransferStatusAsync(int transferId, string newStatus)
     {
         var transfer = await _context.SampleTransfers.FindAsync(transferId);

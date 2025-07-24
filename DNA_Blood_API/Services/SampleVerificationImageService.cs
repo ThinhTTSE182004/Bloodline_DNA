@@ -112,5 +112,13 @@ namespace DNA_API1.Services
             var images = await _repository.GetAllImagesBySampleIdAsync(sampleId);
             return images.Count() >= 2;
         }
+
+        public async Task<bool> HasAtLeastTwoValidImagesAsync(int sampleId)
+        {
+            var images = await _repository.GetAllImagesBySampleIdAsync(sampleId);
+            // Chỉ tính ảnh đã được xác nhận là "Hợp lệ"
+            return images.Count(img => img.VerificationStatus == "Hợp lệ") >= 2;
+        }
+
     }
 }
