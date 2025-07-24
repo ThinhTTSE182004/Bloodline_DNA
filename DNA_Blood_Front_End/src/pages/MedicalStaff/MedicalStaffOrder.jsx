@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import MedicalStaffNavbar from '../../components/medicalStaff/MedicalStaffNavbar';
 import { useNavigate } from 'react-router-dom';
-import { FaClipboardList, FaSpinner, FaExclamationTriangle, FaCheck, FaFlask, FaCheckCircle, FaPlusCircle } from 'react-icons/fa';
+import { FaClipboardList, FaSpinner, FaExclamationTriangle, FaCheck, FaFlask, FaCheckCircle, FaPlusCircle, FaTrash, FaUser, FaTimes } from 'react-icons/fa';
 import { motion } from 'framer-motion';
-import { FaTrash } from 'react-icons/fa';
-import { FaCheck as FaCheckIcon, FaTimes as FaTimesIcon } from 'react-icons/fa';
 
 const MedicalStaffOrder = () => {
   const [samples, setSamples] = useState([]);
@@ -36,6 +34,11 @@ const MedicalStaffOrder = () => {
   const [sampleStatusFilter, setSampleStatusFilter] = useState('all');
   const [orderServiceFilter, setOrderServiceFilter] = useState('all');
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
+
+  // State cho modal xem ảnh xác minh
+  const [showViewImagesModal, setShowViewImagesModal] = useState(false);
+  const [viewImages, setViewImages] = useState([]);
+  const [selectedSampleForImages, setSelectedSampleForImages] = useState(null);
 
   const navigate = useNavigate();
 
@@ -246,6 +249,33 @@ const MedicalStaffOrder = () => {
     );
   }
 
+  // Thêm hàm xác nhận ảnh
+  const verifyImage = async (verificationImageId, status) => {
+    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+    try {
+      await fetch(`/api/MedicalStaff/verify-sample-image/${verificationImageId}`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ verificationStatus: status })
+      });
+      // fetch lại ảnh để cập nhật trạng thái
+      if (selectedSampleForImages) {
+        const resp = await fetch(`/api/MedicalStaff/sample-images/${selectedSampleForImages}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (resp.ok) {
+          const images = await resp.json();
+          setViewImages(images);
+        }
+      }
+    } catch (err) {
+      alert('Xác nhận ảnh thất bại!');
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-100">
       <MedicalStaffNavbar />
@@ -295,15 +325,36 @@ const MedicalStaffOrder = () => {
                         </span>
                       </td>
                       <td className="px-8 py-4 whitespace-nowrap text-sm font-medium">
-                        <button
-                            onClick={() => handleAction('confirm-sample-transfer-received', transfer.sampleTransferId, 'Confirm Transfer Received')}
-                            className={`flex items-center px-3 py-2 text-white rounded-md transition-all duration-200 text-xs font-semibold ${
-                                transfer.sampleTransferStatus === 'Received' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
-                            }`}
-                            disabled={transfer.sampleTransferStatus === 'Received'}
-                        >
-                            <FaCheck className="mr-2" /> Confirm Received
-                        </button>
+                        <div className="flex space-x-2">
+                            <button
+                                onClick={() => handleAction('confirm-sample-transfer-received', transfer.sampleTransferId, 'Confirm Transfer Received')}
+                                className={`flex items-center px-3 py-2 text-white rounded-md transition-all duration-200 text-xs font-semibold ${
+                                    transfer.sampleTransferStatus === 'Received' ? 'bg-gray-400 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
+                                }`}
+                                disabled={transfer.sampleTransferStatus === 'Received'}
+                            >
+                                <FaCheck className="mr-2" /> Confirm Received
+                            </button>
+                            {/* Nút View Images */}
+                            <button
+                                onClick={async () => {
+                                  setSelectedSampleForImages(transfer.sampleId);
+                                  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+                                  const resp = await fetch(`/api/MedicalStaff/sample-images/${transfer.sampleId}`, {
+                                    headers: { 'Authorization': `Bearer ${token}` }
+                                  });
+                                  if (resp.ok) {
+                                    const images = await resp.json();
+                                    setViewImages(images);
+                                    setShowViewImagesModal(true);
+                                  }
+                                }}
+                                className="flex items-center px-2 py-1 text-blue-600 hover:text-blue-800 border border-blue-200 rounded"
+                                title="View Verification Images"
+                            >
+                                📷 View Images
+                            </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -586,8 +637,8 @@ const MedicalStaffOrder = () => {
                               focus:outline-none`}
                             title="Toggle Match"
                           >
-                            {locus.isMatch === true && <FaCheckIcon className="text-green-600 text-lg" />}
-                            {locus.isMatch === false && <FaTimesIcon className="text-red-500 text-lg" />}
+                            {locus.isMatch === true && <FaCheck className="text-green-600 text-lg" />}
+                            {locus.isMatch === false && <FaTimes className="text-red-500 text-lg" />}
                           </button>
                         </td>
                         <td className="px-2 py-1 border border-gray-300">
@@ -613,6 +664,103 @@ const MedicalStaffOrder = () => {
               <button type="submit" className="px-6 py-2 bg-teal-600 text-white rounded-md hover:bg-teal-700">Submit Result</button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Modal hiển thị ảnh xác minh */}
+      {showViewImagesModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition">
+          <div className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto relative">
+            <div className="mb-4 flex items-center gap-3 text-base font-semibold">
+              <span className="inline-flex items-center bg-blue-100 text-blue-800 px-3 py-1 rounded-lg text-base font-bold">
+                <FaUser className="mr-2" /> Participant:
+              </span>
+              <span className="text-gray-800">{viewImages[0]?.participantName}</span>
+            </div>
+            <h3 className="text-2xl font-bold mb-4 text-center">
+              Verification Images for Sample <span className="text-blue-600">#{selectedSampleForImages}</span>
+            </h3>
+            {/* Warning if any image is not verified */}
+            {viewImages.some(img => !img.verificationStatus || img.verificationStatus === 'Pending') && (
+              <div className="mb-4 p-3 bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 rounded">
+                <strong>Chú ý:</strong> Bạn phải kiểm tra và xác thực tất cả ảnh trước khi xác nhận nhận mẫu.
+              </div>
+            )}
+            {viewImages.length === 0 ? (
+              <div className="text-gray-500 text-center py-8">No images uploaded.</div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {viewImages.map((img, idx) => (
+                  <div
+                    key={idx}
+                    className="border-2 border-gray-200 rounded-xl p-5 bg-white shadow hover:shadow-lg transition flex flex-col"
+                  >
+                    <img
+                      src={img.imageUrl}
+                      alt={img.verificationType}
+                      className="w-full h-44 object-cover rounded-lg mb-3 cursor-pointer hover:scale-105 transition"
+                      onClick={() => window.open(img.imageUrl, '_blank')}
+                    />
+                    <div className="flex flex-wrap gap-2 mb-3 items-center">
+                      <span className="inline-block bg-blue-100 text-blue-800 px-2 py-1 rounded text-xs font-semibold">
+                        {img.verificationType}
+                      </span>
+                      <span className={`inline-block px-2 py-1 rounded text-xs font-bold shadow-sm
+                        ${img.verificationStatus === 'Valid photo verification' ? 'bg-green-100 text-green-700 border border-green-300'
+                          : img.verificationStatus === 'Invalid photo verification' ? 'bg-red-100 text-red-700 border border-red-300'
+                          : 'bg-yellow-100 text-yellow-700 border border-yellow-300'}`}>
+                        {img.verificationStatus === 'Valid photo verification' ? 'Approved'
+                          : img.verificationStatus === 'Invalid photo verification' ? 'Rejected'
+                          : 'Pending'}
+                      </span>
+                    </div>
+                    <div className="text-xs text-gray-600 italic mb-1">
+                      <span className="font-semibold text-gray-700">Note:</span> {img.note ? img.note : <span className="text-gray-400">No note</span>}
+                    </div>
+                    <div className="text-xs text-gray-700 mb-1">
+                      <span className="font-semibold">Captured by:</span> {img.capturedByName}
+                      {img.verifiedByName && (
+                        <>
+                          <span className="mx-1">|</span>
+                          <span className="font-semibold">Verified by:</span> {img.verifiedByName}
+                        </>
+                      )}
+                    </div>
+                    <div className="text-xs text-gray-500 mb-1">
+                      <span className="font-semibold">Capture Time:</span> {img.captureTime ? new Date(img.captureTime).toLocaleString() : 'N/A'}
+                    </div>
+                    <div className="flex gap-2 mb-3 mt-2">
+                      <button
+                        className={`flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold shadow transition-all duration-150
+                          ${img.verificationStatus === 'Valid photo verification' ? 'bg-green-400 text-white cursor-not-allowed' : 'bg-green-100 text-green-700 hover:bg-green-500 hover:text-white'}`}
+                        disabled={img.verificationStatus === 'Valid photo verification'}
+                        onClick={() => verifyImage(img.verificationImageId, 'Valid photo verification')}
+                        title={img.verificationStatus === 'Valid photo verification' ? 'Already approved' : 'Approve this image'}
+                      >
+                        <FaCheck className="text-base" /> Approve
+                      </button>
+                      <button
+                        className={`flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold shadow transition-all duration-150
+                          ${img.verificationStatus === 'Invalid photo verification' ? 'bg-red-400 text-white cursor-not-allowed' : 'bg-red-100 text-red-700 hover:bg-red-500 hover:text-white'}`}
+                        disabled={img.verificationStatus === 'Invalid photo verification'}
+                        onClick={() => verifyImage(img.verificationImageId, 'Invalid photo verification')}
+                        title={img.verificationStatus === 'Invalid photo verification' ? 'Already rejected' : 'Reject this image'}
+                      >
+                        <FaTimes className="text-base" /> Reject
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <button
+              onClick={() => setShowViewImagesModal(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-red-500 text-2xl font-bold transition"
+              title="Close"
+            >
+              ×
+            </button>
+          </div>
         </div>
       )}
     </div>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import MedicalStaffNavbar from '../../components/medicalStaff/MedicalStaffNavbar';
 import { useNavigate } from 'react-router-dom';
-import { FaChartPie, FaTags, FaCheckCircle, FaSpinner, FaVials } from 'react-icons/fa';
+
 import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js';
 import { motion } from 'framer-motion';
+import { FaTags, FaVials, FaCheckCircle, FaChartPie } from 'react-icons/fa';
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
@@ -89,7 +90,12 @@ const MedicalStaff = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-100"><MedicalStaffNavbar /><div className="flex justify-center items-center h-screen"><FaSpinner className="w-12 h-12 text-teal-600 animate-spin" /></div></div>
+      <div className="min-h-screen bg-gray-100">
+        <MedicalStaffNavbar />
+        <div className="flex justify-center items-center h-screen">
+          Loading...
+        </div>
+      </div>
     );
   }
 
