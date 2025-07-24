@@ -25,6 +25,13 @@ namespace DNA_API1.Repository
                 .ToListAsync();
         }
 
+        public async Task<IEnumerable<SampleVerificationImage>> GetAllImagesBySampleIdAsync(int sampleId)
+        {
+            return await _context.SampleVerificationImages
+                .Where(x => x.SampleId == sampleId)
+                .ToListAsync();
+        }
+
         public async Task<IEnumerable<SampleVerificationImage>> GetBySampleIdWithSampleAndParticipantAsync(int sampleId)
         {
             return await _context.SampleVerificationImages

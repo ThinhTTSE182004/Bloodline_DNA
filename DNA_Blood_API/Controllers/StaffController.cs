@@ -87,6 +87,16 @@ namespace DNA_API1.Controllers
         [HttpPut("deliver-to-lab/{transferId}")]
         public async Task<IActionResult> DeliverToLab(int transferId)
         {
+            // Lấy sampleId từ transferId
+            var sampleId = await _sampleTransferService.GetSampleIdByTransferIdAsync(transferId);
+            if (sampleId == null)
+                return BadRequest("Không tìm thấy sample cho transfer này.");
+
+            // Kiểm tra đã có ít nhất 2 ảnh xác minh chưa
+            var hasEnoughImages = await _sampleVerificationImageService.HasAtLeastTwoVerificationImagesAsync(sampleId.Value);
+            if (!hasEnoughImages)
+                return BadRequest("Bạn phải upload ít nhất 2 ảnh xác minh mẫu trước khi chuyển sang phòng lab!");
+
             var result = await _sampleTransferService.UpdateSampleTransferStatusAsync(transferId, "Delivering to Lab");
             if (!result.Success) return BadRequest(result.Message);
             return Ok(result.Message);

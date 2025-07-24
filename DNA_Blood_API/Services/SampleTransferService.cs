@@ -21,11 +21,16 @@ namespace DNA_API1.Services
             return true;
         }
 
+        public async Task<int?> GetSampleIdByTransferIdAsync(int transferId)
+        {
+            return await _repository.GetSampleIdByTransferIdAsync(transferId);
+        }
+
         public async Task<StatusChangeResult> ConfirmSampleTransferAsync(int transferId)
         {
             return await _repository.UpdateSampleTransferStatusAsync(transferId, "Delivering Kit");
         }
-
+ 
         public async Task<StatusChangeResult> ConfirmSampleTransferReceivedAsync(int transferId)
         {
             return await _repository.UpdateSampleTransferStatusAsync(transferId, "Received");

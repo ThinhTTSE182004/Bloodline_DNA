@@ -106,5 +106,11 @@ namespace DNA_API1.Services
             await _repository.UpdateAsync(image);
             return true;
         }
+
+        public async Task<bool> HasAtLeastTwoVerificationImagesAsync(int sampleId)
+        {
+            var images = await _repository.GetAllImagesBySampleIdAsync(sampleId);
+            return images.Count() >= 2;
+        }
     }
 }

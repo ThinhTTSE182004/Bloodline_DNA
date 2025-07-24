@@ -13,5 +13,7 @@ namespace DNA_API1.Repository
         Task<List<SampleTransferDTO>> GetSampleTransfersByMedicalStaffIdAsync(int medicalStaffId);
 
         Task<bool> IsSampleAssignedToMedicalStaffAsync(int sampleId, int medicalStaffId);
+
+        Task<int?> GetSampleIdByTransferIdAsync(int transferId);
     }
 }

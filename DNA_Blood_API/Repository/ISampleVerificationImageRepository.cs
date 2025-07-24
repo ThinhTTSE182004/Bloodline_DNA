@@ -12,5 +12,7 @@ namespace DNA_API1.Repository
 
         Task<SampleVerificationImage> GetByIdAsync(int verificationImageId);
         Task UpdateAsync(SampleVerificationImage entity);
+
+        Task<IEnumerable<SampleVerificationImage>> GetAllImagesBySampleIdAsync(int sampleId);
     }
 }

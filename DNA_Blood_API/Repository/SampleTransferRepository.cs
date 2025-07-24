@@ -19,7 +19,11 @@ public class SampleTransferRepository : ISampleTransferRepository
         _context.SampleTransfers.Add(sampleTransfer);
         await _context.SaveChangesAsync();
     }
-
+    public async Task<int?> GetSampleIdByTransferIdAsync(int transferId)
+    {
+        var transfer = await _context.SampleTransfers.FirstOrDefaultAsync(t => t.TransferId == transferId);
+        return transfer?.SampleId;
+    }
     public async Task<StatusChangeResult> UpdateSampleTransferStatusAsync(int transferId, string newStatus)
     {
         var transfer = await _context.SampleTransfers.FindAsync(transferId);
