@@ -51,6 +51,12 @@ const BlogListGuest = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-2 sm:px-4 py-6 sm:py-10">
+      <button
+        onClick={() => navigate('/')}
+        className="mb-6 px-5 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition font-medium shadow"
+      >
+        Back to Home
+      </button>
       <motion.h1
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
