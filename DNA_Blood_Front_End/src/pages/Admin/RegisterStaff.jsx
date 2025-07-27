@@ -4,11 +4,13 @@ import AdminNavbar from '../../components/admin/AdminNavbar';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import { motion } from 'framer-motion';
 
+
 const RegisterStaff = () => {
   const [staffForm, setStaffForm] = useState({ username: '', password: '', email: '', phone: '' });
   const [staffMsg, setStaffMsg] = useState('');
   const navigate = useNavigate();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [passwordError, setPasswordError] = useState(false);
 
   React.useEffect(() => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
@@ -34,6 +36,18 @@ const RegisterStaff = () => {
   const handleStaffSubmit = async (e) => {
     e.preventDefault();
     setStaffMsg('');
+    
+    const password = staffForm.password;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    if (!passwordRegex.test(password)) {
+      setPasswordError(true);
+      setStaffMsg('Password must be at least 8 characters, include uppercase, lowercase, and a number.');
+      return;
+    }
+    setPasswordError(false);
+    
+
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       const res = await fetch('/api/Auth/registerForStaff', {
@@ -70,47 +84,74 @@ const RegisterStaff = () => {
             Create Staff Account
           </motion.h1>
           <form onSubmit={handleStaffSubmit} className="space-y-4">
-            <motion.input 
+            <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
+              className="relative">
+              {staffForm.password === '' && (
+              <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+            <input 
               name="username" 
               value={staffForm.username} 
               onChange={handleStaffChange} 
               placeholder="Username" 
-              className="w-full border p-2 rounded" 
+              className="w-full border p-2 rounded pl-5" 
               required />
-            <motion.input 
+            </motion.div>
+            <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.8, delay: 0.33 }}
+              className="relative">
+              {staffForm.password === '' && (
+                <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+            <input 
               name="password" 
               type="password" 
               value={staffForm.password} 
               onChange={handleStaffChange} 
               placeholder="Password" 
-              className="w-full border p-2 rounded" 
+              className={`w-full border p-2 rounded pl-5 ${passwordError ? 'border-red-500' : ''}`} 
               required />
-            <motion.input 
+              <p className="text-sm text-gray-500">
+                Password must be at least 8 characters, include uppercase, lowercase, and a number.
+              </p>
+            </motion.div>
+            <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
+              className="relative">
+              {staffForm.password === '' && (
+              <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+            <input 
               name="email" 
               value={staffForm.email} 
               onChange={handleStaffChange} 
               placeholder="Email" 
-              className="w-full border p-2 rounded" 
+              className="w-full border p-2 rounded pl-5" 
               required />
-            <motion.input 
+            </motion.div>
+            <motion.div 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
+              className="relative">
+              {staffForm.password === '' && (
+              <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+            <input 
               name="phone" 
               value={staffForm.phone} 
               onChange={handleStaffChange} 
               placeholder="Phone" 
-              className="w-full border p-2 rounded" 
+              className="w-full border p-2 rounded pl-5" 
               required />
+            </motion.div>
             <motion.button 
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}

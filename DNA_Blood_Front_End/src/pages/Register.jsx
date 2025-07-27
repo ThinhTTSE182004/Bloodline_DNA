@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import logo from '/img/logo.png'; // Assuming logo.png is directly in public/img
-import backgroundImage from '/img/bg-breadcrumb.jpg'; // Assuming bg-breadcrumb.jpg is directly in public/img
+import logo from '/img/logo.png';
+import backgroundImage from '/img/bg-breadcrumb.jpg';
 
 const Register = () => {
   const navigate = useNavigate();
@@ -22,26 +22,23 @@ const Register = () => {
       ...formData,
       [name]: type === 'checkbox' ? checked : value,
     });
-    setError(''); // Clear error when user types
+    setError('');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
-    // Validate passwords match
     if (formData.password !== formData.confirmPassword) {
       setError('Passwords do not match');
       return;
     }
 
-    // Validate password length
     if (formData.password.length < 6) {
       setError('Password must be at least 6 characters long');
       return;
     }
 
-    // Validate phone number format
     const phoneRegex = /^[0-9]{10}$/;
     if (!phoneRegex.test(formData.phone)) {
       setError('Phone number must be 10 digits');

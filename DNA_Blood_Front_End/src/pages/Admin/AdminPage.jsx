@@ -26,22 +26,18 @@ const AdminPage = () => {
       setLoading(true);
       const token = sessionStorage.getItem('token') || sessionStorage.getItem('token') || localStorage.getItem('token');
       try {
-        // Medical Staffs
         const medRes = await fetch('/api/ShiftAssignment/medical-staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         setMedicalStaffs(medRes.ok ? await medRes.json() : []);
-        // Staffs
         const staffRes = await fetch('/api/ShiftAssignment/staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         setStaffs(staffRes.ok ? await staffRes.json() : []);
-        // WorkShifts
         const shiftRes = await fetch('/api/WorkShift/WorkShift', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         setWorkShifts(shiftRes.ok ? await shiftRes.json() : []);
-        // Services
         const serviceRes = await fetch('/api/Service/GetAllServiceWithPrice', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
@@ -58,7 +54,6 @@ const AdminPage = () => {
     fetchAll();
   }, []);
 
-  // Tổng hợp số liệu
   const totalMedicalStaff = medicalStaffs.length;
   const totalStaff = staffs.length;
   const totalWorkShifts = workShifts.length;
@@ -69,19 +64,16 @@ const AdminPage = () => {
     return acc;
   }, {});
 
-  // Pie chart tỷ lệ staff/medical staff (dùng SVG đơn giản)
 
   const pieData = [
     { name: 'Medical', value: totalMedicalStaff },
     { name: 'Staff', value: totalStaff }
   ];
-  const COLORS = ['#34d399', '#2563eb']; // xanh lá, xanh dương
+  const COLORS = ['#34d399', '#2563eb'];
 
-  // Sinh mảng ngày trong tháng
   const daysInMonth = (month, year) => new Date(year, month + 1, 0).getDate();
   const daysArray = Array.from({ length: daysInMonth(selectedMonth, selectedYear) }, (_, i) => i + 1);
 
-  // Fetch 4 chỉ số cho từng ngày trong tháng, có cache
   useEffect(() => {
     const cacheKey = `${selectedYear}-${String(selectedMonth + 1).padStart(2, '0')}`;
     if (statsCache[cacheKey]) {
@@ -142,7 +134,6 @@ const AdminPage = () => {
     fetchStats();
   }, [selectedMonth, selectedYear, daysArray]);
 
-  // Tính tần suất dịch vụ được dùng nhiều nhất trong tháng
   const serviceFrequency = mostUsedServiceData.reduce((acc, d) => {
     if (!d.value) return acc;
     acc[d.value] = (acc[d.value] || 0) + 1;

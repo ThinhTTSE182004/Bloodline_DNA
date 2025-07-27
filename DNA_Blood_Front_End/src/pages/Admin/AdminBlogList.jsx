@@ -40,7 +40,6 @@ const quillFormats = [
   'clean'
 ];
 
-// Cấu trúc dữ liệu blog từ API
 const formatDate = (dateString) => {
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
@@ -52,14 +51,13 @@ const formatDate = (dateString) => {
 
 const AdminBlogList = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [editBlog, setEditBlog] = useState(null); // Blog đang edit
-  const [viewBlog, setViewBlog] = useState(null); // Blog đang xem chi tiết
-  const [blogs, setBlogs] = useState([]); // Dữ liệu blog từ API
+  const [editBlog, setEditBlog] = useState(null);
+  const [viewBlog, setViewBlog] = useState(null);
+  const [blogs, setBlogs] = useState([]);
   const [filteredBlogs, setFilteredBlogs] = useState([]);
-  const [loading, setLoading] = useState(true); // Loading state
-  const [error, setError] = useState(null); // Error state
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   
-  // Search and filter states
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState('all');
@@ -69,7 +67,6 @@ const AdminBlogList = () => {
   
   const navigate = useNavigate();
 
-  // Fetch blogs từ API
   const fetchBlogs = async () => {
     try {
       setLoading(true);
@@ -98,28 +95,23 @@ const AdminBlogList = () => {
     }
   };
 
-  // Load blogs khi component mount
   useEffect(() => {
     fetchBlogs();
   }, []);
 
-  // Filter and search blogs
   useEffect(() => {
     let filtered = [...blogs];
 
-    // Search by title
     if (searchTerm) {
       filtered = filtered.filter(blog =>
         blog.title.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Filter by status (if blogs have a status field)
     if (statusFilter !== 'all') {
       filtered = filtered.filter(blog => blog.status === statusFilter);
     }
 
-    // Filter by author
     if (authorFilter) {
       filtered = filtered.filter(blog =>
         blog.authorId.toString().includes(authorFilter) ||
@@ -127,7 +119,6 @@ const AdminBlogList = () => {
       );
     }
 
-    // Filter by date
     if (dateFilter !== 'all') {
       const now = new Date();
       const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
@@ -149,7 +140,6 @@ const AdminBlogList = () => {
       });
     }
 
-    // Sort blogs
     filtered.sort((a, b) => {
       const dateA = new Date(a.createdAt);
       const dateB = new Date(b.createdAt);
@@ -171,7 +161,6 @@ const AdminBlogList = () => {
     setFilteredBlogs(filtered);
   }, [blogs, searchTerm, statusFilter, dateFilter, authorFilter, sortBy]);
 
-  // Clear all filters
   const clearFilters = () => {
     setSearchTerm('');
     setDateFilter('all');
@@ -179,10 +168,8 @@ const AdminBlogList = () => {
     setSortBy('newest');
   };
 
-  // Check if any filter is active
   const hasActiveFilters = searchTerm || dateFilter !== 'all' || authorFilter || sortBy !== 'newest';
 
-  // Hàm xóa blog
   const handleDeleteBlog = async (blogId) => {
     if (!window.confirm('Are you sure you want to delete this blog?')) {
       return;
@@ -202,7 +189,6 @@ const AdminBlogList = () => {
         throw new Error('Failed to delete blog');
       }
 
-      // Refresh danh sách blog
       await fetchBlogs();
       alert('Blog deleted successfully!');
     } catch (err) {
@@ -211,7 +197,6 @@ const AdminBlogList = () => {
     }
   };
 
-  // Popup Edit Card
   const EditBlogCard = ({ blog, onClose }) => {
     const [title, setTitle] = useState(blog.title);
     const [content, setContent] = useState(blog.content || '<p>Blog content...</p>');
@@ -221,16 +206,14 @@ const AdminBlogList = () => {
     const [uploading, setUploading] = useState(false);
     const fileInputRef = React.useRef();
 
-    // Đồng bộ imageUrl với blog.imageUrl khi blog thay đổi
     useEffect(() => {
       setImageUrl(blog.imageUrl || '');
     }, [blog.imageUrl]);
 
-    // Hàm upload ảnh lên Cloudinary
     const uploadImageToCloudinary = async (file) => {
       const formData = new FormData();
       formData.append('file', file);
-      formData.append('upload_preset', 'blog_unsigned'); // Đổi thành preset của bạn nếu khác
+      formData.append('upload_preset', 'blog_unsigned');
       const res = await fetch('https://api.cloudinary.com/v1_1/duqp1ecoj/image/upload', {
         method: 'POST',
         body: formData,
@@ -268,7 +251,7 @@ const AdminBlogList = () => {
           blogId: blog.blogId,
           title,
           content,
-          imageUrl // Gửi kèm link ảnh đại diện
+          imageUrl
         };
         const response = await fetch(`/api/Admin/blogs/${blog.blogId}`, {
           method: 'PUT',
@@ -454,18 +437,15 @@ const AdminBlogList = () => {
     );
   };
 
-  // Popup View Blog Card
   const ViewBlogCard = ({ blog, onClose }) => {
     const [imageError, setImageError] = useState(false);
     
-    // Extract first image from content if exists
     const extractImageFromContent = (content) => {
       const imgRegex = /<img[^>]+src="([^">]+)"/g;
       const match = imgRegex.exec(content);
       return match ? match[1] : null;
     };
 
-    // Ưu tiên lấy blog.imageUrl, nếu không có thì mới lấy ảnh trong content
     const blogImage = blog.imageUrl || extractImageFromContent(blog.content) || '/img/blog-default.jpg';
 
     return (

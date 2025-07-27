@@ -12,18 +12,17 @@ const AdminCreateBlog = () => {
   const [content, setContent] = useState('');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
-  const [imageUrl, setImageUrl] = useState(''); // Thêm state cho ảnh đại diện
-  const [uploading, setUploading] = useState(false); // State loading khi upload ảnh
-  const [posting, setPosting] = useState(false); // Thêm state loading khi gửi blog
+  const [imageUrl, setImageUrl] = useState('');
+  const [uploading, setUploading] = useState(false);
+  const [posting, setPosting] = useState(false);
   const navigate = useNavigate();
   const quillRef = useRef();
-  const fileInputRef = useRef(); // Thêm ref cho input file
+  const fileInputRef = useRef();
 
-  // Hàm upload ảnh lên Cloudinary
   const uploadImageToCloudinary = async (file) => {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'blog_unsigned'); // Tên preset bạn đã tạo
+    formData.append('upload_preset', 'blog_unsigned');
     const res = await fetch('https://api.cloudinary.com/v1_1/duqp1ecoj/image/upload', {
       method: 'POST',
       body: formData,
@@ -32,7 +31,6 @@ const AdminCreateBlog = () => {
     return data.secure_url;
   };
 
-  // Custom image handler cho ReactQuill
   const imageHandler = () => {
   const input = document.createElement('input');
   input.setAttribute('type', 'file');
@@ -48,7 +46,6 @@ const AdminCreateBlog = () => {
         range = { index: quill.getLength(), length: 0 };
       }
       quill.insertEmbed(range.index, 'image', url);
-      // Chèn thêm một dòng trống sau ảnh
       quill.insertText(range.index + 1, '\\n');
       setTimeout(() => {
         quill.focus();
@@ -58,7 +55,6 @@ const AdminCreateBlog = () => {
   };
 };
 
-  // Bỏ custom handler cho image để loại trừ lỗi
   const quillModules = {
     toolbar: [
       [{ 'header': [1, 2, 3, false] }],
@@ -108,18 +104,15 @@ const AdminCreateBlog = () => {
         body: JSON.stringify({
           title,
           content,
-          imageUrl // Gửi kèm link ảnh đại diện
+          imageUrl
         })
       });
       if (!res.ok) throw new Error('Failed to create blog');
       alert('Blog post added successfully!');
-      // Reset lại form thay vì navigate
       setTitle('');
       setContent('');
       setImageUrl('');
       if (fileInputRef.current) fileInputRef.current.value = '';
-      // Không navigate nữa
-      // navigate('/admin/blogs');
     } catch (err) {
       alert('Error creating blog!');
     } finally {
@@ -188,7 +181,7 @@ const AdminCreateBlog = () => {
               </button>
             )}
             <input
-              ref={fileInputRef} // Gán ref cho input file
+              ref={fileInputRef}
               id="blog-thumbnail-input"
               type="file"
               accept="image/*"

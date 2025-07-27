@@ -5,7 +5,6 @@ const OAuthSuccess = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Nếu đã có token trong sessionStorage, không cần xử lý lại
     if (sessionStorage.getItem('token')) {
       navigate('/');
       return;
@@ -26,20 +25,17 @@ const OAuthSuccess = () => {
           payload['name'] ||
           payload['unique_name'] ||
           payload['sub'];
-        // Không cắt chuỗi trước @gmail.com, giữ nguyên tên Google trả về
         const userRole =
           payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'] ||
           payload['role'];
         sessionStorage.setItem('userName', userName);
         sessionStorage.setItem('userRole', userRole);
 
-        // Dispatch custom event để thông báo đăng nhập thành công
         const loginEvent = new CustomEvent('userLogin', {
           detail: { userName, userRole }
         });
         window.dispatchEvent(loginEvent);
 
-        // Chuyển hướng dựa trên role
         if (userRole === 'Staff') {
           navigate('/staff');
         } else {
@@ -62,7 +58,6 @@ const OAuthSuccess = () => {
   );
 };
 
-// Hàm giải mã JWT đúng chuẩn Unicode
 function parseJwt(token) {
   const base64Url = token.split('.')[1];
   const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');

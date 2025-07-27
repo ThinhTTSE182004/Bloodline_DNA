@@ -18,14 +18,11 @@ const StaffOrder = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmActionDetails, setConfirmActionDetails] = useState({ action: null, transferIds: null, actionText: '' });
   const [sampleVerificationCounts, setSampleVerificationCounts] = useState({});
-  // Thêm các state cho modal upload ảnh
   const [showUploadModal, setShowUploadModal] = useState(false);
   const [selectedTransferForUpload, setSelectedTransferForUpload] = useState(null);
   const [uploadError, setUploadError] = useState('');
-  // Thay selectedFile thành selectedFiles (array)
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [uploading, setUploading] = useState(false);
-  // Thêm state cho verificationType và note
   const [verificationType, setVerificationType] = useState('');
   const [imageNote, setImageNote] = useState('');
   const [showViewImagesModal, setShowViewImagesModal] = useState(false);
@@ -118,7 +115,6 @@ const StaffOrder = () => {
       if (!token) {
         navigate('/login');
       }
-      // Gọi API cho từng transferId trong nhóm
       await Promise.all(transferIds.map(async (transferId) => {
       const response = await fetch(`/api/Staff/${action}/${transferId}`, {
         method: 'PUT',
@@ -212,7 +208,6 @@ const StaffOrder = () => {
     );
   }
 
-  // Lọc các sample transfer theo collectionMethod
   const atHomeTransfers = sampleTransfers.filter(
     transfer => transfer.collectionMethod === 'At Home'
   );
@@ -323,7 +318,7 @@ const StaffOrder = () => {
                             transfer.sampleTransferStatus === 'Collecting Sample' ? 'bg-orange-100 text-orange-800' :
                             transfer.sampleTransferStatus === 'Delivering to Lab' ? 'bg-teal-100 text-teal-800' :
                             transfer.sampleTransferStatus === 'Received' ? 'bg-green-100 text-green-800' :
-                            'bg-green-100 text-green-800' // Completed
+                            'bg-green-100 text-green-800'
                           }`}>
                             {transfer.sampleTransferStatus}
                           </span>
@@ -464,7 +459,7 @@ const StaffOrder = () => {
                           transfer.sampleTransferStatus === 'Collecting Sample' ? 'bg-orange-100 text-orange-800' :
                           transfer.sampleTransferStatus === 'Delivering to Lab' ? 'bg-teal-100 text-teal-800' :
                           transfer.sampleTransferStatus === 'Received' ? 'bg-green-100 text-green-800' :
-                          'bg-green-100 text-green-800' // Completed
+                          'bg-green-100 text-green-800'
                         }`}>
                           {transfer.sampleTransferStatus}
                         </span>
@@ -753,7 +748,6 @@ const StaffOrder = () => {
                   try {
                     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
                     for (const file of selectedFiles) {
-                      // 1. Upload lên Cloudinary
                       const formData = new FormData();
                       formData.append('file', file);
                       formData.append('upload_preset', 'blog_unsigned');
@@ -764,7 +758,6 @@ const StaffOrder = () => {
                       const data = await res.json();
                       if (!data.secure_url) throw new Error('Upload to cloud failed');
                       const imageUrl = data.secure_url;
-                      // 2. Gửi URL và các trường khác lên backend
                       const resp = await fetch('/api/Staff/upload-sample-verification-image', {
                         method: 'POST',
                         headers: {

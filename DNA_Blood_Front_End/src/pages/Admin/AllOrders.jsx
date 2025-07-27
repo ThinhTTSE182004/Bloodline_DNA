@@ -82,7 +82,6 @@ const AllOrders = () => {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      // Update the order in the local state
       setOrders(prevOrders => 
         prevOrders.map(order => 
           order.orderId === orderId 
@@ -99,7 +98,6 @@ const AllOrders = () => {
     }
   };
 
-  // Filter orders based on search and filters
   const filteredOrders = orders.filter(order => {
     const matchesSearch = order.serviceName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          order.orderId?.toString().includes(searchTerm);
@@ -108,7 +106,6 @@ const AllOrders = () => {
     return matchesSearch && matchesStatus && matchesPayment;
   });
 
-  // Calculate statistics
   const totalOrders = orders.length;
   const pendingOrders = orders.filter(o => o.orderStatus === 'Pending').length;
   const paidOrders = orders.filter(o => o.paymentStatus === 'Paid').length;

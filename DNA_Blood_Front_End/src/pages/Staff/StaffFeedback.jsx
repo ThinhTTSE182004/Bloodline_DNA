@@ -92,7 +92,6 @@ const StaffFeedback = () => {
     setResponseLoading(false);
   };
 
-  // Sắp xếp feedbacks: chưa response lên đầu, trong đó feedback cũ hơn lên trên
   const sortedFeedbacks = [...feedbacks].sort((a, b) => {
     const aNoResp = !a.contentResponses || a.contentResponses.length === 0;
     const bNoResp = !b.contentResponses || b.contentResponses.length === 0;

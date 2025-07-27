@@ -24,30 +24,24 @@ const Login = () => {
       if (response.ok) {
         const token = await response.text();
         
-        // Lưu token vào sessionStorage
         sessionStorage.setItem('token', token);
         sessionStorage.setItem('isLoggedIn', 'true');
         
-        // Phân tích token để lấy thông tin người dùng
         const payload = parseJwt(token);
-        // Lấy tên từ claim chuẩn của Microsoft
         let userName = payload["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
         if (!userName) {
           userName = 'User';
         }
         const userRole = payload['http://schemas.microsoft.com/ws/2008/06/identity/claims/role'];
         
-        // Lưu thông tin người dùng vào sessionStorage
         sessionStorage.setItem('userName', userName);
         sessionStorage.setItem('userRole', userRole);
 
-        // Dispatch custom event để thông báo đăng nhập thành công
         const loginEvent = new CustomEvent('userLogin', {
           detail: { userName, userRole }
         });
         window.dispatchEvent(loginEvent);
 
-        // Chuyển hướng dựa trên role
         if (userRole === 'Staff') {
           navigate('/staff');
         } else if (userRole === 'Admin') {
@@ -67,7 +61,6 @@ const Login = () => {
     }
   };
 
-  // Hàm giải mã JWT đúng chuẩn Unicode
   function parseJwt(token) {
     const base64Url = token.split('.')[1];
     const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');

@@ -128,7 +128,7 @@ const Staff = () => {
         throw new Error(errorData.message || 'Failed to update sample');
       }
       setShowUpdateModal(false);
-      await fetchData(); // Refresh data
+      await fetchData();
     } catch (err) {
       setUpdateError(err.message || 'An error occurred while updating the sample');
     }
@@ -161,11 +161,11 @@ const Staff = () => {
             label: 'Sample Status',
             data: Object.values(statusCounts),
             backgroundColor: [
-                'rgba(255, 206, 86, 0.7)', // Yellow for Pending
-                'rgba(75, 192, 192, 0.7)',  // Green for Collected
-                'rgba(54, 162, 235, 0.7)',  // Blue for Processing
-                'rgba(153, 102, 255, 0.7)', // Purple for Completed/Done
-                'rgba(201, 203, 207, 0.7)'  // Grey for Unknown
+                'rgba(255, 206, 86, 0.7)', 
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(201, 203, 207, 0.7)'
             ],
             borderColor: [
                 'rgba(255, 206, 86, 1)',
