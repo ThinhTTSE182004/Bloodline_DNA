@@ -341,12 +341,12 @@ const AdminBlogList = () => {
           </div>
           {/* Title */}
           <motion.input
-            whileFocus={{ scale: 1.03, borderColor: '#2563eb' }}
+            whileFocus={{ borderColor: '#2563eb' }}
             type="text"
             placeholder="Blog title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full border border-blue-200 rounded-2xl px-5 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow transition-all text-lg"
+            className="w-full border border-blue-200 rounded-2xl px-6 py-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow transition-all text-xl font-semibold"
           />
           {/* Thumbnail image upload - giống AdminCreateBlog */}
           <div className="flex flex-col items-center justify-center mt-2 mb-4 w-full">
