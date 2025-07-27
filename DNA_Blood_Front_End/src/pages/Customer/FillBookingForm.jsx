@@ -224,7 +224,7 @@ const FillBookingForm = () => {
 
     const hour = getLocalHour(formData.bookingDate);
     if (!(hour >= 8 && hour < 12 || hour >= 13 && hour < 17)) {
-      alert("Vui lòng chọn giờ từ 8:00-12:00 hoặc 13:00-17:00.");
+      alert("Please select time from 8:00-12:00 or 13:00-17:00.");
       return;
     }
 
@@ -482,7 +482,6 @@ const FillBookingForm = () => {
                   </div>
                 </motion.div>
 
-                {/* Address - chỉ hiện khi chọn At Home */}
                 {formData.sampleCollectionMethod === 'At Home' && (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}

@@ -24,7 +24,7 @@ const BlogDetailGuest = () => {
     fetchBlog();
   }, [blogId]);
 
-  if (loading) return <div className="text-center py-20">Đang tải bài viết...</div>;
+  if (loading) return <div className="text-center py-20">Loading Blog...</div>;
   if (error) return (
     <div className="text-center py-20 text-red-600">
       {error}
