@@ -268,7 +268,6 @@ const Profile = () => {
     if (event) event.stopPropagation();
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-      // SỬA ĐƯỜNG DẪN API TẠI ĐÂY
       const res = await fetch(`/api/UserProfile/Results/${resultId}/download-pdf`, {
         method: 'GET',
         headers: {
@@ -277,8 +276,6 @@ const Profile = () => {
       });
       if (!res.ok) throw new Error('Failed to download PDF');
       const blob = await res.blob();
-
-      // Lấy tên file từ header nếu có
       let filename = `result_${resultId}.pdf`;
       const disposition = res.headers.get('content-disposition');
       if (disposition && disposition.indexOf('filename=') !== -1) {
@@ -305,35 +302,6 @@ const Profile = () => {
     addNotification('Đây là test notification cho kết quả xét nghiệm!', 'result', 5000);
   };
 
-  // const testBackendNotification = async () => {
-  //   try {
-  //     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-  //     if (!token) {
-  //       addNotification('Vui lòng đăng nhập để test notification', 'error', 3000);
-  //       return;
-  //     }
-
-  //     const tokenData = JSON.parse(atob(token.split('.')[1]));
-  //     const userId = tokenData['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
-
-  //     const response = await fetch(`/api/MedicalStaff/test-notification/${userId}`, {
-  //       method: 'POST',
-  //       headers: {
-  //         'Authorization': `Bearer ${token.trim()}`,
-  //         'Content-Type': 'application/json'
-  //       }
-  //     });
-
-  //     if (response.ok) {
-  //       addNotification('Test notification đã được gửi từ backend!', 'success', 3000);
-  //     } else {
-  //       addNotification('Không thể gửi test notification từ backend', 'error', 3000);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error testing backend notification:', error);
-  //     addNotification('Lỗi khi test notification từ backend', 'error', 3000);
-  //   }
-  // };
 
   if (loading) {
     return (
@@ -795,7 +763,7 @@ const Profile = () => {
           {/* Feedback Modal */}
           {feedbackModal.open && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md relative animate-fade-in">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md h-[80vh] flex flex-col relative animate-fade-in">
                 <button
                   className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300"
                   onClick={() => setFeedbackModal({ open: false, orderId: null })}
@@ -805,7 +773,7 @@ const Profile = () => {
                   </svg>
                 </button>
 
-                <div className="text-center mb-6">
+                <div className="text-center mb-6 flex-shrink-0">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full mb-4 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
@@ -815,7 +783,8 @@ const Profile = () => {
                   <p className="text-gray-600">Help us improve our services</p>
                 </div>
 
-                <form onSubmit={async e => {
+                <div className="flex-1 overflow-y-auto">
+                  <form onSubmit={async e => {
                   e.preventDefault();
                   setFeedbackLoading(true);
                   setFeedbackMsg('');
@@ -958,6 +927,7 @@ const Profile = () => {
                     </div>
                   )}
                 </form>
+                </div>
               </div>
 
               <style>{`
@@ -981,7 +951,7 @@ const Profile = () => {
           {/* Feedback Response Modal */}
           {feedbackResponseModal.open && (
             <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-              <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto relative animate-fade-in">
+              <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-2xl h-[80vh] flex flex-col relative animate-fade-in">
                 <button
                   className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 bg-white rounded-full p-2 shadow-lg hover:shadow-xl transition-all duration-300"
                   onClick={() => setFeedbackResponseModal({ open: false, feedbacks: [], loading: false, error: '', orderId: null })}
@@ -991,7 +961,7 @@ const Profile = () => {
                   </svg>
                 </button>
 
-                <div className="text-center mb-6">
+                <div className="text-center mb-6 flex-shrink-0">
                   <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mb-4 shadow-lg">
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
@@ -1001,37 +971,38 @@ const Profile = () => {
                   <p className="text-gray-600">Your feedback and our response</p>
                 </div>
 
-                {feedbackResponseModal.loading ? (
-                  <div className="text-center py-12">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-                    <p className="text-purple-600 font-semibold">Loading response...</p>
-                  </div>
-                ) : feedbackResponseModal.error ? (
-                  <div className="text-center py-12">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
-                      </svg>
+                <div className="flex-1 overflow-y-auto">
+                  {feedbackResponseModal.loading ? (
+                    <div className="text-center py-12">
+                      <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+                      <p className="text-purple-600 font-semibold">Loading response...</p>
                     </div>
-                    <p className="text-red-600 font-semibold">{feedbackResponseModal.error}</p>
-                  </div>
-                ) : (() => {
-                  const feedback = feedbackList.find(fb => fb.orderId === feedbackResponseModal.orderId);
-                  if (!feedback) {
-                    return (
-                      <div className="text-center py-12">
-                        <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
-                          <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
-                          </svg>
-                        </div>
-                        <p className="text-gray-500 font-semibold">No feedback found for this order.</p>
+                  ) : feedbackResponseModal.error ? (
+                    <div className="text-center py-12">
+                      <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                        </svg>
                       </div>
-                    );
-                  }
+                      <p className="text-red-600 font-semibold">{feedbackResponseModal.error}</p>
+                    </div>
+                  ) : (() => {
+                    const feedback = feedbackList.find(fb => fb.orderId === feedbackResponseModal.orderId);
+                    if (!feedback) {
+                      return (
+                        <div className="text-center py-12">
+                          <div className="inline-flex items-center justify-center w-16 h-16 bg-gray-100 rounded-full mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                            </svg>
+                          </div>
+                          <p className="text-gray-500 font-semibold">No feedback found for this order.</p>
+                        </div>
+                      );
+                    }
 
-                  return (
-                    <div className="space-y-6">
+                    return (
+                      <div className="space-y-6">
                       {/* Customer Feedback Section */}
                       <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-6 border border-blue-200">
                         <div className="flex items-center mb-4">
@@ -1132,6 +1103,7 @@ const Profile = () => {
                     </div>
                   );
                 })()}
+                </div>
               </div>
 
               <style>{`
@@ -1147,6 +1119,25 @@ const Profile = () => {
                 }
                 .animate-fade-in { 
                   animation: fade-in 0.5s cubic-bezier(0.4, 0, 0.2, 1) both; 
+                }
+
+                /* Custom scrollbar for feedback modal */
+                .overflow-y-auto::-webkit-scrollbar {
+                  width: 6px;
+                }
+                
+                .overflow-y-auto::-webkit-scrollbar-track {
+                  background: #f1f5f9;
+                  border-radius: 3px;
+                }
+                
+                .overflow-y-auto::-webkit-scrollbar-thumb {
+                  background: #cbd5e1;
+                  border-radius: 3px;
+                }
+                
+                .overflow-y-auto::-webkit-scrollbar-thumb:hover {
+                  background: #94a3b8;
                 }
               `}</style>
             </div>
