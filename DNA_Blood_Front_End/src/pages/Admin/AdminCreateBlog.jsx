@@ -113,7 +113,13 @@ const AdminCreateBlog = () => {
       });
       if (!res.ok) throw new Error('Failed to create blog');
       alert('Blog post added successfully!');
-      navigate('/admin/blogs');
+      // Reset lại form thay vì navigate
+      setTitle('');
+      setContent('');
+      setImageUrl('');
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      // Không navigate nữa
+      // navigate('/admin/blogs');
     } catch (err) {
       alert('Error creating blog!');
     } finally {
