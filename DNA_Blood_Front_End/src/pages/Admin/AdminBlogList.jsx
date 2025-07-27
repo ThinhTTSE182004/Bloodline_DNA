@@ -324,12 +324,12 @@ const AdminBlogList = () => {
           </div>
           {/* Title */}
           <motion.input
-            whileFocus={{ scale: 1.03, borderColor: '#2563eb' }}
+            whileFocus={{ borderColor: '#2563eb' }}
             type="text"
             placeholder="Blog title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full border border-blue-200 rounded-2xl px-5 py-3 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow transition-all text-lg"
+            className="w-full border border-blue-200 rounded-2xl px-6 py-4 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-400 shadow transition-all text-xl font-semibold"
           />
           {/* Thumbnail image upload - giống AdminCreateBlog */}
           <div className="flex flex-col items-center justify-center mt-2 mb-4 w-full">
@@ -551,9 +551,20 @@ const AdminBlogList = () => {
                 </h3>
                 <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                   <div 
-                    className="prose prose-lg max-w-none"
+                    className="quill-content"
                     dangerouslySetInnerHTML={{ __html: blog.content || '<p>No content available</p>' }}
                   />
+                  <style>{`
+                    .quill-content h1 { font-size: 2em; font-weight: bold; margin: 0.67em 0; }
+                    .quill-content h2 { font-size: 1.5em; font-weight: bold; margin: 0.75em 0; }
+                    .quill-content h3 { font-size: 1.17em; font-weight: bold; margin: 0.83em 0; }
+                    .quill-content ul { list-style-type: disc; margin-left: 1.5em; }
+                    .quill-content ol { list-style-type: decimal; margin-left: 1.5em; }
+                    .quill-content li { margin-bottom: 0.25em; }
+                    .quill-content blockquote { border-left: 4px solid #ccc; margin: 1em 0; padding-left: 1em; color: #555; font-style: italic; }
+                    .quill-content strong { font-weight: bold; }
+                    .quill-content em { font-style: italic; }
+                  `}</style>
                 </div>
               </div>
 

@@ -246,25 +246,55 @@ const WorkAssignment = () => {
 
   const handleAcceptAll = async () => {
     setLoadingAcceptAll(true);
+    const results = [];
     try {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       for (const a of suggestedAssignments) {
-        await fetch('/api/ShiftAssignment', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(token ? { 'Authorization': `Bearer ${token}` } : {})
-          },
-          body: JSON.stringify({
-            userId: a.userId,
-            shiftId: a.shiftId,
-            assignmentDate: a.assignmentDate
-          })
+        try {
+          const res = await fetch('/api/ShiftAssignment', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+            },
+            body: JSON.stringify({
+              userId: a.userId,
+              shiftId: a.shiftId,
+              assignmentDate: a.assignmentDate
+            })
+          });
+          if (!res.ok) {
+            const errorText = await res.text();
+            results.push({
+              assignment: a,
+              success: false,
+              message: errorText
+            });
+          } else {
+            results.push({
+              assignment: a,
+              success: true
+            });
+          }
+        } catch (err) {
+          results.push({
+            assignment: a,
+            success: false,
+            message: err.message
+          });
+        }
+      }
+      // English summary message
+      const successCount = results.filter(r => r.success).length;
+      const failResults = results.filter(r => !r.success);
+      let message = `Successfully assigned ${successCount} out of ${results.length} shifts.\n`;
+      if (failResults.length > 0) {
+        message += 'Failed assignments:\n';
+        failResults.forEach(r => {
+          message += `- ${r.assignment.userName} (${r.assignment.assignmentDate} - ${r.assignment.shiftName}): ${r.message}\n`;
         });
       }
-      alert('All assignments confirmed!');
-    } catch (err) {
-      alert('Error confirming all assignments: ' + err.message);
+      alert(message);
     } finally {
       setLoadingAcceptAll(false);
     }

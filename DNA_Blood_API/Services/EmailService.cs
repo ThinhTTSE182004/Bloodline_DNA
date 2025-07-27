@@ -11,7 +11,7 @@ namespace DNA_API1.Services
             _config = config;
         }
 
-        public async Task SendEmailAsync(string toEmail, string subject, string htmlMessage)
+        public async Task SendEmailAsync(string toEmail, string subject, string htmlMessage, byte[] attachment = null, string attachmentName = null)
         {
             var smtpClient = new SmtpClient("smtp.gmail.com")
             {
@@ -31,6 +31,11 @@ namespace DNA_API1.Services
                 IsBodyHtml = true
             };
             mailMessage.To.Add(toEmail);
+
+            if (attachment != null && !string.IsNullOrEmpty(attachmentName))
+            {
+                mailMessage.Attachments.Add(new Attachment(new MemoryStream(attachment), attachmentName, "application/pdf"));
+            }
 
             await smtpClient.SendMailAsync(mailMessage);
         }

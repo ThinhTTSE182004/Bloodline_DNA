@@ -52,8 +52,16 @@ namespace DNA_API1.Services
             if (!suitableMedical.Any())
             {
                 // Nếu không có ai chuyên môn phù hợp, lấy người có năm kinh nghiệm cao nhất
-                var maxExp = medicalUsers.Max(u => u.UserProfile?.YearsOfExperience ?? 0);
-                suitableMedical = medicalUsers.Where(u => (u.UserProfile?.YearsOfExperience ?? 0) == maxExp).ToList();
+                if (medicalUsers.Any())
+                {
+                    var maxExp = medicalUsers.Max(u => u.UserProfile?.YearsOfExperience ?? 0);
+                    suitableMedical = medicalUsers.Where(u => (u.UserProfile?.YearsOfExperience ?? 0) == maxExp).ToList();
+                }
+                else
+                {
+                    // Không có medicalUsers nào, suitableMedical sẽ để rỗng
+                    suitableMedical = new List<User>();
+                }
             }
             var availableMedical = new List<User>();
             foreach (var u in suitableMedical)

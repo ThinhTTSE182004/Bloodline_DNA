@@ -87,8 +87,8 @@ namespace DNA_API1.Controllers
         public async Task<IActionResult> ShareResult([FromBody] ShareResultRequestDTO request)
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
-            await _resultService.ShareResultByEmailAsync(userId, request);
-            return Ok(new { message = "Đã gửi kết quả xét nghiệm qua email." });
+            await _resultService.ShareResultByEmailWithAttachmentAsync(userId, request);
+            return Ok(new { message = "Result has been sent via email with PDF attachment." });
         }
 
         [HttpGet("Results/{resultId}/download-pdf")]

@@ -27,6 +27,16 @@ const StaffOrder = () => {
   const [imageNote, setImageNote] = useState('');
   const [showViewImagesModal, setShowViewImagesModal] = useState(false);
   const [viewImages, setViewImages] = useState([]);
+  const [selectedSampleForImages, setSelectedSampleForImages] = useState(null);
+  
+  // State cho modal edit ảnh bị reject
+  const [showEditRejectedImageModal, setShowEditRejectedImageModal] = useState(false);
+  const [selectedRejectedImage, setSelectedRejectedImage] = useState(null);
+  const [newImageFile, setNewImageFile] = useState(null);
+  const [newImageNote, setNewImageNote] = useState('');
+  const [editImageError, setEditImageError] = useState('');
+  const [editingImage, setEditingImage] = useState(false);
+  
   const navigate = useNavigate();
 
   const statusHierarchy = ['Pending', 'Delivering Kit', 'Collecting Sample', 'Delivering to Lab', 'Completed'];
@@ -89,9 +99,11 @@ const StaffOrder = () => {
             const images = await resp.json();
             counts[transfer.sampleId] = images.length;
           } else {
+            console.warn(`Failed to fetch images for sample ${transfer.sampleId}: ${resp.status}`);
             counts[transfer.sampleId] = 0;
           }
-        } catch {
+        } catch (error) {
+          console.error(`Error fetching images for sample ${transfer.sampleId}:`, error);
           counts[transfer.sampleId] = 0;
         }
       }));
@@ -193,6 +205,135 @@ const StaffOrder = () => {
     }
     
     setShowUpdateModal(true);
+  };
+
+  // Hàm mở modal edit ảnh bị reject
+  const openEditRejectedImageModal = (image) => {
+
+    
+    // Kiểm tra trạng thái ảnh trước khi cho phép edit
+    // Chỉ cho phép edit ảnh bị từ chối (Invalid photo verification)
+    if (image.verificationStatus !== 'Invalid photo verification') {
+      alert(`Only rejected images (Invalid photo verification) can be edited. Current status: ${image.verificationStatus}`);
+      return;
+    }
+    
+    setSelectedRejectedImage(image);
+    setNewImageFile(null);
+    setNewImageNote(image.note || '');
+    setEditImageError('');
+    setShowEditRejectedImageModal(true);
+  };
+
+  // Hàm xử lý edit ảnh bị reject
+  const handleEditRejectedImage = async () => {
+    if (!newImageFile) {
+      setEditImageError('Vui lòng chọn ảnh mới!');
+      return;
+    }
+
+    setEditingImage(true);
+    setEditImageError('');
+
+    try {
+      const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+      
+      // 0. Kiểm tra trạng thái hiện tại từ backend trước khi update
+      const sampleId = selectedSampleForImages || selectedRejectedImage?.sampleId;
+      
+      if (!sampleId) {
+        throw new Error('Không tìm thấy sample ID để kiểm tra trạng thái ảnh');
+      }
+      
+      const checkResp = await fetch(`/api/Staff/sample-verification-images/${sampleId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (checkResp.ok) {
+        const currentImages = await checkResp.json();
+        const currentImage = currentImages.find(img => img.verificationImageId === selectedRejectedImage.verificationImageId);
+        
+        if (currentImage && currentImage.verificationStatus !== 'Invalid photo verification') {
+          throw new Error(`This image cannot be edited because current status is: ${currentImage.verificationStatus}. Only images with "Invalid photo verification" status can be edited.`);
+        }
+      }
+      
+      // 1. Upload ảnh mới lên Cloudinary
+      const formData = new FormData();
+      formData.append('file', newImageFile);
+      formData.append('upload_preset', 'blog_unsigned');
+      const res = await fetch('https://api.cloudinary.com/v1_1/duqp1ecoj/image/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+      if (!data.secure_url) throw new Error('Upload to cloud failed');
+      const newImageUrl = data.secure_url;
+
+      // 2. Gửi API để update ảnh bị reject
+      const requestBody = {
+        imageUrl: newImageUrl,
+        verificationType: selectedRejectedImage.verificationType,
+        note: newImageNote,
+      };
+      
+      const resp = await fetch(`/api/Staff/update-sample-verification-image/${selectedRejectedImage.verificationImageId}`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+      
+      if (!resp.ok) {
+        const errorText = await resp.text();
+        
+        if (resp.status === 400 && errorText.includes('Cannot update image that has already been verified')) {
+          throw new Error(`🚨 LỖI BACKEND: Ảnh này không thể update vì đã được xác minh (verified). Chỉ có thể edit ảnh có trạng thái "Pending verification" hoặc "Invalid photo verification".`);
+        }
+        
+        throw new Error(`Update failed: ${resp.status} - ${errorText}`);
+      }
+
+      // 3. Refresh lại danh sách ảnh
+      const refreshSampleId = selectedSampleForImages || selectedRejectedImage?.sampleId;
+      if (refreshSampleId) {
+        const refreshResp = await fetch(`/api/Staff/sample-verification-images/${refreshSampleId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (refreshResp.ok) {
+          const images = await refreshResp.json();
+          setViewImages(images);
+          
+          // Kiểm tra xem ảnh đã được update chưa
+          const updatedImage = images.find(img => img.verificationImageId === selectedRejectedImage.verificationImageId);
+          if (updatedImage) {
+            // Backend đã được cập nhật để reset status thành "Pending verification"
+            if (updatedImage.verificationStatus === 'Pending verification') {
+              alert('✅ Image updated successfully!');
+            } else {
+              // Nếu vẫn là "Invalid photo verification", có thể do cache hoặc delay
+              alert(`✅ Image updated successfully! Current status: ${updatedImage.verificationStatus}`);
+            }
+          }
+        }
+      }
+
+      // Đóng modal và reset state
+      setShowEditRejectedImageModal(false);
+      setSelectedRejectedImage(null);
+      setNewImageFile(null);
+      setNewImageNote('');
+      
+      // Force refresh toàn bộ data để đảm bảo UI cập nhật
+      await fetchAllData();
+      
+    } catch (err) {
+      setEditImageError(err.message);
+    } finally {
+      setEditingImage(false);
+    }
   };
 
   if (loading) {
@@ -394,14 +535,23 @@ const StaffOrder = () => {
                               </button>
                               <button
                                 onClick={async () => {
-                                  const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-                                  const resp = await fetch(`/api/Staff/sample-verification-images/${transfer.sampleId}`, {
-                                    headers: { 'Authorization': `Bearer ${token}` }
-                                  });
-                                  if (resp.ok) {
-                                    const images = await resp.json();
-                                    setViewImages(images);
-                                    setShowViewImagesModal(true);
+                                  try {
+                                    const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+                                    const resp = await fetch(`/api/Staff/sample-verification-images/${transfer.sampleId}`, {
+                                      headers: { 'Authorization': `Bearer ${token}` }
+                                    });
+                                    if (resp.ok) {
+                                      const images = await resp.json();
+                                      setViewImages(images);
+                                      setSelectedSampleForImages(transfer.sampleId);
+                                      setShowViewImagesModal(true);
+                                    } else {
+                                      console.error(`Failed to fetch images for sample ${transfer.sampleId}:`, resp.status);
+                                      alert(`Failed to load images: ${resp.status}`);
+                                    }
+                                  } catch (error) {
+                                    console.error(`Error fetching images for sample ${transfer.sampleId}:`, error);
+                                    alert('Error loading images. Please try again.');
                                   }
                                 }}
                                 className="flex items-center px-2 py-1 text-green-600 hover:text-green-800 border border-green-200 rounded"
@@ -511,14 +661,23 @@ const StaffOrder = () => {
                           </button>
                           <button
                             onClick={async () => {
-                              const token = sessionStorage.getItem('token') || localStorage.getItem('token');
-                              const resp = await fetch(`/api/Staff/sample-verification-images/${transfer.sampleId}`, {
-                                headers: { 'Authorization': `Bearer ${token}` }
-                              });
-                              if (resp.ok) {
-                                const images = await resp.json();
-                                setViewImages(images);
-                                setShowViewImagesModal(true);
+                              try {
+                                const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+                                const resp = await fetch(`/api/Staff/sample-verification-images/${transfer.sampleId}`, {
+                                  headers: { 'Authorization': `Bearer ${token}` }
+                                });
+                                if (resp.ok) {
+                                  const images = await resp.json();
+                                  setViewImages(images);
+                                  setSelectedSampleForImages(transfer.sampleId);
+                                  setShowViewImagesModal(true);
+                                } else {
+                                  console.error(`Failed to fetch images for sample ${transfer.sampleId}:`, resp.status);
+                                  alert(`Failed to load images: ${resp.status}`);
+                                }
+                              } catch (error) {
+                                console.error(`Error fetching images for sample ${transfer.sampleId}:`, error);
+                                alert('Error loading images. Please try again.');
                               }
                             }}
                             className="flex items-center px-2 py-1 text-green-600 hover:text-green-800 border border-green-200 rounded"
@@ -771,7 +930,11 @@ const StaffOrder = () => {
                           note: imageNote,
                         }),
                       });
-                      if (!resp.ok) throw new Error('Upload to server failed');
+                      if (!resp.ok) {
+                        const errorText = await resp.text();
+                        console.error('Upload to server failed:', resp.status, errorText);
+                        throw new Error(`Upload to server failed: ${resp.status} - ${errorText}`);
+                      }
                     }
                     await fetchAllData();
                     setShowUploadModal(false);
@@ -824,6 +987,40 @@ const StaffOrder = () => {
                     <div className="text-xs text-gray-600 italic break-words">
                       {img.note || <span className="text-gray-400">No note</span>}
                     </div>
+                    {/* Hiển thị lý do reject nếu có */}
+                    {img.verificationStatus === 'Invalid photo verification' && img.rejectionNote && (
+                      <div className="text-xs text-red-600 italic break-words mt-1">
+                        <strong>Lý do từ chối:</strong> {img.rejectionNote}
+                      </div>
+                    )}
+                    {/* Nút Edit chỉ cho ảnh bị từ chối */}
+                    {img.verificationStatus === 'Invalid photo verification' && (
+                      <div>
+                        <button
+                          onClick={() => openEditRejectedImageModal(img)}
+                          className="mt-2 w-full bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-2 rounded transition-colors"
+                          title="Edit rejected image"
+                        >
+                          ✏️ Edit Image
+                        </button>
+                        <div className="text-xs text-red-500 mt-1 text-center">
+                          Rejected
+                        </div>
+                      </div>
+                    )}
+                    
+                    {/* Thông báo cho ảnh đang chờ xác minh - KHÔNG có nút Edit */}
+                    {img.verificationStatus === 'Pending verification' && (
+                      <div className="mt-2 w-full bg-yellow-100 text-yellow-700 text-xs py-1 px-2 rounded text-center">
+                        ⏳ Pending Verification
+                      </div>
+                    )}
+                    {/* Thông báo cho ảnh đã được xác minh */}
+                    {['Valid photo verification', 'Hợp lệ'].includes(img.verificationStatus) && (
+                      <div className="mt-2 w-full bg-green-100 text-green-700 text-xs py-1 px-2 rounded text-center">
+                        ✅ Verified
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -835,6 +1032,124 @@ const StaffOrder = () => {
             >
               ×
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal edit ảnh bị reject */}
+      {showEditRejectedImageModal && selectedRejectedImage && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+          <div className="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-blue-100">
+                <span className="text-2xl">✏️</span>
+              </div>
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-4">
+                Edit Rejected Image
+              </h3>
+
+
+              <div className="mt-4">
+                {/* Hiển thị ảnh cũ bị reject */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    Old Image (Rejected):
+                  </label>
+                  <div className="relative">
+                    <img
+                      src={selectedRejectedImage.imageUrl}
+                      alt="Rejected image"
+                      className="w-full h-32 object-cover rounded-lg border border-red-300"
+                    />
+                    <div className="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                      REJECTED
+                    </div>
+                  </div>
+                  {selectedRejectedImage.rejectionNote && (
+                    <div className="text-xs text-red-600 mt-1 text-left">
+                      <strong>Rejection Reason:</strong> {selectedRejectedImage.rejectionNote}
+                    </div>
+                  )}
+                  {selectedRejectedImage.note && (
+                    <div className="text-xs text-gray-600 mt-1 text-left">
+                      <strong>Old Note:</strong> {selectedRejectedImage.note}
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-600 mt-1 text-left">
+                    <strong>Status:</strong> {selectedRejectedImage.verificationStatus}
+                  </div>
+                </div>
+                
+                {/* Upload ảnh mới */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    New Image <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setNewImageFile(e.target.files[0])}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                </div>
+                
+                {/* Note cho ảnh mới */}
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    Note for New Image
+                  </label>
+                  <textarea
+                    value={newImageNote}
+                    onChange={(e) => setNewImageNote(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    rows="3"
+                    placeholder="Enter note for new image (optional)..."
+                  />
+                </div>
+                
+                {/* Preview ảnh mới */}
+                {newImageFile && (
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                      New Image Preview:
+                    </label>
+                    <img
+                      src={URL.createObjectURL(newImageFile)}
+                      alt="New image preview"
+                      className="w-full h-32 object-cover rounded-lg border border-green-300"
+                    />
+                  </div>
+                )}
+                
+                {editImageError && (
+                  <div className="mb-4 p-2 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+                    {editImageError}
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-center space-x-4 mt-6">
+                                        <button
+                          onClick={() => {
+                            setShowEditRejectedImageModal(false);
+                            setSelectedRejectedImage(null);
+                            setNewImageFile(null);
+                            setNewImageNote('');
+                            setEditImageError('');
+                          }}
+                          className="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-all duration-200"
+                          disabled={editingImage}
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          onClick={handleEditRejectedImage}
+                          className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-all duration-200"
+                          disabled={editingImage}
+                        >
+                          {editingImage ? 'Updating...' : 'Update Image'}
+                        </button>
+              </div>
+            </div>
           </div>
         </div>
       )}
