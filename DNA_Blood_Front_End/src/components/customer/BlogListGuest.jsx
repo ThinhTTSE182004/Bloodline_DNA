@@ -74,14 +74,16 @@ const BlogListGuest = () => {
               <motion.div
                 key={blog.blogId}
                 whileHover={{ scale: 1.04, boxShadow: '0 12px 32px rgba(37,99,235,0.18)' }}
-                className="bg-white border border-gray-100 rounded-2xl shadow-xl group cursor-pointer transition-all duration-300"
+                className="bg-white border border-gray-100 rounded-2xl shadow-xl group cursor-pointer transition-all duration-300 overflow-hidden hover:shadow-2xl hover:-translate-y-1"
                 onClick={() => handleCardClick(blog)}
               >
-                <img
-                  src={blog.imageUrl || '/img/blog-1.png'}
-                  alt={blog.title}
-                  className="w-full h-48 object-cover rounded-t-2xl group-hover:scale-105 transition-transform duration-300"
-                />
+                <div className="relative overflow-hidden">
+                  <img
+                    src={blog.imageUrl || '/img/blog-1.png'}
+                    alt={blog.title}
+                    className="w-full h-48 object-cover transform group-hover:scale-110 transition-transform duration-500 rounded-t-2xl shadow-lg"
+                  />
+                </div>
                 <div className="p-4">
                   <h2 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition">
                     {blog.title}
