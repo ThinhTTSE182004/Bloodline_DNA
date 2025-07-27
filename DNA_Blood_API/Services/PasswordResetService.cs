@@ -31,7 +31,7 @@ namespace DNA_API1.Services
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
             if (user == null)
-                throw new Exception("Email không tồn tại trong hệ thống.");
+                throw new Exception("Email does not exist in the system.");
 
             // Sinh token ngẫu nhiên
             var token = Guid.NewGuid().ToString();

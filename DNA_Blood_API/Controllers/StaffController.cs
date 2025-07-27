@@ -52,7 +52,7 @@ namespace DNA_API1.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Đã xảy ra lỗi khi lấy danh sách mẫu.", error = ex.Message });
+                return StatusCode(500, new { message = "An error occurred while retrieving the sample list..", error = ex.Message });
             }
         }
 
@@ -90,12 +90,12 @@ namespace DNA_API1.Controllers
             // Lấy sampleId từ transferId
             var sampleId = await _sampleTransferService.GetSampleIdByTransferIdAsync(transferId);
             if (sampleId == null)
-                return BadRequest("Không tìm thấy sample cho transfer này.");
+                return BadRequest("No sample found for this transfer.");
 
             // Kiểm tra đã có ít nhất 2 ảnh xác minh chưa
             var hasEnoughImages = await _sampleVerificationImageService.HasAtLeastTwoVerificationImagesAsync(sampleId.Value);
             if (!hasEnoughImages)
-                return BadRequest("Bạn phải upload ít nhất 2 ảnh xác minh mẫu trước khi chuyển sang phòng lab!");
+                return BadRequest("You must upload at least 2 sample verification photos before sending to the lab!");
 
             var result = await _sampleTransferService.UpdateSampleTransferStatusAsync(transferId, "Delivering to Lab");
             if (!result.Success) return BadRequest(result.Message);
@@ -123,7 +123,7 @@ namespace DNA_API1.Controllers
                 UpdateAt = null
             };
             await _feedbackResponseService.AddAsync(response);
-            return Ok(new { message = "Phản hồi đánh giá thành công." });
+            return Ok(new { message = "Feedback successful." });
         }
 
         [HttpGet("feedback-list")]
@@ -143,7 +143,7 @@ namespace DNA_API1.Controllers
             var result = await _sampleVerificationImageService.UploadVerificationImageAsync(model, staffId);
             if (!result.Success)
                 return StatusCode(result.StatusCode, new { message = result.Message });
-            return Ok(new { message = "Upload ảnh xác minh thành công." });
+            return Ok(new { message = "Upload verification photo successfully." });
         }
 
         // Lấy danh sách ảnh xác minh của một sample
@@ -163,7 +163,7 @@ namespace DNA_API1.Controllers
             var result = await _sampleVerificationImageService.UpdateVerificationImageAsync(verificationImageId, model, staffId);
             if (!result.Success)
                 return StatusCode(result.StatusCode, new { message = result.Message });
-            return Ok(new { message = "Cập nhật ảnh xác minh thành công." });
+            return Ok(new { message = "Photo verification update successful." });
         }
 
         [HttpGet("work-schedule")]

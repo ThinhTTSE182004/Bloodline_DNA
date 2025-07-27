@@ -46,21 +46,17 @@ namespace LoginAPI.Controllers
         public async Task<IActionResult> ForgotPassword([FromBody] ForgotPasswordDTO model)
         {
             await _passwordResetService.SendForgotPasswordEmailAsync(model.Email);
-            return Ok(new { message = "Đã gửi email đặt lại mật khẩu (nếu email tồn tại)." });
+            return Ok(new { message = "Password reset email sent (if email exists)." });
         }
 
-        public class ResetPasswordRequestDTO
-        {
-            public string Token { get; set; }
-            public string NewPassword { get; set; }
-        }
+        
 
         [AllowAnonymous]
         [HttpPost("ResetPassword")]
         public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequestDTO model)
         {
             await _passwordResetService.ResetPasswordAsync(model.Token, model.NewPassword);
-            return Ok(new { message = "Đổi mật khẩu thành công." });
+            return Ok(new { message = "Password changed successfully." });
         }
 
 
@@ -147,7 +143,6 @@ namespace LoginAPI.Controllers
             var token = await _authService.HandleGoogleLoginAsync(email, name);
             var encodedToken = Uri.EscapeDataString(token);
 
-            Console.WriteLine(token);
             var frontendUrl = $"http://localhost:5173/oauth-success?token={encodedToken}";
             return Redirect(frontendUrl);
 

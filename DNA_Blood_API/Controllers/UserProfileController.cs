@@ -88,7 +88,7 @@ namespace DNA_API1.Controllers
         {
             var userId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
             await _resultService.ShareResultByEmailAsync(userId, request);
-            return Ok(new { message = "Đã gửi kết quả xét nghiệm qua email." });
+            return Ok(new { message = "Test results sent via email." });
         }
 
         [HttpGet("Results/{resultId}/download-pdf")]
@@ -100,7 +100,7 @@ namespace DNA_API1.Controllers
                 var pdfBytes = await _resultService.GeneratePdfReportAsync(resultId, userId);
                 
                 if (pdfBytes == null)
-                    return NotFound(new { message = "Kết quả không tồn tại hoặc bạn không có quyền truy cập." });
+                    return NotFound(new { message = "The result does not exist or you do not have access." });
 
                 return File(pdfBytes, "application/pdf", $"DNA_Result_{resultId}_{DateTime.Now:yyyyMMdd}.pdf");
             }
@@ -117,11 +117,11 @@ namespace DNA_API1.Controllers
 
             var order = await _orderService.GetOrderByIdAndUserIdAsync(dto.OrderId, userId);
             if (order == null)
-                return BadRequest("Đơn hàng không tồn tại hoặc không thuộc về bạn.");
+                return BadRequest("The order does not exist or does not belong to you.");
 
             // 2. Kiểm tra đã feedback chưa
             if (await _feedbackService.ExistsByOrderIdAsync(dto.OrderId))
-                return BadRequest("Đơn hàng này đã có feedback.");
+                return BadRequest("This order has feedback.");
 
             // 3. Lưu feedback
             var feedback = new DNA_API1.Models.Feedback
@@ -134,7 +134,7 @@ namespace DNA_API1.Controllers
                 UpdateAt = null
             };
             await _feedbackService.AddAsync(feedback);
-            return Ok(new { message = "Gửi đánh giá thành công." });
+            return Ok(new { message = "Review sent successfully." });
         }
 
         [HttpGet("feedback-list")]

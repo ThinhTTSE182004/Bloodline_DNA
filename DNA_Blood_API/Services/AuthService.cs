@@ -179,7 +179,6 @@ namespace LoginAPI.Services
                 name = "Google User";
 
             var user = await _userRepository.GetByEmailAsync(email);
-            Console.WriteLine(user == null ? "User chưa có" : "User đã có");
             if (user == null)
             {
                 user = new User
@@ -198,7 +197,7 @@ namespace LoginAPI.Services
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Lỗi khi lưu user mới: " + ex.InnerException?.Message ?? ex.Message);
+                    throw new Exception("Error saving new user: " + ex.InnerException?.Message ?? ex.Message);
                 }
 
                 var profile = new UserProfile
@@ -216,7 +215,7 @@ namespace LoginAPI.Services
                 }
                 catch (Exception ex)
                 {
-                    throw new Exception("Lỗi khi lưu user profile: " + ex.InnerException?.Message ?? ex.Message);
+                    throw new Exception("Error saving user profile: " + ex.InnerException?.Message ?? ex.Message);
                 }
             }
 

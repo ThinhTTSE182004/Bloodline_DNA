@@ -37,7 +37,7 @@ namespace DNA_API1.Controllers
             }
             if (dto.Participants == null || dto.Participants.Count != 2)
             {
-                return BadRequest(new { message = "Cần nhập đủ thông tin 2 người tham gia!" });
+                return BadRequest(new { message = "Need to enter enough information for 2 participants!" });
             }
             var customerId = GetUserIdFromToken();
             if (customerId == null)
@@ -50,7 +50,7 @@ namespace DNA_API1.Controllers
 
                 return Ok(new
                 {
-                    message = "Đơn hàng đã được tạo thành công",
+                    message = "Order created successfully",
                     orderId = orderId
                 });
             }
@@ -58,7 +58,7 @@ namespace DNA_API1.Controllers
             {
                 return StatusCode(500, new
                 {
-                    message = "Đã xảy ra lỗi khi tạo đơn hàng",
+                    message = "An error occurred while creating the order.",
                     error = ex.ToString() // Trả về cả stack trace
                 });
             }

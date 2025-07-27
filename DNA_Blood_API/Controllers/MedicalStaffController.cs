@@ -41,7 +41,7 @@ namespace DNA_API1.Controllers
             _shiftAssignmentService = shiftAssignmentService;
             _sampleVerificationImageService = sampleVerificationImageService;
         }
-        // Nhận mẫu: cập nhật trạng thái Sample.Status = "Processing"
+        // Receive sample: Update Sample.Status = "Processing"
         [HttpPut("receive-sample/{sampleId}")]
         public async Task<IActionResult> ReceiveSample(int sampleId)
         {
@@ -51,7 +51,7 @@ namespace DNA_API1.Controllers
             return Ok("Sample status updated to Processing");
         }
 
-        // Hoàn thành xét nghiệm: cập nhật trạng thái Sample.Status = "Completed"
+        // Complete: update Sample.Status = "Completed"
         [HttpPut("complete-sample/{sampleId}")]
         public async Task<IActionResult> CompleteSample(int sampleId)
         {
@@ -60,7 +60,7 @@ namespace DNA_API1.Controllers
                 return NotFound("Sample not found");
             return Ok("Sample status updated to Completed");
         }
-        // Lấy cái sample theo Medical
+        // Get the sample according to Medical
         [HttpGet("get-sample-by-medicalStaffId")]
         public async Task<IActionResult> GetSamplesByMedicalStaffId()
         {
@@ -69,7 +69,7 @@ namespace DNA_API1.Controllers
             return Ok(samples);
         }
 
-        // Cập nhật sample_transfer là đã nhận được mẫu
+        // Update sample_transfer as sample received
         [HttpPut("confirm-sample-transfer-received/{transferId}")]
         public async Task<IActionResult> ConfirmSampleTransferReceived(int transferId)
         {
@@ -79,7 +79,7 @@ namespace DNA_API1.Controllers
             return Ok(result.Message);
         }
 
-        // Lấy các sample_transfer theo medical
+        // Get sample_transfers by medical
         [HttpGet("get-sample-transfers-by-medicalStaffId")]
         public async Task<IActionResult> GetSampleTransfers()
         {
@@ -89,14 +89,14 @@ namespace DNA_API1.Controllers
             return Ok(transfers);
         }
 
-        // Update orderDetail khi tất cả các sample của đơn đó đã ở trạng thái Đã hoàn thành.
+        // Update orderDetail when all samples of that order are in Completed status.
         [HttpPut("update-status-order-detail/{orderDetailId}")]
         public async Task<IActionResult> AutoUpdateStatus(int orderDetailId)
         {
             var result = await _orderDetailService.UpdateOrderDetailStatusIfAllSamplesCompletedAsync(orderDetailId);
-            if (!result) return NotFound("OrderDetail không tồn tại hoặc chưa đủ điều kiện.");
+            if (!result) return NotFound("OrderDetail does not exist or is not qualified.");
 
-            // Sau khi update thành công, lấy orderDetail để lấy userId
+            // After successful update, get orderDetail to get userId
             var orderDetail = await _orderDetailService.GetOrderDetailByIdAsync(orderDetailId);
             if (orderDetail != null && orderDetail.Order != null)
             {
@@ -119,7 +119,7 @@ namespace DNA_API1.Controllers
 
                 if (string.IsNullOrEmpty(medicalStaffIdString))
                 {
-                    return Unauthorized("Không thể xác định người dùng từ token.");
+                    return Unauthorized("Unable to identify user from token.");
                 }
 
                 var medicalStaffId = int.Parse(medicalStaffIdString);
@@ -131,7 +131,7 @@ namespace DNA_API1.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, "Đã có lỗi xảy ra ở phía server.");
+                return StatusCode(500, "An error occurred on the server side.");
             }
         }
 
@@ -144,7 +144,7 @@ namespace DNA_API1.Controllers
                 var createdResult = await _resultService.AddResultWithLocusAsync(result);
                 return Ok(new 
                 { 
-                    message = "Kết quả đã được tạo thành công với thông tin locus chi tiết",
+                    message = "The result was generated successfully with detailed locus information.",
                     resultId = createdResult.ResultId,
                     result = createdResult
                 });
@@ -156,7 +156,7 @@ namespace DNA_API1.Controllers
                 Console.WriteLine($"StackTrace: {ex.StackTrace}");
                 
                 return BadRequest(new { 
-                    message = "Có lỗi xảy ra khi tạo kết quả",
+                    message = "An error occurred while generating the result\"",
                     error = ex.Message,
                     details = ex.InnerException?.Message
                 });
@@ -190,9 +190,9 @@ namespace DNA_API1.Controllers
 
             var success = await _sampleVerificationImageService.VerifyImageAsync(verificationImageId, model, medicalStaffId);
             if (!success)
-                return StatusCode(403, new { message = "Bạn không có quyền xác nhận ảnh này hoặc ảnh không tồn tại." });
+                return StatusCode(403, new { message = "You do not have permission to claim this photo or the photo does not exist." });
 
-            return Ok(new { message = "Xác nhận ảnh thành công." });
+            return Ok(new { message = "Image verification successful." });
         }
     }
 }
