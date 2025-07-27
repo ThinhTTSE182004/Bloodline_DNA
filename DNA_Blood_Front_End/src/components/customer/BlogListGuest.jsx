@@ -127,7 +127,10 @@ const BlogListGuest = () => {
           {totalPages > 1 && (
             <div className="flex justify-center items-center gap-4 mt-10">
               <button
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                onClick={() => {
+                  setCurrentPage(prev => Math.max(1, prev - 1));
+                  setTimeout(() => window.scrollTo(0, 0), 100);
+                }}
                 disabled={currentPage === 1}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
@@ -137,7 +140,10 @@ const BlogListGuest = () => {
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
                   <button
                     key={page}
-                    onClick={() => setCurrentPage(page)}
+                    onClick={() => {
+                      setCurrentPage(page);
+                      window.scrollTo(0, 0);
+                    }}
                     className={`px-3 py-2 rounded-lg transition-colors ${
                       currentPage === page
                         ? 'bg-blue-600 text-white'
@@ -149,7 +155,10 @@ const BlogListGuest = () => {
                 ))}
               </div>
               <button
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                onClick={() => {
+                  setCurrentPage(prev => Math.min(totalPages, prev + 1));
+                  setTimeout(() => window.scrollTo(0, 0), 100);
+                }}
                 disabled={currentPage === totalPages}
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
