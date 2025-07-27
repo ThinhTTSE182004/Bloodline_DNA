@@ -57,14 +57,25 @@ const BlogListGuest = () => {
       >
         Back to Home
       </button>
-      <motion.h1
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="text-3xl sm:text-4xl font-bold text-center mb-10"
+        className="flex flex-col items-center mb-10"
       >
-        Blog List
-      </motion.h1>
+        <div className="flex items-center gap-2 mb-1">
+          <span className="inline-block p-1 bg-blue-100 rounded-full">
+            {/* Newspaper/news icon */}
+            <svg width="24" height="24" fill="none" viewBox="0 0 24 24"><path fill="currentColor" d="M19 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2Zm0 16H5V5h14v14ZM7 7h10v2H7V7Zm0 4h10v2H7v-2Zm0 4h7v2H7v-2Z"/></svg>
+          </span>
+          <h1 className="text-3xl sm:text-4xl font-bold text-blue-700 border-b-2 border-blue-200 px-2 pb-1 text-center">
+            Blog List
+          </h1>
+        </div>
+        <p className="text-base text-gray-500 font-normal mt-1 text-center max-w-xl">
+          A collection of the latest articles, news, and stories about DNA & blood testing.
+        </p>
+      </motion.div>
 
       {/* Blog cards */}
       {loading ? (
