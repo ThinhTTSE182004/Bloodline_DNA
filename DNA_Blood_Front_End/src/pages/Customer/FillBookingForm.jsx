@@ -12,7 +12,6 @@ const FillBookingForm = () => {
     testType: '',
     sampleCollectionMethod: '',
     sampleType: '',
-    // Main participant (person taking the test)
     mainParticipant: {
       fullName: '',
       gender: '',
@@ -20,7 +19,6 @@ const FillBookingForm = () => {
       phoneNumber: '',
       email: '',
     },
-    // Related participant (person booking for someone else)
     relatedParticipant: {
       fullName: '',
       gender: '',
@@ -44,7 +42,6 @@ const FillBookingForm = () => {
     const serviceId = searchParams.get('service');
 
     if (serviceId) {
-      // Tìm trong cart hoặc services (so sánh cùng kiểu)
       let service = cartItems.find(item => String(item.servicePackageId) === String(serviceId));
       if (!service) {
         service = services.find(item => String(item.servicePackageId) === String(serviceId));
@@ -54,7 +51,7 @@ const FillBookingForm = () => {
         return;
       }
     }
-    // Nếu không có serviceId, lấy từ localStorage
+
     const saved = sessionStorage.getItem('selectedServices');
     if (saved) {
       try {
@@ -70,8 +67,7 @@ const FillBookingForm = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    
-    // Handle nested participant objects
+
     if (name.startsWith('mainParticipant.')) {
       const field = name.split('.')[1];
       setFormData({
@@ -91,7 +87,6 @@ const FillBookingForm = () => {
         },
       });
     } else {
-      // Handle regular fields
       setFormData({
         ...formData,
         [name]: value,
@@ -102,7 +97,6 @@ const FillBookingForm = () => {
   const handleDateTimeFocus = (e) => {
     const { name } = e.target;
     if (name === 'bookingDate') {
-      // If the time part is empty or 00:00, set it to 08:00
       const currentValue = e.target.value;
       if (!currentValue || currentValue.endsWith('T00:00')) {
         const today = new Date();
@@ -117,7 +111,6 @@ const FillBookingForm = () => {
   };
 
   function getLocalHour(datetimeStr) {
-    // datetimeStr dạng "2025-07-13T08:00"
     if (!datetimeStr) return null;
     const timePart = datetimeStr.split('T')[1];
     if (!timePart) return null;
@@ -126,7 +119,6 @@ const FillBookingForm = () => {
   }
 
   function isPastDateTimeLocal(datetimeStr) {
-    // Compare local datetime-local string with now (local time)
     if (!datetimeStr) return true;
     const [datePart, timePart] = datetimeStr.split('T');
     if (!datePart || !timePart) return true;
@@ -154,21 +146,20 @@ const FillBookingForm = () => {
 
   const validate = () => {
     const newErrors = {};
-    // Test Type
     if (!formData.testType) newErrors.testType = "Please select test type.";
-    // Sample Collection Method
+    
     if (!formData.sampleCollectionMethod) newErrors.sampleCollectionMethod = "Please select sample collection method.";
-    // Sample Type
+    
     if (!formData.sampleType) newErrors.sampleType = "Please select sample type.";
-    // Booking Date
+    
     if (!formData.bookingDate) {
       newErrors.bookingDate = "Please select booking date.";
     } else {
-      // Nếu chọn hôm nay và đã quá 17:00 thì báo lỗi
+      
       if (isTodayLocal(formData.bookingDate)) {
         const now = new Date();
         if (now.getHours() >= 17) {
-          newErrors.bookingDate = "Vui lòng đặt hàng vào ngày hôm sau.";
+          newErrors.bookingDate = "Please order the next day.";
         }
       }
       if (!newErrors.bookingDate) {
@@ -182,15 +173,18 @@ const FillBookingForm = () => {
         }
       }
     }
-    // Address
+    
     if (formData.sampleCollectionMethod === "At Home" && !formData.address.trim()) {
       newErrors.address = "Please enter address for home collection.";
     }
-    // Relationship
+    
     if (!formData.relationshipToPatient) newErrors.relationshipToPatient = "Please select relationship.";
-    // Main Participant
-    if (!formData.mainParticipant.fullName.trim() || formData.mainParticipant.fullName.trim().length < 2)
+    
+    const fullName = formData.mainParticipant?.fullName?.trim() || "";
+    if (!fullName || fullName.length < 2) {
       newErrors["mainParticipant.fullName"] = "Please enter full name (at least 2 characters).";
+    }
+
     if (!formData.mainParticipant.gender) newErrors["mainParticipant.gender"] = "Please select gender.";
     if (!formData.mainParticipant.dateOfBirth) {
       newErrors["mainParticipant.dateOfBirth"] = "Please select date of birth.";
@@ -200,10 +194,10 @@ const FillBookingForm = () => {
     }
     if (!formData.mainParticipant.phoneNumber.match(/^0[0-9]{9}$/))
       newErrors["mainParticipant.phoneNumber"] = "Please enter a valid 10-digit phone number.";
-    if (!formData.mainParticipant.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/))
-      newErrors["mainParticipant.email"] = "Please enter a valid email address.";
-    // Related Participant (nếu relationship khác self và khác rỗng)
-    if (formData.relationshipToPatient && formData.relationshipToPatient !== "self") {
+    if (!formData.mainParticipant.email.match(/^[\w.+\-]+@gmail\.[a-z]{2,}$/))
+      newErrors["mainParticipant.email"] = "Please enter a valid Gmail address (e.g., example@gmail.com).";
+
+    if (formData.relationshipToPatient && formData.relationshipToPatient !='self') {
       if (!formData.relatedParticipant.fullName.trim() || formData.relatedParticipant.fullName.trim().length < 2)
         newErrors["relatedParticipant.fullName"] = "Please enter full name (at least 2 characters).";
       if (!formData.relatedParticipant.gender) newErrors["relatedParticipant.gender"] = "Please select gender.";
@@ -215,8 +209,8 @@ const FillBookingForm = () => {
       }
       if (!formData.relatedParticipant.phoneNumber.match(/^0[0-9]{9}$/))
         newErrors["relatedParticipant.phoneNumber"] = "Please enter a valid 10-digit phone number.";
-      if (!formData.relatedParticipant.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/))
-        newErrors["relatedParticipant.email"] = "Please enter a valid email address.";
+      if (!formData.relatedParticipant.email.match(/^[\w.+\-]+@gmail\.[a-z]{2,}$/))
+        newErrors["relatedParticipant.email"] = "Please enter a valid Gmail address (e.g., example@gmail.com).";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -228,17 +222,15 @@ const FillBookingForm = () => {
 
     const total = selectedServices.reduce((total, service) => total + (service.price || 0), 0);
 
-    // Kiểm tra giờ
     const hour = getLocalHour(formData.bookingDate);
     if (!(hour >= 8 && hour < 12 || hour >= 13 && hour < 17)) {
-      alert("Vui lòng chọn giờ từ 8:00-12:00 hoặc 13:00-17:00.");
+      alert("Please select time from 8:00-12:00 or 13:00-17:00.");
       return;
     }
 
-    // Prepare participants array
     const participants = [];
-    
-    // Add main participant
+
+
     participants.push({
       fullName: formData.mainParticipant.fullName,
       sex: formData.mainParticipant.gender,
@@ -248,8 +240,7 @@ const FillBookingForm = () => {
       nameRelation: formData.mainParticipant.fullName
     });
 
-    // Add related participant if relationship is not 'self'
-    if (formData.relationshipToPatient !== 'self' && formData.relationshipToPatient !== '') {
+    if (formData.relationshipToPatient !== '') {
       participants.push({
         fullName: formData.relatedParticipant.fullName,
         sex: formData.relatedParticipant.gender,
@@ -265,7 +256,6 @@ const FillBookingForm = () => {
       participants: participants,
       details: selectedServices.map(s => ({ servicePackageId: s.servicePackageId })),
       payment: {
-        // paymentMethod will be added on payment screen
         total: total
       },
       testTypeName: formData.testType,
@@ -300,15 +290,17 @@ const FillBookingForm = () => {
 
   function getBookingMinDate() {
     const now = new Date();
-    // Nếu đã quá 17:00 thì min là 08:00 ngày mai
     if (now.getHours() >= 17) {
       const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 8, 0, 0);
       return tomorrow.toISOString().slice(0, 16);
     }
-    // Nếu chưa quá 17:00 thì min là giờ hiện tại (local)
-    // Nhưng phải chuyển về local ISO string
     const local = new Date(now.getTime() - now.getTimezoneOffset() * 60000);
     return local.toISOString().slice(0, 16);
+  }
+
+  function getDateOfBirth() {
+    const now = new Date();
+    return now.toISOString().slice(0, 10);
   }
 
   return (
@@ -317,22 +309,25 @@ const FillBookingForm = () => {
       <main className="flex-grow pt-24 pb-12 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto space-y-8">
           {/* SELECTED SERVICES SUMMARY */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="bg-white rounded-lg shadow-xl p-8 border-2 border-blue-100">
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-2xl font-bold text-blue-700 mb-6 flex items-center hover:text-blue-600 hover:cursor-default">
               <FaClipboardList className="w-7 h-7 mr-3 text-blue-600" />
               Selected Services Details
             </motion.h2>
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.4 }}
               className="space-y-4">
               {selectedServices.map((service) => (
@@ -351,14 +346,16 @@ const FillBookingForm = () => {
           </motion.div>
 
           {/* ENTER SERVICE DETAILS */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.8 }}
             className="bg-white rounded-lg shadow-xl p-8 border-2 border-blue-100">
-            <motion.h2 
+            <motion.h2
               initial={{ opacity: 0, scale: 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="text-2xl font-bold text-blue-700 mb-8 flex items-center hover:text-blue-600 hover:cursor-default">
               <FaPencilAlt className="w-7 h-7 mr-3 text-blue-600" />
@@ -375,9 +372,10 @@ const FillBookingForm = () => {
             >
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {/* Test Type */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                   <label htmlFor="testType" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
@@ -401,9 +399,10 @@ const FillBookingForm = () => {
                 </motion.div>
 
                 {/* Sample Collection Method */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.4 }}
                   className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                   <label htmlFor="sampleCollectionMethod" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
@@ -427,9 +426,10 @@ const FillBookingForm = () => {
                 </motion.div>
 
                 {/* Sample Type */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.5 }}
                   className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                   <label htmlFor="sampleType" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
@@ -454,9 +454,10 @@ const FillBookingForm = () => {
                 </motion.div>
 
                 {/* Booking Date */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.5 }}
                   className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                   <label htmlFor="bookingDate" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
@@ -481,11 +482,11 @@ const FillBookingForm = () => {
                   </div>
                 </motion.div>
 
-                {/* Address - chỉ hiện khi chọn At Home */}
                 {formData.sampleCollectionMethod === 'At Home' && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
                     transition={{ duration: 0.8 }}
                     className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                     <label htmlFor="address" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
@@ -508,9 +509,10 @@ const FillBookingForm = () => {
                 )}
 
                 {/* Relationship to Patient */}
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.6 }}
                   className="bg-gray-50 p-6 rounded-lg border border-gray-200">
                   <label htmlFor="relationshipToPatient" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
@@ -537,13 +539,13 @@ const FillBookingForm = () => {
               </div>
 
               {/* MAIN PARTICIPANT SECTION */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
                 className="bg-blue-50 rounded-lg p-6 border-2 border-blue-200">
-                <motion.h3 
+                <motion.h3
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -554,7 +556,7 @@ const FillBookingForm = () => {
                 </motion.h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Main Participant Full Name */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
@@ -579,7 +581,7 @@ const FillBookingForm = () => {
                   </motion.div>
 
                   {/* Main Participant Gender */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
@@ -607,7 +609,7 @@ const FillBookingForm = () => {
                   </motion.div>
 
                   {/* Main Participant Date of Birth */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
@@ -624,6 +626,7 @@ const FillBookingForm = () => {
                       className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:cursor-text"
                       value={formData.mainParticipant.dateOfBirth}
                       onChange={handleChange}
+                      max={getDateOfBirth()}
                     />
                     {errors["mainParticipant.dateOfBirth"] && (
                       <div className="text-red-500 text-sm mt-1">{errors["mainParticipant.dateOfBirth"]}</div>
@@ -631,7 +634,7 @@ const FillBookingForm = () => {
                   </motion.div>
 
                   {/* Main Participant Phone Number */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
@@ -656,7 +659,7 @@ const FillBookingForm = () => {
                   </motion.div>
 
                   {/* Main Participant Email */}
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     viewport={{ once: true }}
@@ -683,13 +686,13 @@ const FillBookingForm = () => {
               </motion.div>
 
               {/* RELATED PARTICIPANT SECTION - Always show */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.8 }}
                 className="bg-green-50 rounded-lg p-6 border-2 border-green-200">
-                <motion.h3 
+                <motion.h3
                   initial={{ opacity: 0, scale: 0.8 }}
                   whileInView={{ opacity: 1, scale: 1 }}
                   viewport={{ once: true }}
@@ -698,138 +701,139 @@ const FillBookingForm = () => {
                   <FaUserFriends className="w-6 h-6 mr-3 text-green-600" />
                   Related Participant (Person Booking the Test)
                 </motion.h3>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    {/* Related Participant Full Name */}
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8 }}
-                      className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.fullName" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
-                        <FaUser className="w-5 h-5 mr-2 text-green-600" />
-                        Full Name
-                      </label>
-                      <input
-                        type="text"
-                        name="relatedParticipant.fullName"
-                        id="relatedParticipant.fullName"
-                        className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                        placeholder="Enter full name"
-                        value={formData.relatedParticipant.fullName}
-                        onChange={handleChange}
-                      />
-                      {errors["relatedParticipant.fullName"] && (
-                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.fullName"]}</div>
-                      )}
-                    </motion.div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  {/* Related Participant Full Name */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200">
+                    <label htmlFor="relatedParticipant.fullName" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <FaUser className="w-5 h-5 mr-2 text-green-600" />
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      name="relatedParticipant.fullName"
+                      id="relatedParticipant.fullName"
+                      className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      placeholder="Enter full name"
+                      value={formData.relatedParticipant.fullName}
+                      onChange={handleChange}
+                    />
+                    {errors["relatedParticipant.fullName"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.fullName"]}</div>
+                    )}
+                  </motion.div>
 
-                    {/* Related Participant Gender */}
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8 }}
-                      className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.gender" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
-                        <FaTransgender className="w-5 h-5 mr-2 text-green-600" />
-                        Gender
-                      </label>
-                      <select
-                        id="relatedParticipant.gender"
-                        name="relatedParticipant.gender"
-                        className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:cursor-pointer"
-                        value={formData.relatedParticipant.gender}
-                        onChange={handleChange}
-                      >
-                        <option value="">-- Select Gender --</option>
-                        <option value="male">Male</option>
-                        <option value="female">Female</option>
-                        <option value="other">Other</option>
-                      </select>
-                      {errors["relatedParticipant.gender"] && (
-                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.gender"]}</div>
-                      )}
-                    </motion.div>
+                  {/* Related Participant Gender */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200">
+                    <label htmlFor="relatedParticipant.gender" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <FaTransgender className="w-5 h-5 mr-2 text-green-600" />
+                      Gender
+                    </label>
+                    <select
+                      id="relatedParticipant.gender"
+                      name="relatedParticipant.gender"
+                      className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:cursor-pointer"
+                      value={formData.relatedParticipant.gender}
+                      onChange={handleChange}
+                    >
+                      <option value="">-- Select Gender --</option>
+                      <option value="male">Male</option>
+                      <option value="female">Female</option>
+                      <option value="other">Other</option>
+                    </select>
+                    {errors["relatedParticipant.gender"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.gender"]}</div>
+                    )}
+                  </motion.div>
 
-                    {/* Related Participant Date of Birth */}
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8 }}
-                      className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.dateOfBirth" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
-                        <FaCalendarAlt className="w-5 h-5 mr-2 text-green-600" />
-                        Date of Birth
-                      </label>
-                      <input
-                        type="date"
-                        name="relatedParticipant.dateOfBirth"
-                        id="relatedParticipant.dateOfBirth"
-                        className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:cursor-text"
-                        value={formData.relatedParticipant.dateOfBirth}
-                        onChange={handleChange}
-                      />
-                      {errors["relatedParticipant.dateOfBirth"] && (
-                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.dateOfBirth"]}</div>
-                      )}
-                    </motion.div>
+                  {/* Related Participant Date of Birth */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200">
+                    <label htmlFor="relatedParticipant.dateOfBirth" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <FaCalendarAlt className="w-5 h-5 mr-2 text-green-600" />
+                      Date of Birth
+                    </label>
+                    <input
+                      type="date"
+                      name="relatedParticipant.dateOfBirth"
+                      id="relatedParticipant.dateOfBirth"
+                      className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 hover:cursor-text"
+                      value={formData.relatedParticipant.dateOfBirth}
+                      onChange={handleChange}
+                      max={getDateOfBirth()}
+                    />
+                    {errors["relatedParticipant.dateOfBirth"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.dateOfBirth"]}</div>
+                    )}
+                  </motion.div>
 
-                    {/* Related Participant Phone Number */}
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8 }}
-                      className="bg-white p-4 rounded-lg border border-gray-200">
-                      <label htmlFor="relatedParticipant.phoneNumber" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
-                        <FaPhone className="w-5 h-5 mr-2 text-green-600" />
-                        Phone Number
-                      </label>
-                      <input
-                        type="tel"
-                        name="relatedParticipant.phoneNumber"
-                        id="relatedParticipant.phoneNumber"
-                        className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                        placeholder="Enter phone number"
-                        value={formData.relatedParticipant.phoneNumber}
-                        onChange={handleChange}
-                      />
-                      {errors["relatedParticipant.phoneNumber"] && (
-                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.phoneNumber"]}</div>
-                      )}
-                    </motion.div>
+                  {/* Related Participant Phone Number */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200">
+                    <label htmlFor="relatedParticipant.phoneNumber" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <FaPhone className="w-5 h-5 mr-2 text-green-600" />
+                      Phone Number
+                    </label>
+                    <input
+                      type="tel"
+                      name="relatedParticipant.phoneNumber"
+                      id="relatedParticipant.phoneNumber"
+                      className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      placeholder="Enter phone number"
+                      value={formData.relatedParticipant.phoneNumber}
+                      onChange={handleChange}
+                    />
+                    {errors["relatedParticipant.phoneNumber"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.phoneNumber"]}</div>
+                    )}
+                  </motion.div>
 
-                    {/* Related Participant Email */}
-                    <motion.div 
-                      initial={{ opacity: 0, scale: 0.8 }}
-                      whileInView={{ opacity: 1, scale: 1 }}
-                      viewport={{ once: true }}
-                      transition={{ duration: 0.8 }}
-                      className="bg-white p-4 rounded-lg border border-gray-200 md:col-span-2">
-                      <label htmlFor="relatedParticipant.email" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
-                        <FaEnvelope className="w-5 h-5 mr-2 text-green-600" />
-                        Email
-                      </label>
-                      <input
-                        type="email"
-                        name="relatedParticipant.email"
-                        id="relatedParticipant.email"
-                        className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
-                        placeholder="Enter email address"
-                        value={formData.relatedParticipant.email}
-                        onChange={handleChange}
-                      />
-                      {errors["relatedParticipant.email"] && (
-                        <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.email"]}</div>
-                      )}
-                    </motion.div>
-                  </div>
-                </motion.div>
+                  {/* Related Participant Email */}
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8 }}
+                    className="bg-white p-4 rounded-lg border border-gray-200 md:col-span-2">
+                    <label htmlFor="relatedParticipant.email" className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                      <FaEnvelope className="w-5 h-5 mr-2 text-green-600" />
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      name="relatedParticipant.email"
+                      id="relatedParticipant.email"
+                      className="mt-1 block w-full border-2 border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500"
+                      placeholder="Enter email address"
+                      value={formData.relatedParticipant.email}
+                      onChange={handleChange}
+                    />
+                    {errors["relatedParticipant.email"] && (
+                      <div className="text-red-500 text-sm mt-1">{errors["relatedParticipant.email"]}</div>
+                    )}
+                  </motion.div>
+                </div>
+              </motion.div>
 
               {/* Submit Button */}
-              <motion.div 
+              <motion.div
                 initial={{ opacity: 0, scale: 0.8 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}

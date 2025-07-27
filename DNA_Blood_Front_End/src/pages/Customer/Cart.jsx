@@ -15,13 +15,11 @@ const Cart = () => {
 
   const handleSelectItem = (id) => {
     setSelectedItems(prevSelected => {
-      // Nếu item này đã được chọn, bỏ chọn nó
       if (prevSelected[id]) {
         const newSelected = { ...prevSelected };
         delete newSelected[id];
         return newSelected;
       }
-      // Nếu chọn item mới, chỉ giữ lại item này (chỉ cho phép chọn 1)
       return { [id]: true };
     });
   };
@@ -61,7 +59,7 @@ const Cart = () => {
       alert('You can only select one service at a time for booking.');
       return;
     }
-    // Save selected items to sessionStorage
+
     sessionStorage.setItem('selectedServices', JSON.stringify(itemsToOrder));
     navigate('/fill-booking');
   };

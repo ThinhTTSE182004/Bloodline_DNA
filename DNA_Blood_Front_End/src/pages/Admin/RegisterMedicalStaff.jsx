@@ -62,7 +62,7 @@ const RegisterMedicalStaff = () => {
       <AdminSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       <div className="min-h-screen bg-gray-100 py-10 px-4 pt-32 transition-all duration-300">
         <div className="max-w-2xl mx-auto bg-white shadow-lg rounded-lg p-8 space-y-10">
-          <motion.h1 
+          <motion.h1
             initial={{ opacity: 0, scale: 0.8 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8, delay: 0 }}
@@ -70,73 +70,116 @@ const RegisterMedicalStaff = () => {
             Create Medical Staff Account
           </motion.h1>
           <form onSubmit={handleMedicalSubmit} className="space-y-4">
-            <motion.input 
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              name="username" 
-              value={medicalForm.username} 
-              onChange={handleMedicalChange} 
-              placeholder="Username" 
-              className="w-full border p-2 rounded" 
-              required />
-            <motion.input 
+              className="relative"
+            >
+              {medicalForm.username === '' && (
+                <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+              <input
+                name="username"
+                value={medicalForm.username}
+                onChange={handleMedicalChange}
+                placeholder="Username"
+                className="w-full border p-2 rounded pl-5"
+                required
+              />
+            </motion.div>
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              name="password" 
-              type="password" 
-              value={medicalForm.password} 
-              onChange={handleMedicalChange} 
-              placeholder="Password" 
-              className="w-full border p-2 rounded" 
+              className="relative"
+            >
+              {medicalForm.username === '' && (
+                <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+            <input
+              name="password"
+              type="password"
+              value={medicalForm.password}
+              onChange={handleMedicalChange}
+              placeholder="Password"
+              className="w-full border p-2 rounded pl-5"
               required />
-            <motion.input 
+            </motion.div>
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              name="email" 
-              value={medicalForm.email} 
-              onChange={handleMedicalChange} 
-              placeholder="Email" 
-              className="w-full border p-2 rounded" 
+              className="relative"
+            >
+              {medicalForm.username === '' && (
+                <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+            <input
+              name="email"
+              value={medicalForm.email}
+              onChange={handleMedicalChange}
+              placeholder="Email"
+              className="w-full border p-2 rounded pl-5"
               required />
-            <motion.input 
+            </motion.div>
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              name="phone" 
-              value={medicalForm.phone} 
-              onChange={handleMedicalChange} 
-              placeholder="Phone" 
-              className="w-full border p-2 rounded" 
+              className="relative"
+            >
+              {medicalForm.username === '' && (
+                <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+            <input
+              name="phone"
+              value={medicalForm.phone}
+              onChange={handleMedicalChange}
+              placeholder="Phone"
+              className="w-full border p-2 rounded pl-5"
               required />
-            <motion.input 
+            </motion.div>
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.6 }}
-              name="yoe" 
-              type="number" 
-              value={medicalForm.yoe} 
-              onChange={handleMedicalChange} 
-              placeholder="Years of Experience" 
-              className="w-full border p-2 rounded" 
+              className="relative"
+            >
+              {medicalForm.username === '' && (
+                <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+            <input
+              name="yoe"
+              type="number"
+              value={medicalForm.yoe}
+              onChange={handleMedicalChange}
+              placeholder="Years of Experience"
+              className="w-full border p-2 rounded pl-5"
               required />
-            <motion.input 
+            </motion.div>
+            <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.7 }}
-              name="specialization" 
-              value={medicalForm.specialization} 
-              onChange={handleMedicalChange} 
-              placeholder="Specialization" 
-              className="w-full border p-2 rounded" 
+              className="relative"
+            >
+              {medicalForm.username === '' && (
+                <span className="absolute left-[10px] top-[13px] text-red-500 pointer-events-none">*</span>
+              )}
+            <input
+              name="specialization"
+              value={medicalForm.specialization}
+              onChange={handleMedicalChange}
+              placeholder="Specialization"
+              className="w-full border p-2 rounded pl-5"
               required />
-            <motion.button 
+            </motion.div>
+            <motion.button
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.8, delay: 0.8 }}
-              type="submit" 
+              type="submit"
               className="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
               Create Medical Staff
             </motion.button>

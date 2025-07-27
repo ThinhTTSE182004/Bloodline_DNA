@@ -11,15 +11,12 @@ const PaymentSuccess = () => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
-    // Ưu tiên lấy từ sessionStorage trước
     const sessionBooking = JSON.parse(sessionStorage.getItem('lastPaidBooking'));
     if (sessionBooking) {
       setUserDetails(sessionBooking);
-      // Nếu thiếu selectedServices, thử lấy từ details + services context
       if (sessionBooking.selectedServices && sessionBooking.selectedServices.length > 0) {
         setServices(sessionBooking.selectedServices);
       } else if (sessionBooking.details && window.servicesList) {
-        // window.servicesList là biến tạm, bạn có thể truyền qua context hoặc localStorage
         const fallbackServices = sessionBooking.details.map(detail =>
           window.servicesList.find(s => String(s.servicePackageId) === String(detail.servicePackageId))
         ).filter(Boolean);
@@ -30,23 +27,19 @@ const PaymentSuccess = () => {
       return;
     }
 
-    // Nếu không có trong sessionStorage, thử lấy từ localStorage
     const booking = JSON.parse(sessionStorage.getItem('bookingFormData'));
     if (booking) {
       setUserDetails(booking);
       setServices(booking.selectedServices || []);
-      // Lưu vào sessionStorage để giữ lại thông tin
       sessionStorage.setItem('lastPaidBooking', JSON.stringify(booking));
     }
 
-    // Redirect về home sau 60s
     const timer = setTimeout(() => {
       navigate('/');
     }, 60000);
     return () => clearTimeout(timer);
   }, [navigate]);
 
-  // Thêm useEffect để log thông tin debug
   useEffect(() => {
     console.log('User Details:', userDetails);
     console.log('Services:', services);

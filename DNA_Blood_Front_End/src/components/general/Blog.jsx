@@ -15,6 +15,8 @@ const Blog = () => {
         const response = await fetch('/api/Admin/public-blogs');
         if (!response.ok) throw new Error('Failed to fetch blogs');
         const data = await response.json();
+        // Sắp xếp blog mới nhất lên đầu (bên trái)
+        data.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         setBlogs(data);
       } catch (err) {
         setBlogs([]);
@@ -76,7 +78,7 @@ const Blog = () => {
     blogs.slice(0, 3).map((post, index) => (
               <div 
                 key={post.blogId} 
-                className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 group hover:-translate-y-1"
+                className="bg-white rounded-lg overflow-hidden shadow-md transition-all duration-300 group hover:-translate-y-1 hover:shadow-[0_12px_32px_rgba(37,99,235,0.18)]"
               >
                 <div className="relative overflow-hidden">
                   <img 
@@ -95,7 +97,9 @@ const Blog = () => {
                       <FaCalendarAlt className="text-blue-600 mr-1 inline" />{new Date(post.createdAt).toLocaleDateString('en-GB')}
                     </span>
                   </div>
-                  <h3 className="text-xl font-semibold text-gray-900 mt-4 hover:text-gray-800 transition-colors duration-200 cursor-default">{post.title}</h3>
+                  <h3 className="text-xl font-semibold text-gray-900 mt-4 transition-colors duration-200 cursor-default group-hover:text-blue-600">
+                    {post.title}
+                  </h3>
                   <div className="mb-3 flex justify-center">
                     {post.category && (
                       <span className="inline-block bg-primary text-black px-3 py-1 rounded-full text-sm transform group-hover:scale-105 transition-transform duration-300 cursor-default">

@@ -94,14 +94,8 @@ const Payment = () => {
       const newCart = allCart.filter(item => !paidIds.includes(item.servicePackageId));
       localStorage.setItem('cart', JSON.stringify(newCart));
       refreshCart();
-      //const paidIds = orderSummary.map(item => item.servicePackageId);
-      //const allCart = JSON.parse(sessionStorage.getItem('cart')) || [];
-      //const newCart = allCart.filter(item => !paidIds.includes(item.servicePackageId));
-      //sessionStorage.setItem('cart', JSON.stringify(newCart));
-      //refreshCart();
       
-      // Lấy lại thông tin service đầy đủ từ services context nếu thiếu
-      const selectedServices = bookingData.details.map(detail =>
+       const selectedServices = bookingData.details.map(detail =>
         services.find(s => String(s.servicePackageId) === String(detail.servicePackageId))
       ).filter(Boolean);
 

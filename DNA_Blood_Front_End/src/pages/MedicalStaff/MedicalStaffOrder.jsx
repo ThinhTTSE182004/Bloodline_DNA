@@ -14,7 +14,6 @@ const MedicalStaffOrder = () => {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [confirmActionDetails, setConfirmActionDetails] = useState({ action: null, id: null, actionText: '' });
   
-  // State for Add Result Modal
   const [showAddResultModal, setShowAddResultModal] = useState(false);
   const [currentOrderDetailId, setCurrentOrderDetailId] = useState(null);
   const [resultData, setResultData] = useState({
@@ -28,14 +27,12 @@ const MedicalStaffOrder = () => {
   });
   const [resultError, setResultError] = useState('');
 
-  // 1. State cho filter
   const [transferStatusFilter, setTransferStatusFilter] = useState('all');
   const [sampleTypeFilter, setSampleTypeFilter] = useState('all');
   const [sampleStatusFilter, setSampleStatusFilter] = useState('all');
   const [orderServiceFilter, setOrderServiceFilter] = useState('all');
   const [orderStatusFilter, setOrderStatusFilter] = useState('all');
 
-  // State cho modal xem ảnh xác minh
   const [showViewImagesModal, setShowViewImagesModal] = useState(false);
   const [viewImages, setViewImages] = useState([]);
   const [selectedSampleForImages, setSelectedSampleForImages] = useState(null);
@@ -230,7 +227,6 @@ const MedicalStaffOrder = () => {
     });
   };
 
-  // 2. Filtered data
   const filteredSampleTransfers = sampleTransfers.filter(t =>
     transferStatusFilter === 'all' || t.sampleTransferStatus === transferStatusFilter
   );
@@ -254,7 +250,6 @@ const MedicalStaffOrder = () => {
     );
   }
 
-  // Thêm hàm xác nhận ảnh
   const verifyImage = async (verificationImageId, status, note = '') => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     try {
@@ -269,7 +264,6 @@ const MedicalStaffOrder = () => {
           note: note 
         })
       });
-      // fetch lại ảnh để cập nhật trạng thái
       if (selectedSampleForImages) {
         const resp = await fetch(`/api/MedicalStaff/sample-images/${selectedSampleForImages}`, {
           headers: { 'Authorization': `Bearer ${token}` }
@@ -280,7 +274,7 @@ const MedicalStaffOrder = () => {
         }
       }
     } catch (err) {
-      alert('Xác nhận ảnh thất bại!');
+      alert('verification failed!');
     }
   };
 
@@ -294,7 +288,7 @@ const MedicalStaffOrder = () => {
   // Hàm xác nhận reject với note
   const confirmRejectWithNote = async () => {
     if (!rejectNote.trim()) {
-      alert('Vui lòng nhập lý do từ chối ảnh!');
+      alert('Please enter reason for photo rejection!');
       return;
     }
     
@@ -695,7 +689,7 @@ const MedicalStaffOrder = () => {
         </div>
       )}
 
-      {/* Modal hiển thị ảnh xác minh */}
+      {/* Modal show verified image */}
       {showViewImagesModal && (
         <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50 transition">
           <div className="bg-white p-6 rounded-xl shadow-2xl w-full max-w-3xl max-h-[85vh] overflow-y-auto relative">

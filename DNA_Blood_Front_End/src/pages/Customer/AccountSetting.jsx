@@ -81,7 +81,6 @@ const AccountSetting = () => {
     try {
       await signalRService.startConnection();
 
-      // Lắng nghe sự kiện cập nhật profile
       signalRService.onUserProfileUpdate((updatedProfile) => {
         console.log('Profile updated via SignalR:', updatedProfile);
         setSuccessMessage('Profile updated successfully!');
@@ -144,7 +143,6 @@ const AccountSetting = () => {
         navigate('/login');
         return;
       }
-      // Không cần set success message ở đây vì sẽ được xử lý bởi SignalR
       setIsEditing(false);
     } catch (err) {
       console.error('Error updating profile:', err);
@@ -292,7 +290,7 @@ const AccountSetting = () => {
                     type="button"
                     onClick={() => {
                       setIsEditing(false);
-                      fetchProfileData(); // Reset form data
+                      fetchProfileData();
                     }}
                     className="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                   >

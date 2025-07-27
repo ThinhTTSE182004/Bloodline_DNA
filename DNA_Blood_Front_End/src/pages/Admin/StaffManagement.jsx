@@ -40,14 +40,12 @@ const StaffManagement = () => {
       const token = sessionStorage.getItem('token') || localStorage.getItem('token');
       
       try {
-        // Fetch Medical Staffs
         const medRes = await fetch('/api/ShiftAssignment/medical-staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
         const medData = medRes.ok ? await medRes.json() : [];
         setMedicalStaffs(Array.isArray(medData) ? medData : []);
 
-        // Fetch Staffs
         const staffRes = await fetch('/api/ShiftAssignment/staffs', {
           headers: token ? { 'Authorization': `Bearer ${token}` } : {}
         });
@@ -65,17 +63,14 @@ const StaffManagement = () => {
     fetchStaffData();
   }, []);
 
-  // Calculate statistics
   const totalMedicalStaff = medicalStaffs.length;
   const totalStaff = staffs.length;
   const totalEmployees = totalMedicalStaff + totalStaff;
   
-  // Calculate average experience for medical staff (using yearsOfExperience field)
   const avgExperience = medicalStaffs.length > 0 
     ? medicalStaffs.reduce((sum, staff) => sum + (staff.yearsOfExperience || 0), 0) / medicalStaffs.length 
     : 0;
 
-  // Chart data
   const roleDistributionData = [
     { name: 'Medical Staff', value: totalMedicalStaff, color: '#10B981' },
     { name: 'Regular Staff', value: totalStaff, color: '#3B82F6' }
@@ -88,7 +83,6 @@ const StaffManagement = () => {
     { range: '10+ years', count: medicalStaffs.filter(s => (s.yearsOfExperience || 0) > 10).length }
   ];
 
-  // Filter and search functionality
   const filteredMedicalStaffs = medicalStaffs.filter(staff => {
     const matchesSearch = staff.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          staff.userId?.toString().includes(searchTerm);

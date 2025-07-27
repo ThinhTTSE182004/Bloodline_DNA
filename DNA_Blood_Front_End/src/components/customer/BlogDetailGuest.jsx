@@ -24,11 +24,12 @@ const BlogDetailGuest = () => {
     fetchBlog();
   }, [blogId]);
 
-  if (loading) return <div className="text-center py-20">Đang tải bài viết...</div>;
+  if (loading) return <div className="text-center py-20">Loading Blog...</div>;
   if (error) return (
     <div className="text-center py-20 text-red-600">
       {error}
-      <button onClick={() => navigate('/blog')} className="ml-4 px-4 py-2 bg-blue-600 text-white rounded">Quay lại danh sách</button>
+      <button onClick={() => navigate('/blog')} className="ml-4 px-4 py-2 bg-blue-600 text-white rounded">Back to Blog List</button>
+      <button onClick={() => navigate('/')} className="ml-2 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">Back to Home</button>
     </div>
   );
   if (!post) return null;
@@ -41,7 +42,8 @@ const BlogDetailGuest = () => {
         <span>By {post.authorName || post.authorId}</span> | <span>{new Date(post.createdAt).toLocaleDateString('en-GB')}</span>
       </div>
       <div className="prose max-w-none" dangerouslySetInnerHTML={{ __html: post.content }} />
-      <button onClick={() => navigate('/blog')} className="mt-8 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Quay lại danh sách</button>
+      <button onClick={() => navigate('/blog')} className="mt-8 px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Back to Blog List</button>
+      <button onClick={() => navigate('/')} className="mt-8 ml-2 px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">Back to Home</button>
     </div>
   );
 };

@@ -109,10 +109,10 @@ const MedicalStaff = () => {
         label: 'Sample Status',
         data: Object.values(statusCounts),
         backgroundColor: [
-          'rgba(54, 162, 235, 0.7)',  // Blue for Processing
-          'rgba(75, 192, 192, 0.7)',  // Green for Completed
-          'rgba(255, 206, 86, 0.7)', // Yellow for others
-          'rgba(201, 203, 207, 0.7)'  // Grey for Unknown
+          'rgba(54, 162, 235, 0.7)', 
+          'rgba(75, 192, 192, 0.7)', 
+          'rgba(255, 206, 86, 0.7)', 
+          'rgba(201, 203, 207, 0.7)' 
         ],
         borderWidth: 1,
       }]
