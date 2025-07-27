@@ -7,10 +7,10 @@ namespace DNA_Blood_API.Services
 {
     public interface IShiftAssignmentService
     {
-        Task<IEnumerable<ShiftAssignment>> GetAllAsync();
-        Task<ShiftAssignment> GetByIdAsync(int id);
-        Task<ShiftAssignment> AddAsync(ShiftAssignmentCreateOrUpdateDTO dto);
-        Task<ShiftAssignment> UpdateAsync(int assignmentId, ShiftAssignmentCreateOrUpdateDTO dto);
+        Task<IEnumerable<ShiftAssignmentDTO>> GetAllDTOAsync();
+        Task<ShiftAssignmentDTO> GetByIdDTOAsync(int id);
+        Task<ShiftAssignmentDTO> AddDTOAsync(ShiftAssignmentCreateOrUpdateDTO dto);
+        Task<ShiftAssignmentDTO> UpdateDTOAsync(int assignmentId, ShiftAssignmentCreateOrUpdateDTO dto);
         Task DeleteAsync(int id);
         Task<int> CountAssignedByRoleAsync(int shiftId, System.DateOnly date, int roleId);
         Task<List<ShiftAssignmentSuggestionDTO>> SuggestAssignments(List<ShiftSimpleDTO> shifts, List<UserSimpleDTO> users, List<System.DateOnly> dates);

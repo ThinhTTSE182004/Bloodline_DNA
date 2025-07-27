@@ -156,6 +156,11 @@ namespace DNA_API1.Services
                         staffProcessingTime
                     );
 
+                    if (medicalStaffId == 0 || staffId == 0)
+                    {
+                        throw new Exception("Không tìm được nhân viên phù hợp để tạo đơn hàng!");
+                    }
+
                     var detail = new OrderDetail
                     {
                         ServicePackageId = detailDto.ServicePackageId,
