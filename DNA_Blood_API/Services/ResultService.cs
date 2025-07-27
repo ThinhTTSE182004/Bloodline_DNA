@@ -126,22 +126,33 @@ namespace DNA_API1.Services
             return resultDTOs;
         }
 
-        public async Task ShareResultByEmailAsync(int userId, ShareResultRequestDTO request)
+        public async Task ShareResultByEmailWithAttachmentAsync(int userId, ShareResultRequestDTO request)
         {
-            // Get result and check access rights
+            // Lấy kết quả và kiểm tra quyền
             var result = await _resultRepository.GetResultWithFullDataAsync(request.ResultId, userId);
             if (result == null)
                 throw new Exception("Result does not exist or you do not have access rights.");
 
-            // Get file/report info
+            // Sinh file PDF
+            var pdfBytes = await GeneratePdfReportAsync(result.ResultId, userId);
+            if (pdfBytes == null)
+                throw new Exception("Could not generate PDF file.");
+
+            // Soạn email
             var testName = result.OrderDetail.ServicePackage.ServiceName;
-            var pdfUrl = $"https://localhost:7113/api/UserProfile/Results/{result.ResultId}/download-pdf";
             var subject = $"Share DNA Test Result: {testName}";
             var body = $"<p>You have received a DNA test result from the DNA Testing system.</p>" +
                        $"<p>Test name: <b>{testName}</b></p>" +
-                       $"<p>You can download the result file at: <a href='{pdfUrl}'>{pdfUrl}</a></p>";
+                       $"<p>The result file is attached to this email.</p>";
 
-            await _emailService.SendEmailAsync(request.ToEmail, subject, body);
+            // Gửi email với file PDF đính kèm
+            await _emailService.SendEmailAsync(
+                request.ToEmail,
+                subject,
+                body,
+                pdfBytes,
+                $"DNA_Result_{result.ResultId}_{DateTime.Now:yyyyMMdd}.pdf"
+            );
         }
 
         public async Task<ResultDetailDTO> GetResultByIdAsync(int resultId, int userId)
@@ -240,12 +251,12 @@ namespace DNA_API1.Services
         {
             container.Row(row =>
             {
-                row.ConstantItem(100).Image("img/logo.png", ImageScaling.FitArea);
+                row.ConstantItem(70).Height(60).Image("img/logo.png", ImageScaling.FitArea);
                 row.RelativeItem().Column(col =>
                 {
-                    col.Item().Text("BLOODLINE DNA TESTING LABORATORY").FontSize(16).Bold();
-                    col.Item().Text("123 DNA Street, Ho Chi Minh City, Vietnam").FontSize(10);
-                    col.Item().Text("Phone: +84 123 456 789 | Email: info@bloodlinedna.com").FontSize(10);
+                    col.Item().PaddingLeft(10).Text("BLOODLINE DNA TESTING LABORATORY").FontSize(16).Bold();
+                    col.Item().PaddingLeft(10).Text("123 DNA Street, Ho Chi Minh City, Vietnam").FontSize(10);
+                    col.Item().PaddingLeft(10).Text("Phone: +84 123 456 789 | Email: info@bloodlinedna.com").FontSize(10);
                 });
             });
         }
@@ -374,10 +385,14 @@ namespace DNA_API1.Services
                     col.Item().Text("Generated on: " + DateTime.Now.ToString("dd/MM/yyyy HH:mm:ss")).FontSize(8);
                 });
 
-                row.ConstantItem(200).Column(col =>
+                row.ConstantItem(260).Column(col =>
                 {
-                    col.Item().AlignRight().Text("Authorized Signature:").FontSize(10);
-                    col.Item().AlignRight().Height(60).Image("img/signature.png", ImageScaling.FitWidth);
+                    col.Item().AlignCenter().Text("Authorized Signature:").FontSize(12);
+                    col.Item()
+                        .AlignCenter()
+                        .PaddingTop(4)
+                        .Height(100)
+                        .Image("img/signature.png", ImageScaling.FitArea);
                 });
             });
         }
