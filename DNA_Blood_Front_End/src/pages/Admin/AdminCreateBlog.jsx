@@ -17,6 +17,7 @@ const AdminCreateBlog = () => {
   const [posting, setPosting] = useState(false); // Thêm state loading khi gửi blog
   const navigate = useNavigate();
   const quillRef = useRef();
+  const fileInputRef = useRef(); // Thêm ref cho input file
 
   // Hàm upload ảnh lên Cloudinary
   const uploadImageToCloudinary = async (file) => {
@@ -181,6 +182,7 @@ const AdminCreateBlog = () => {
               </button>
             )}
             <input
+              ref={fileInputRef} // Gán ref cho input file
               id="blog-thumbnail-input"
               type="file"
               accept="image/*"
@@ -218,7 +220,10 @@ const AdminCreateBlog = () => {
                 <button
                   className="absolute top-2 right-2 bg-white/80 hover:bg-red-100 text-red-500 rounded-full p-1 shadow transition"
                   title="Remove image"
-                  onClick={() => setImageUrl('')}
+                  onClick={() => {
+                    setImageUrl('');
+                    if (fileInputRef.current) fileInputRef.current.value = '';
+                  }}
                   type="button"
                 >
                   <FiX className="text-lg" />
