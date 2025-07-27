@@ -49,8 +49,12 @@ namespace DNA_API1.Repository
 
         public async Task UpdateAsync(SampleVerificationImage entity)
         {
-            _context.SampleVerificationImages.Update(entity);
-            await _context.SaveChangesAsync();
+            var existingEntity = await _context.SampleVerificationImages.FindAsync(entity.VerificationImageId);
+            if (existingEntity != null)
+            {
+                _context.Entry(existingEntity).CurrentValues.SetValues(entity);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }

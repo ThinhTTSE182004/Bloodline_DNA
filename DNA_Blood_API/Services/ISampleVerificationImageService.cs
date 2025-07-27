@@ -15,5 +15,7 @@ namespace DNA_API1.Services
 
         // Cái này ràng buộc cho medical khi muốn xác nhận đã nhận
         Task<bool> HasAtLeastTwoValidImagesAsync(int sampleId);
+
+        Task<UploadResult> UpdateVerificationImageAsync(int verificationImageId, SampleVerificationImageUpdateDTO model, int staffId);
     }
 }
