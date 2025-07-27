@@ -6,6 +6,8 @@ import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js';
 import StaffFeedback from './StaffFeedback';
 import { motion } from 'framer-motion';
+import WorkSchedule from '../../components/general/WorkSchedule';
+import { fetchWorkSchedule } from '../../services/scheduleService';
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
@@ -23,6 +25,11 @@ const Staff = () => {
   const [sampleTransfers, setSampleTransfers] = useState([]);
   const [assignedOrders, setAssignedOrders] = useState([]);
   const navigate = useNavigate();
+  const [workSchedule, setWorkSchedule] = useState([]);
+  const [scheduleLoading, setScheduleLoading] = useState(true);
+  const [scheduleError, setScheduleError] = useState(null);
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
 
   const fetchData = async () => {
     setLoading(true);
@@ -68,6 +75,24 @@ const Staff = () => {
   useEffect(() => {
     fetchData();
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      setScheduleLoading(true);
+      setScheduleError(null);
+      try {
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+        if (!token) throw new Error('No token found');
+        const data = await fetchWorkSchedule(month, year, token);
+        setWorkSchedule(data);
+      } catch (err) {
+        setScheduleError(err.message);
+      } finally {
+        setScheduleLoading(false);
+      }
+    };
+    fetchSchedule();
+  }, [month, year]);
 
   const calculateStats = () => {
     return {
@@ -209,6 +234,17 @@ const Staff = () => {
             <StatCard icon={<FaShippingFast className="w-8 h-8 text-yellow-500"/>} title="Pending Samples" value={stats.pendingSamples} color="border-l-4 border-yellow-500" />
             <StatCard icon={<FaCheckCircle className="w-8 h-8 text-purple-500"/>} title="Completed Samples" value={stats.completedSamples} color="border-l-4 border-purple-500" />
           </motion.div>
+
+          {/* Work Schedule Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Work Schedule By Week</h2>
+            {scheduleError && <div className="text-red-500 mb-2">{scheduleError}</div>}
+            {scheduleLoading ? (
+              <div className="flex justify-center items-center h-32"><FaSpinner className="w-8 h-8 text-blue-600 animate-spin" /></div>
+            ) : (
+              <WorkSchedule schedule={workSchedule} month={month} year={year} />
+            )}
+          </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Chart */}

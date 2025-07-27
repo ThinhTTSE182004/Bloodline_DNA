@@ -6,6 +6,8 @@ import { Pie } from 'react-chartjs-2';
 import { Chart as ChartJS, ArcElement, Tooltip, Legend, Title } from 'chart.js';
 import { motion } from 'framer-motion';
 import { FaTags, FaVials, FaCheckCircle, FaChartPie } from 'react-icons/fa';
+import WorkSchedule from '../../components/general/WorkSchedule';
+import { fetchMedicalStaffWorkSchedule } from '../../services/scheduleService';
 
 ChartJS.register(ArcElement, Tooltip, Legend, Title);
 
@@ -15,6 +17,12 @@ const MedicalStaff = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+
+  const [workSchedule, setWorkSchedule] = useState([]);
+  const [scheduleLoading, setScheduleLoading] = useState(true);
+  const [scheduleError, setScheduleError] = useState(null);
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [year, setYear] = useState(new Date().getFullYear());
 
   const fetchData = async () => {
     setLoading(true);
@@ -55,6 +63,29 @@ const MedicalStaff = () => {
   useEffect(() => {
     fetchData();
   }, [navigate]);
+
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      setScheduleLoading(true);
+      setScheduleError(null);
+      try {
+        const token = sessionStorage.getItem('token') || localStorage.getItem('token');
+        if (!token) {
+          navigate('/login');
+          throw new Error('Unauthorized');
+        }
+        const data = await fetchMedicalStaffWorkSchedule(month, year, token);
+        setWorkSchedule(data);
+      } catch (err) {
+        if (err.message !== 'Unauthorized') {
+          setScheduleError(err.message);
+        }
+      } finally {
+        setScheduleLoading(false);
+      }
+    };
+    fetchSchedule();
+  }, [month, year, navigate]);
 
   const calculateStats = () => {
     return {
@@ -136,6 +167,17 @@ const MedicalStaff = () => {
             <StatCard icon={<FaCheckCircle className="w-8 h-8 text-green-500" />} title="Completed Samples" value={stats.completedSamples} color="border-l-4 border-green-500" hoverBg="hover:bg-green-50" />
             <StatCard icon={<FaCheckCircle className="w-8 h-8 text-indigo-500" />} title="Transfers Received" value={stats.receivedTransfers} color="border-l-4 border-indigo-500" hoverBg="hover:bg-indigo-50" />
           </motion.div>
+
+          {/* Work Schedule Section */}
+          <div className="mb-8">
+            <h2 className="text-xl font-bold text-gray-800 mb-2">Work Schedule By Week</h2>
+            {scheduleError && <div className="text-red-500 mb-2">{scheduleError}</div>}
+            {scheduleLoading ? (
+              <div className="flex justify-center items-center h-32"><span className="w-8 h-8 text-blue-600 animate-spin">Loading...</span></div>
+            ) : (
+              <WorkSchedule schedule={workSchedule} month={month} year={year} />
+            )}
+          </div>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <motion.div 
               initial={{ opacity: 0 }}
