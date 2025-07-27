@@ -16,3 +16,45 @@ User Guide for AI Service Website
 Frequently Asked Questions:
 - How to reset my password? → Click "Forgot password" on the login page.
 - Are AI services free? → Some services are free, others are charged by package. 
+
+1. Select a DNA Testing Service:
+- The customer chooses the appropriate test type (e.g., paternity, siblingship, ).
+- They select the sample collection method:
+
+- Self-collection at home (send-in)
+
+- Technician visits customer’s location
+
+- Visit testing center in person
+
+2. Enter Participant Information:
+- Input personal details and relationships of individuals involved in the test.
+
+3. (Optional) Request Personalized Consultation:
+- Customers may submit a request for professional consultation before finalizing the order.
+
+4. Make a Payment:
+- Supported payment methods:
+
+- Online payment (e.g., bank transfer, payment gateway)
+
+- Cash on Delivery (COD) during sample pickup or result delivery
+
+5. Track the Order:
+- Customers can monitor:
+
+- Sample delivery/shipping status
+
+- DNA test progress and lab processing
+
+6. Receive Results:
+- Test results are accessible via:
+
+- Online viewing
+
+- File download
+
+- Email sharing
+
+7. View Testing History:
+- Users can access a full record of past DNA testing services they’ve used.
