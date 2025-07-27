@@ -38,9 +38,9 @@ namespace DNA_API1.Services
         {
             var sample = await _sampleService.GetSampleByIdAsync(model.SampleId);
             if (sample == null)
-                return new UploadResult { Success = false, StatusCode = 404, Message = "Sample không tồn tại." };
+                return new UploadResult { Success = false, StatusCode = 404, Message = "Sample not found." };
             if (sample.StaffId != staffId)
-                return new UploadResult { Success = false, StatusCode = 403, Message = "Bạn không có quyền upload ảnh cho mẫu này." };
+                return new UploadResult { Success = false, StatusCode = 403, Message = "You don't have permission to upload images for this sample." };
 
             var entity = new SampleVerificationImage
             {
@@ -49,11 +49,11 @@ namespace DNA_API1.Services
                 CaptureTime = DateTime.Now,
                 CapturedBy = staffId,
                 VerificationType = model.VerificationType,
-                VerificationStatus = "Chờ xác minh",
+                VerificationStatus = "Pending verification",
                 Note = model.Note
             };
             await _repository.AddAsync(entity);
-            return new UploadResult { Success = true, StatusCode = 200, Message = "Upload ảnh xác minh thành công." };
+            return new UploadResult { Success = true, StatusCode = 200, Message = "Verification image uploaded successfully." };
         }
 
         public async Task<IEnumerable<SampleVerificationImage>> GetImagesBySampleIdAsync(int sampleId)
@@ -118,6 +118,44 @@ namespace DNA_API1.Services
             var images = await _repository.GetAllImagesBySampleIdAsync(sampleId);
             // Chỉ tính ảnh đã được xác nhận là "Hợp lệ"
             return images.Count(img => img.VerificationStatus == "Hợp lệ") >= 2;
+        }
+
+        public async Task<UploadResult> UpdateVerificationImageAsync(int verificationImageId, SampleVerificationImageUpdateDTO model, int staffId)
+        {
+            var image = await _repository.GetByIdAsync(verificationImageId);
+            if (image == null)
+                return new UploadResult { Success = false, StatusCode = 404, Message = "Verification image not found." };
+
+            // Check permission: only staff who created the image can update it
+            if (image.CapturedBy != staffId)
+                return new UploadResult { Success = false, StatusCode = 403, Message = "You don't have permission to update this image." };
+
+            // Check status: only allow updating images that haven't been verified yet
+            // Allow update for statuses: "Pending verification", "Invalid photo verification"
+            var allowedStatuses = new[] { "Pending verification", "Invalid photo verification" };
+            if (!allowedStatuses.Contains(image.VerificationStatus))
+                return new UploadResult { Success = false, StatusCode = 400, Message = "Cannot update image that has already been verified." };
+
+            // Log current status before update
+            Console.WriteLine($"Before update - Image ID: {verificationImageId}, Current Status: {image.VerificationStatus}");
+
+            // Update information
+            image.ImageUrl = model.ImageUrl;
+            image.VerificationType = model.VerificationType;
+            image.Note = model.Note;
+            // Reset status to pending verification when updating
+            image.VerificationStatus = "Pending verification";
+
+            // Log status after update
+            Console.WriteLine($"After update - Image ID: {verificationImageId}, New Status: {image.VerificationStatus}");
+
+            await _repository.UpdateAsync(image);
+            
+            // Verify the update was saved
+            var updatedImage = await _repository.GetByIdAsync(verificationImageId);
+            Console.WriteLine($"After save - Image ID: {verificationImageId}, Saved Status: {updatedImage?.VerificationStatus}");
+
+            return new UploadResult { Success = true, StatusCode = 200, Message = "Verification image updated successfully." };
         }
 
     }

@@ -39,6 +39,11 @@ const MedicalStaffOrder = () => {
   const [showViewImagesModal, setShowViewImagesModal] = useState(false);
   const [viewImages, setViewImages] = useState([]);
   const [selectedSampleForImages, setSelectedSampleForImages] = useState(null);
+  
+  // State cho modal reject note
+  const [showRejectNoteModal, setShowRejectNoteModal] = useState(false);
+  const [rejectNote, setRejectNote] = useState('');
+  const [selectedImageForReject, setSelectedImageForReject] = useState(null);
 
   const navigate = useNavigate();
 
@@ -250,7 +255,7 @@ const MedicalStaffOrder = () => {
   }
 
   // Thêm hàm xác nhận ảnh
-  const verifyImage = async (verificationImageId, status) => {
+  const verifyImage = async (verificationImageId, status, note = '') => {
     const token = sessionStorage.getItem('token') || localStorage.getItem('token');
     try {
       await fetch(`/api/MedicalStaff/verify-sample-image/${verificationImageId}`, {
@@ -259,7 +264,10 @@ const MedicalStaffOrder = () => {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ verificationStatus: status })
+        body: JSON.stringify({ 
+          verificationStatus: status,
+          note: note 
+        })
       });
       // fetch lại ảnh để cập nhật trạng thái
       if (selectedSampleForImages) {
@@ -274,6 +282,26 @@ const MedicalStaffOrder = () => {
     } catch (err) {
       alert('Xác nhận ảnh thất bại!');
     }
+  };
+
+  // Hàm mở modal reject note
+  const openRejectNoteModal = (image) => {
+    setSelectedImageForReject(image);
+    setRejectNote('');
+    setShowRejectNoteModal(true);
+  };
+
+  // Hàm xác nhận reject với note
+  const confirmRejectWithNote = async () => {
+    if (!rejectNote.trim()) {
+      alert('Vui lòng nhập lý do từ chối ảnh!');
+      return;
+    }
+    
+    await verifyImage(selectedImageForReject.verificationImageId, 'Invalid photo verification', rejectNote);
+    setShowRejectNoteModal(false);
+    setRejectNote('');
+    setSelectedImageForReject(null);
   };
 
   return (
@@ -743,8 +771,8 @@ const MedicalStaffOrder = () => {
                         className={`flex items-center gap-1 px-3 py-1 rounded-md text-xs font-semibold shadow transition-all duration-150
                           ${img.verificationStatus === 'Invalid photo verification' ? 'bg-red-400 text-white cursor-not-allowed' : 'bg-red-100 text-red-700 hover:bg-red-500 hover:text-white'}`}
                         disabled={img.verificationStatus === 'Invalid photo verification'}
-                        onClick={() => verifyImage(img.verificationImageId, 'Invalid photo verification')}
-                        title={img.verificationStatus === 'Invalid photo verification' ? 'Already rejected' : 'Reject this image'}
+                        onClick={() => openRejectNoteModal(img)}
+                        title={img.verificationStatus === 'Invalid photo verification' ? 'Already rejected' : 'Reject this image with reason'}
                       >
                         <FaTimes className="text-base" /> Reject
                       </button>
@@ -760,6 +788,62 @@ const MedicalStaffOrder = () => {
             >
               ×
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Modal nhập lý do reject */}
+      {showRejectNoteModal && selectedImageForReject && (
+        <div className="fixed inset-0 bg-gray-600 bg-opacity-75 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+          <div className="relative mx-auto p-8 border w-full max-w-md shadow-lg rounded-md bg-white">
+            <div className="text-center">
+              <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
+                <FaTimes className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg leading-6 font-medium text-gray-900 mt-4">
+                Reject Image
+              </h3>
+              <div className="mt-4">
+                <div className="mb-4">
+                  <img
+                    src={selectedImageForReject.imageUrl}
+                    alt="Image to reject"
+                    className="w-full h-32 object-cover rounded-lg border"
+                  />
+                </div>
+                <div className="mb-4">
+                  <label className="block text-sm font-medium text-gray-700 mb-2 text-left">
+                    Lý do từ chối ảnh <span className="text-red-500">*</span>
+                  </label>
+                  <textarea
+                    value={rejectNote}
+                    onChange={(e) => setRejectNote(e.target.value)}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
+                    rows="4"
+                    placeholder="Nhập lý do tại sao từ chối ảnh này..."
+                    required
+                  />
+                </div>
+              </div>
+              <div className="flex justify-center space-x-4 mt-6">
+                <button
+                  onClick={() => {
+                    setShowRejectNoteModal(false);
+                    setRejectNote('');
+                    setSelectedImageForReject(null);
+                  }}
+                  className="px-6 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-all duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={confirmRejectWithNote}
+                  className="px-6 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition-all duration-200"
+                >
+                  Confirm Reject
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

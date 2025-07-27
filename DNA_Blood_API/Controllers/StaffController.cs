@@ -154,6 +154,18 @@ namespace DNA_API1.Controllers
             return Ok(images);
             
         }
+
+        // Cập nhật ảnh xác minh mẫu
+        [HttpPut("update-sample-verification-image/{verificationImageId}")]
+        public async Task<IActionResult> UpdateSampleVerificationImage(int verificationImageId, [FromBody] SampleVerificationImageUpdateDTO model)
+        {
+            var staffId = int.Parse(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+            var result = await _sampleVerificationImageService.UpdateVerificationImageAsync(verificationImageId, model, staffId);
+            if (!result.Success)
+                return StatusCode(result.StatusCode, new { message = result.Message });
+            return Ok(new { message = "Cập nhật ảnh xác minh thành công." });
+        }
+
         [HttpGet("work-schedule")]
         public async Task<IActionResult> GetWorkSchedule([FromQuery] int? month, [FromQuery] int? year)
         {
