@@ -11,19 +11,19 @@ Bộ Dữ liệu mẫu cho Staff
   {
     "username": "Trần Thị Thùy",
     "password": "123456",
-    "email": "tranthithuy@yahoo.com",
+    "email": "tranthithuy@gmail.com",
     "phone": "0908765432"
   },
   {
     "username": "Lê Minh Thư",
     "password": "123456",
-    "email": "leminhthu@hotmail.com",
+    "email": "leminhthu@gmail.com",
     "phone": "0987654321"
   },
   {
     "username": "Phạm Thanh Sơn",
     "password": "123456",
-    "email": "phamthanhson@outlook.com",
+    "email": "phamthanhson@gmail.com",
     "phone": "0923456789"
   },
   {
@@ -35,19 +35,19 @@ Bộ Dữ liệu mẫu cho Staff
   {
     "username": "Đoàn Văn Khánh",
     "password": "123456",
-    "email": "doanvankhanh@mail.com",
+    "email": "doanvankhanh@gmail.com",
     "phone": "0901234567"
   },
   {
     "username": "Ngô Thị Thảo",
     "password": "123456",
-    "email": "ngothithao@outlook.com",
+    "email": "ngothithao@gmail.com",
     "phone": "0912349876"
   },
   {
     "username": "Vương Thanh Hà",
     "password": "123456",
-    "email": "vuongthanhha@yahoo.com",
+    "email": "vuongthanhha@gmail.com",
     "phone": "0923456789"
   },
   {
@@ -59,7 +59,7 @@ Bộ Dữ liệu mẫu cho Staff
   {
     "username": "Phan Thị Thùy",
     "password": "123456",
-    "email": "phanthithuy@hotmail.com",
+    "email": "phanthithuy@gmail.com",
     "phone": "0981234567"
   }
 ]
@@ -78,7 +78,7 @@ Bộ Dữ Liệu Cho Medical Staff
   {
     "username": "Trần Minh Tú",
     "password": "123456",
-    "email": "tranminhtu@yahoo.com",
+    "email": "tranminhtu@gmail.com",
     "phone": "0908765432",
     "yoe": 3,
     "specialization": "Molecular Biology"
@@ -86,7 +86,7 @@ Bộ Dữ Liệu Cho Medical Staff
   {
     "username": "Lê Thị Hương",
     "password": "123456",
-    "email": "lethihuong@hotmail.com",
+    "email": "lethihuong@gmail.com",
     "phone": "0987654321",
     "yoe": 2,
     "specialization": "Biomedical Science"
@@ -94,7 +94,7 @@ Bộ Dữ Liệu Cho Medical Staff
   {
     "username": "Phạm Quang Huy",
     "password": "123456",
-    "email": "phamquanghuy@outlook.com",
+    "email": "phamquanghuy@gmail.com",
     "phone": "0923456789",
     "yoe": 8,
     "specialization": "Genomics"
@@ -110,7 +110,7 @@ Bộ Dữ Liệu Cho Medical Staff
   {
     "username": "Đoàn Bích Liên",
     "password": "123456",
-    "email": "doanbichlien@mail.com",
+    "email": "doanbichlien@gmail.com",
     "phone": "0901234567",
     "yoe": 4,
     "specialization": "Clinical Laboratory Science"
@@ -118,7 +118,7 @@ Bộ Dữ Liệu Cho Medical Staff
   {
     "username": "Ngô Thiên Kim",
     "password": "123456",
-    "email": "ngothienkim@outlook.com",
+    "email": "ngothienkim@gmail.com",
     "phone": "0912349876",
     "yoe": 7,
     "specialization": "DNA Forensics"
@@ -126,7 +126,7 @@ Bộ Dữ Liệu Cho Medical Staff
   {
     "username": "Vương Hồng Hà",
     "password": "123456",
-    "email": "vuonghongha@yahoo.com",
+    "email": "vuonghongha@gmail.com",
     "phone": "0923456789",
     "yoe": 9,
     "specialization": "Bioinformatics"
@@ -142,7 +142,7 @@ Bộ Dữ Liệu Cho Medical Staff
   {
     "username": "Phan Thị Yến",
     "password": "123456",
-    "email": "phanthiyen@hotmail.com",
+    "email": "phanthiyen@gmail.com",
     "phone": "0981234567",
     "yoe": 3,
     "specialization": "DNA Sample Processing"
