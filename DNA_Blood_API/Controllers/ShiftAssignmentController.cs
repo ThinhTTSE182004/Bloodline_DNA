@@ -28,30 +28,37 @@ namespace DNA_Blood_API.Controllers
         [HttpGet("AllAssignments")]
         public async Task<IActionResult> GetAll()
         {
-            var result = await _shiftAssignmentService.GetAllAsync();
-            return Ok(result);
+            var dtoList = await _shiftAssignmentService.GetAllDTOAsync();
+            return Ok(dtoList);
         }
 
         [HttpGet("Assignment/{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await _shiftAssignmentService.GetByIdAsync(id);
-            if (result == null) return NotFound();
-            return Ok(result);
+            var dto = await _shiftAssignmentService.GetByIdDTOAsync(id);
+            if (dto == null) return NotFound();
+            return Ok(dto);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] ShiftAssignmentCreateOrUpdateDTO assignment)
         {
-            var created = await _shiftAssignmentService.AddAsync(assignment);
-            return Ok(created);
+            try
+            {
+                var dto = await _shiftAssignmentService.AddDTOAsync(assignment);
+                return Ok(dto);
+            }
+            catch (System.Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] ShiftAssignmentCreateOrUpdateDTO assignment)
         {
-            var updated = await _shiftAssignmentService.UpdateAsync(id, assignment);
-            return Ok(updated);
+            var dto = await _shiftAssignmentService.UpdateDTOAsync(id, assignment);
+            return Ok(dto);
         }
 
         [HttpDelete("DeleteAssignment/{id}")]

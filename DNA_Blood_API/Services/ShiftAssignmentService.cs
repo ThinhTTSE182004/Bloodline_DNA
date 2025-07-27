@@ -24,37 +24,7 @@ namespace DNA_Blood_API.Services
             _userProfileRepository = userProfileRepository;
             _shiftAssignmentRepositoryCustom = shiftAssignmentRepositoryCustom;
         }
-        public async Task<IEnumerable<ShiftAssignment>> GetAllAsync()
-        {
-            return await _shiftAssignmentRepository.GetAllAsync();
-        }
-        public async Task<ShiftAssignment> GetByIdAsync(int id)
-        {
-            return await _shiftAssignmentRepository.GetByIdAsync(id);
-        }
-        public async Task<ShiftAssignment> AddAsync(ShiftAssignmentCreateOrUpdateDTO dto)
-        {
-            // Kiểm tra số lượng user đã gán vào ca/ngày theo role
-            // Lấy user từ dto.UserId nếu cần kiểm tra role
-            // (Giả sử có thể lấy user từ repository hoặc truyền roleId từ ngoài vào)
-            // Ở đây tạm bỏ kiểm tra role để đơn giản hóa
-            var entity = new ShiftAssignment
-            {
-                UserId = dto.UserId,
-                ShiftId = dto.ShiftId,
-                AssignmentDate = dto.AssignmentDate
-            };
-            return await _shiftAssignmentRepository.AddAsync(entity);
-        }
-        public async Task<ShiftAssignment> UpdateAsync(int assignmentId, ShiftAssignmentCreateOrUpdateDTO dto)
-        {
-            var entity = await _shiftAssignmentRepository.GetByIdAsync(assignmentId);
-            if (entity == null) throw new System.Exception("Assignment not found");
-            entity.UserId = dto.UserId;
-            entity.ShiftId = dto.ShiftId;
-            entity.AssignmentDate = dto.AssignmentDate;
-            return await _shiftAssignmentRepository.UpdateAsync(entity);
-        }
+        // Đã xoá các hàm không còn dùng: GetAllAsync, GetByIdAsync, AddAsync, UpdateAsync
         public async Task DeleteAsync(int id)
         {
             await _shiftAssignmentRepository.DeleteAsync(id);
@@ -105,14 +75,15 @@ namespace DNA_Blood_API.Services
                     // Medical Staff
                     var assignedMedical = assignments
                         .Where(a => a.ShiftId == shift.ShiftId && a.AssignmentDate == date && a.User != null && a.User.RoleId == 4)
+                        .Select(a => a.UserId)
                         .ToList();
 
                     int needMedical = 3 - assignedMedical.Count;
                     for (int i = 0; i < needMedical && medicalStaffs.Count > 0; i++)
                     {
-                        // Tìm Medical Staff phù hợp theo Round-Robin
+                        var availableMedicalStaffs = medicalStaffs.Where(m => !assignedMedical.Contains(m.UserId)).ToList();
                         var selectedMedical = FindNextAvailableStaff(
-                            medicalStaffs, 
+                            availableMedicalStaffs, 
                             date, 
                             shift, 
                             assignments, 
@@ -121,7 +92,7 @@ namespace DNA_Blood_API.Services
 
                         if (selectedMedical != null)
                         {
-                            // Cập nhật số ca đã gợi ý
+                            assignedMedical.Add(selectedMedical.UserId); // Thêm vào danh sách đã gán
                             var key = (selectedMedical.UserId, date.Year, date.Month);
                             if (!suggestedCountPerUserPerMonth.ContainsKey(key))
                                 suggestedCountPerUserPerMonth[key] = 0;
@@ -145,14 +116,15 @@ namespace DNA_Blood_API.Services
                     // Staff
                     var assignedStaff = assignments
                         .Where(a => a.ShiftId == shift.ShiftId && a.AssignmentDate == date && a.User != null && a.User.RoleId == 2)
+                        .Select(a => a.UserId)
                         .ToList();
 
                     int needStaff = 4 - assignedStaff.Count;
                     for (int i = 0; i < needStaff && staffs.Count > 0; i++)
                     {
-                        // Tìm Staff phù hợp theo Round-Robin
+                        var availableStaffs = staffs.Where(s => !assignedStaff.Contains(s.UserId)).ToList();
                         var selectedStaff = FindNextAvailableStaff(
-                            staffs, 
+                            availableStaffs, 
                             date, 
                             shift, 
                             assignments, 
@@ -161,7 +133,7 @@ namespace DNA_Blood_API.Services
 
                         if (selectedStaff != null)
                         {
-                            // Cập nhật số ca đã gợi ý
+                            assignedStaff.Add(selectedStaff.UserId); // Thêm vào danh sách đã gán
                             var key = (selectedStaff.UserId, date.Year, date.Month);
                             if (!suggestedCountPerUserPerMonth.ContainsKey(key))
                                 suggestedCountPerUserPerMonth[key] = 0;
@@ -252,6 +224,86 @@ namespace DNA_Blood_API.Services
         public async Task<List<WorkShiftAssignmentDTO>> GetWorkShiftsByUserAndMonthAsync(int userId, int month, int year)
         {
             return await _shiftAssignmentRepositoryCustom.GetWorkShiftsByUserAndMonthAsync(userId, month, year);
+        }
+
+        // Trả về danh sách DTO
+        public async Task<IEnumerable<ShiftAssignmentDTO>> GetAllDTOAsync()
+        {
+            var list = await _shiftAssignmentRepository.GetAllAsync();
+            return list.Select(sa => new ShiftAssignmentDTO
+            {
+                AssignmentId = sa.AssignmentId,
+                UserId = sa.UserId,
+                ShiftId = sa.ShiftId,
+                AssignmentDate = sa.AssignmentDate
+            });
+        }
+        // Trả về 1 DTO theo id
+        public async Task<ShiftAssignmentDTO> GetByIdDTOAsync(int id)
+        {
+            var sa = await _shiftAssignmentRepository.GetByIdAsync(id);
+            if (sa == null) return null;
+            return new ShiftAssignmentDTO
+            {
+                AssignmentId = sa.AssignmentId,
+                UserId = sa.UserId,
+                ShiftId = sa.ShiftId,
+                AssignmentDate = sa.AssignmentDate
+            };
+        }
+        // Thêm mới và trả về DTO
+        public async Task<ShiftAssignmentDTO> AddDTOAsync(ShiftAssignmentCreateOrUpdateDTO dto)
+        {
+            // Lấy user để kiểm tra role
+            var user = await _userRepository.GetByIdAsync(dto.UserId);
+            if (user == null)
+                throw new System.Exception("User not found");
+            int roleId = user.RoleId ?? 0;
+
+            // Get assignments for this shift, date, and role
+            var assignments = await _shiftAssignmentRepository.FindAsync(sa => sa.ShiftId == dto.ShiftId && sa.AssignmentDate == dto.AssignmentDate && sa.User.RoleId == roleId);
+            // Check duplicate user first
+            var exists = assignments.Any(a => a.UserId == dto.UserId);
+            if (exists)
+                throw new System.Exception("This user has already been assigned to this shift!");
+
+            // Then check max allowed
+            int maxAllowed = (roleId == 4) ? 3 : (roleId == 2) ? 4 : int.MaxValue;
+            if (assignments.Count() >= maxAllowed)
+                throw new System.Exception($"The maximum number of {(roleId == 4 ? "Medical Staff" : roleId == 2 ? "Staff" : "employees")} for this shift has been reached!");
+
+            var entity = new ShiftAssignment
+            {
+                UserId = dto.UserId,
+                ShiftId = dto.ShiftId,
+                AssignmentDate = dto.AssignmentDate
+            };
+            var sa = await _shiftAssignmentRepository.AddAsync(entity);
+
+            return new ShiftAssignmentDTO
+            {
+                AssignmentId = sa.AssignmentId,
+                UserId = sa.UserId,
+                ShiftId = sa.ShiftId,
+                AssignmentDate = sa.AssignmentDate
+            };
+        }
+        // Cập nhật và trả về DTO
+        public async Task<ShiftAssignmentDTO> UpdateDTOAsync(int assignmentId, ShiftAssignmentCreateOrUpdateDTO dto)
+        {
+            var entity = await _shiftAssignmentRepository.GetByIdAsync(assignmentId);
+            if (entity == null) throw new System.Exception("Assignment not found");
+            entity.UserId = dto.UserId;
+            entity.ShiftId = dto.ShiftId;
+            entity.AssignmentDate = dto.AssignmentDate;
+            var sa = await _shiftAssignmentRepository.UpdateAsync(entity);
+            return new ShiftAssignmentDTO
+            {
+                AssignmentId = sa.AssignmentId,
+                UserId = sa.UserId,
+                ShiftId = sa.ShiftId,
+                AssignmentDate = sa.AssignmentDate
+            };
         }
     }
 } 
